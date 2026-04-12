@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+table td, table th {
+    text-align: left !important;
+    position: relative;
+}
+.dt-search input[type="search"] {
+    margin-left: 2px;
+    font-size: 14px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+/* Make search bar move into its own wrapper */
+.search-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 10px;
+}
+.dt-length {
+    display: none;
+}
+
+:root {
+    --primary: #5c297c;
+    --secondary: #f0a71f;
+    --light: #ffffff;
+    --gray: #dbdbdb;
+    --darkgray: #a9a9a9;
+    --lightgray: #f5f5f5;
+    --blue: #0096ff;
+    --darkblue: #00008b;
+    --whitepurple: #9954c4;
+    --darkpurple: #401b57;
+    --darkergray: #5c5c5c;
+}
