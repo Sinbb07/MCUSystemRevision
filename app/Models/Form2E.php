@@ -17,6 +17,7 @@ class Form2E extends Model
     protected $fillable = [
         'form2EID',
         'user_ID',
+        'protocol_ID',
         // Radio button fields
         'main_idea_study',
         'scientific_significance',

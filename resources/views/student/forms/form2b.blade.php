@@ -351,6 +351,9 @@
                     CONSIDERATIONS</h2>
                 <div class="p-3">
                     <div class="mt-2 space-y-2 text-base">
+                        <p class="text-sm italic text-gray-700">
+                            Complete all ethics fields below. If a section does not apply, type <strong>N/A</strong>.
+                        </p>
                         <!-- Informed Consent -->
                         <div>
                             <label>
@@ -365,7 +368,8 @@
                                 </span>
                             </label>
                             <textarea name="information_confidentiality" id="information_confidentiality"
-                                class="w-full border rounded p-2">{{ old('information_confidentiality', $form2b->information_confidentiality ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('information_confidentiality', $form2b->information_confidentiality ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -378,7 +382,8 @@
                                 </span>
                             </label>
                             <textarea name="participants_vulnerability" id="participants_vulnerability"
-                                class="w-full border rounded p-2">{{ old('participants_vulnerability', $form2b->participants_vulnerability ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('participants_vulnerability', $form2b->participants_vulnerability ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -391,7 +396,8 @@
                                 </span>
                             </label>
                             <textarea name="study_risks" id="study_risks"
-                                class="w-full border rounded p-2">{{ old('study_risks', $form2b->study_risks ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('study_risks', $form2b->study_risks ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -404,7 +410,8 @@
                                 </span>
                             </label>
                             <textarea name="study_benefits" id="study_benefits"
-                                class="w-full border rounded p-2">{{ old('study_benefits', $form2b->study_benefits ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('study_benefits', $form2b->study_benefits ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -416,7 +423,8 @@
                                 </span>
                             </label>
                             <textarea name="patient_related" id="patient_related"
-                                class="w-full border rounded p-2">{{ old('patient_related', $form2b->patient_related ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('patient_related', $form2b->patient_related ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -431,7 +439,8 @@
                                 </span>
                             </label>
                             <textarea name="informed_consent_process" id="informed_consent_process"
-                                class="w-full border rounded p-2">{{ old('informed_consent_process', $form2b->informed_consent_process ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('informed_consent_process', $form2b->informed_consent_process ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -443,7 +452,8 @@
                                 </span>
                             </label>
                             <textarea name="community_considerations" id="community_considerations"
-                                class="w-full border rounded p-2">{{ old('community_considerations', $form2b->community_considerations ?? '') }}</textarea> 
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('community_considerations', $form2b->community_considerations ?? '') }}</textarea> 
                         </div>
                         <div>
                             <label>
@@ -455,7 +465,8 @@
                                 </span>
                             </label>
                             <textarea name="dissemination" id="dissemination"
-                                class="w-full border rounded p-2">{{ old('dissemination', $form2b->dissemination ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('dissemination', $form2b->dissemination ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -468,7 +479,8 @@
                                 </span>
                             </label>
                             <textarea name="collaborative_terms" id="collaborative_terms"
-                                class="w-full border rounded p-2">{{ old('collaborative_terms', $form2b->collaborative_terms ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="w-full border rounded p-2" required>{{ old('collaborative_terms', $form2b->collaborative_terms ?? '') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -556,7 +568,7 @@
                 <div class="p-3 flex items-center justify-center space-x-2">
                     <button type="submit"
                         class="bg-primary text-secondary hover:bg-secondary hover:text-primary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">SAVE</button>
-                    <a href="{{ route('export.form2b') }}">
+                    <a href="{{ route('export.form2b') }}" target="_blank">
                         <button type="button"
                             class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm"
                             @if(!$hasSavedForm) disabled style="opacity:0.5; cursor:not-allowed;" @endif>EXPORT

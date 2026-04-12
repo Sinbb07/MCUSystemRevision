@@ -12,12 +12,13 @@ class Form2BController extends Controller
     {
         // Validate fields
         $request->validate([
-            'protocol_title' => 'nullable|string|max:255',
+            'protocol_title' => 'required|string|max:255',
             'pi_name' => 'required|string|max:255',
             'pi_contact' => 'required|string|max:20',
             'pi_email' => 'required|string|max:255',
             'coiname' => 'required|string|max:255',
             'investigator_type' => 'required|string',
+            'protocol' => 'required|string|max:255',
             'college_institution' => 'required|string|max:255',
             'submitted_by' => 'required|string|max:255',
             'study_type' => 'required|string',
@@ -28,23 +29,23 @@ class Form2BController extends Controller
             'settings_site' => 'required|string|max:255',
             'study_participants' => 'required|string|max:255',
             'funds' => 'required|string',
-            'funds_pharma_details' => 'nullable|string|max:255',   // renamed to *_details
-            'funds_others_details' => 'nullable|string|max:255',   // renamed to *_details
+            'funds_pharma_details' => 'required_if:funds,Pharmaceutical|string|max:255',
+            'funds_others_details' => 'required_if:funds,Others|string|max:255',
             'tech_review'   => 'required|boolean',
             'erb_submit'   => 'required|boolean',
-            'information_confidentiality' => 'nullable|string',
-            'participants_vulnerability' => 'nullable|string',
-            'study_risks' => 'nullable|string',
-            'study_benefits' => 'nullable|string',
-            'patient_related' => 'nullable|string',
-            'informed_consent_process' => 'nullable|string',
-            'community_considerations' => 'nullable|string',
-            'dissemination' => 'nullable|string',
-            'collaborative_terms' => 'nullable|string',
+            'information_confidentiality' => 'required|string',
+            'participants_vulnerability' => 'required|string',
+            'study_risks' => 'required|string',
+            'study_benefits' => 'required|string',
+            'patient_related' => 'required|string',
+            'informed_consent_process' => 'required|string',
+            'community_considerations' => 'required|string',
+            'dissemination' => 'required|string',
+            'collaborative_terms' => 'required|string',
 
             // Special Population
             'special_population' => 'required|string',
-            'special_population_others' => 'nullable|string|max:255',
+            'special_population_others' => 'required_if:special_population,Others|string|max:255',
         ]);
 
         // Generate form2BID if new

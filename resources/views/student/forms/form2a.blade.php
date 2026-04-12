@@ -12,6 +12,7 @@
             </div>
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <h2 class="p-3 font-bold text-lg max-2xl:text-base max-sm:text-sm">STUDY PROTOCOL INFORMATION</h2>
+                <p class="px-3 text-sm text-red-600 font-semibold">All textboxes are required. If a field does not apply, type "N/A" in the textbox.</p>
                 <div
                     class="px-3 py-2 flex flex-col md:flex-row justify-between items-start md:space-x-5 space-y-4 md:space-y-0">
                     <div class="flex flex-col md:basis-1/3 w-full">
@@ -20,7 +21,7 @@
                         </label>
                         <input type="text" name="protocol" value="{{ old('protocol', $researchInfo->research_title ?? '') }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
-                            required>
+                            required placeholder="Type N/A if no title yet">
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
@@ -28,14 +29,15 @@
                         </label>
                         <input type="text" name="pi_name" value="{{ $principalInvestigator }}" 
                             class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
-                            required>
+                            required placeholder="Type N/A if not applicable">
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             CO-INVESTIGATOR
                         </label>
                         <input type="text" name="coiname" value="{{ old('coiname', $researchInfo->research_CoInvestigator ?? '') }}"
-                            class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
+                            class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
+                            required placeholder="Type N/A if none">
                     </div>
                 </div>
             </div>
@@ -752,7 +754,7 @@
                 <div class="p-3 flex items-center justify-center space-x-2">
                     <button type="submit"
                         class="bg-primary text-secondary hover:bg-secondary hover:text-primary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">SAVE</button>
-                    <a href="{{ route('export.form2a') }}">
+                    <a href="{{ route('export.form2a') }}" target="_blank">
                         <button type="button"
                             class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm"
                             @if(!$hasSavedForm) disabled style="opacity:0.5; cursor:not-allowed;" @endif>EXPORT
@@ -762,4 +764,14 @@
             </div>
         </form>
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.setAttribute('required', 'true');
+                if (!textarea.hasAttribute('placeholder') || textarea.getAttribute('placeholder').trim() === '') {
+                    textarea.setAttribute('placeholder', 'Type N/A if nothing applies');
+                }
+            });
+        });
+    </script>
 </x-student-layout>

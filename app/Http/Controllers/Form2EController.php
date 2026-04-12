@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Form2E;
+use App\Models\Protocol;
 use Illuminate\Support\Facades\Auth;
 
 class Form2EController extends Controller
@@ -80,11 +81,16 @@ class Form2EController extends Controller
             
             // Justification
             'justification' => 'nullable|string|max:2000',
+            'protocol_ID' => 'nullable|string',
         ]);
 
         try {
-            // Check if record already exists for this user
-            $existingForm = Form2E::where('user_ID', $userId)->first();
+            $protocolId = $validated['protocol_ID'] ?? null;
+            
+            // Check if record already exists for this user and protocol
+            $existingForm = Form2E::where('user_ID', $userId)
+                ->where('protocol_ID', $protocolId)
+                ->first();
 
             if ($existingForm) {
                 // Update existing record
@@ -100,15 +106,20 @@ class Form2EController extends Controller
                     $form2EID = 'f2e000001';
                 }
 
-                // Add user ID and form2EID to validated data
+                // Add user ID, protocol ID and form2EID to validated data
                 $validated['user_ID'] = $userId;
+                $validated['protocol_ID'] = $protocolId;
                 $validated['form2EID'] = $form2EID;
 
                 // Create new record
                 Form2E::create($validated);
             }
 
-            return redirect()->route('form2e.edit')->with('success', 'Form 2(E) saved successfully!');
+            // Redirect back to the form with the protocol ID
+            $redirectRoute = $protocolId 
+                ? route('form2e.edit', ['protocol' => $protocolId])
+                : route('form2e.edit');
+            return redirect($redirectRoute)->with('success', 'Form 2(E) saved successfully!');
             
         } catch (\Exception $e) {
             return redirect()->back()
@@ -117,14 +128,26 @@ class Form2EController extends Controller
         }
     }
 
-    public function edit()
+    public function edit($protocol = null)
     {
         $user = auth()->user();
         $userId = $user->user_ID;
 
-        // Fetch existing form data or create empty instance
-        $form2e = Form2E::where('user_ID', $userId)->first() ?? new Form2E();
+        // Fetch existing form data for this user and protocol, or create empty instance
+        $form2e = Form2E::where('user_ID', $userId)
+            ->where('protocol_ID', $protocol)
+            ->first() ?? new Form2E();
 
-        return view('erb-reviewer.forms.form2e', compact('form2e')); 
+        // Fetch protocol and PI details if protocol ID is provided
+        $protocol_data = null;
+        $pi = null;
+        if ($protocol) {
+            $protocol_data = Protocol::find($protocol);
+            if ($protocol_data) {
+                $pi = $protocol_data->user;
+            }
+        }
+
+        return view('erb-reviewer.forms.form2e', compact('form2e', 'protocol_data', 'pi')); 
     }
 }

@@ -11,12 +11,12 @@ class Form2AController extends Controller
     public function store(Request $request)
     {
         // Validate fields
-        $request->validate([
-            'protocol' => 'nullable|string|max:255',
+        $rules = [
+            'protocol' => 'required|string|max:255',
             'pi_name' => 'required|string|max:255',
-            'coiname' => 'nullable|string|max:255',
+            'coiname' => 'required|string|max:255',
 
-            //Seniors
+            // Seniors
             'informed_consent' => 'nullable|string',
             'cognitive_assessment' => 'nullable|string',
             'physical_risks' => 'nullable|string',
@@ -24,7 +24,7 @@ class Form2AController extends Controller
             'privacy_confidentiality' => 'nullable|string',
             'intervention_suitability' => 'nullable|string', 
 
-            //Minors
+            // Minors
             'parent_consent' => 'nullable|string',
             'assent_process' => 'nullable|string',
             'harm_protection' => 'nullable|string',
@@ -32,7 +32,7 @@ class Form2AController extends Controller
             'mandatory_reporting' => 'nullable|string',
             'equitable_inclusion' => 'nullable|string', 
 
-            //Persons with Disabilities
+            // Persons with Disabilities
             'accessible_comm' => 'nullable|string',
             'consent_capacity' => 'nullable|string',
             'risk_mitigation' => 'nullable|string',
@@ -40,7 +40,7 @@ class Form2AController extends Controller
             'reasonable_accommodations' => 'nullable|string',
             'monitoring' => 'nullable|string', 
 
-            //Person Deprived of Liberty
+            // Person Deprived of Liberty
             'voluntary_participation' => 'nullable|string',
             'equitable_selection' => 'nullable|string',
             'privacy_confidentiality_2' => 'nullable|string',
@@ -48,14 +48,14 @@ class Form2AController extends Controller
             'independent_oversight' => 'nullable|string',
             'post_study_support' => 'nullable|string', 
 
-            //General Principles for All Groups
+            // General Principles for All Groups
             'ethical_justification' => 'nullable|string',
             'scientific_validity' => 'nullable|string',
             'risk_benefit_assessment' => 'nullable|string',
             'cultural_sensitivity' => 'nullable|string',
             'compensation' => 'nullable|string',
             
-            //Process of Participant Recruitment
+            // Process of Participant Recruitment
             'potential_participants' => 'nullable|string',
             'conditions_characteristics' => 'nullable|string',
             'susceptible_to_risks' => 'nullable|string',
@@ -63,19 +63,68 @@ class Form2AController extends Controller
             'possible_indication' => 'nullable|string',
             'procedure' => 'nullable|string', 
 
-            //Sample size and suitable determination procedure
+            // Sample size and suitable determination procedure
             'sample_size_1' => 'nullable|string',
             'sample_size_2' => 'nullable|string',
             
-            //Site of data collection
+            // Site of data collection
             'anonymity_confidentiality' => 'nullable|string',
             'procedures_confidentiality' => 'nullable|string',
             'final_disposition' => 'nullable|string', 
-            //Last Part
+            // Last part
             'thesisadviser' => 'required|string|max:255',
             'notedby' => 'required|string|max:255',
             'coordinator' => 'required|string|max:255', 
-        ]);
+        ];
+
+        $requiredTextFields = [
+            'informed_consent',
+            'cognitive_assessment',
+            'physical_risks',
+            'respect_autonomy',
+            'privacy_confidentiality',
+            'intervention_suitability',
+            'parent_consent',
+            'assent_process',
+            'harm_protection',
+            'educational_balance',
+            'mandatory_reporting',
+            'equitable_inclusion',
+            'accessible_comm',
+            'consent_capacity',
+            'risk_mitigation',
+            'non_discrimination',
+            'reasonable_accommodations',
+            'monitoring',
+            'voluntary_participation',
+            'equitable_selection',
+            'privacy_confidentiality_2',
+            'benefit_risk_analysis',
+            'independent_oversight',
+            'post_study_support',
+            'ethical_justification',
+            'scientific_validity',
+            'risk_benefit_assessment',
+            'cultural_sensitivity',
+            'compensation',
+            'potential_participants',
+            'conditions_characteristics',
+            'susceptible_to_risks',
+            'special_vulnerability',
+            'possible_indication',
+            'procedure',
+            'sample_size_1',
+            'sample_size_2',
+            'anonymity_confidentiality',
+            'procedures_confidentiality',
+            'final_disposition',
+        ];
+
+        foreach ($requiredTextFields as $field) {
+            $rules[$field] = 'required|string';
+        }
+
+        $request->validate($rules);
 
         // Generate form2BID if new
         $lastId = Form2A::max('form2AID');

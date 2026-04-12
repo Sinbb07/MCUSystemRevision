@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Form2J;
+use App\Models\Protocol;
 use Illuminate\Support\Facades\Auth;
 
 class Form2JController extends Controller
@@ -12,9 +13,16 @@ class Form2JController extends Controller
     {
         $user = auth()->user();
         $userId = $user->user_ID;
+        $protocolId = $request->input('protocol_ID');
+
+        // Validate protocol_ID
+        if (!$protocolId) {
+            return redirect()->back()->with('error', 'Protocol ID is required.');
+        }
 
         // Validate the request data
         $validated = $request->validate([
+            'protocol_ID' => 'required|string',
             // Radio button fields
             'potential_manner' => 'nullable|string|in:Yes,No',
             'conditions_characteristics' => 'nullable|string|in:Yes,No',
@@ -51,8 +59,10 @@ class Form2JController extends Controller
         ]);
 
         try {
-            // Check if record already exists for this user
-            $existingForm = Form2J::where('user_ID', $userId)->first();
+            // Check if record already exists for this user and protocol
+            $existingForm = Form2J::where('user_ID', $userId)
+                ->where('protocol_ID', $protocolId)
+                ->first();
 
             if ($existingForm) {
                 // Update existing record
@@ -68,7 +78,7 @@ class Form2JController extends Controller
                     $form2JID = 'f2j000001';
                 }
 
-                // Add user ID and form2JID to validated data
+                // Add user ID, protocol ID and form2JID to validated data
                 $validated['user_ID'] = $userId;
                 $validated['form2JID'] = $form2JID;
 
@@ -76,7 +86,7 @@ class Form2JController extends Controller
                 Form2J::create($validated);
             }
 
-            return redirect()->route('form2j.edit')->with('success', 'Form 2(J) saved successfully!');
+            return redirect()->route('form2j.edit', ['protocol' => $protocolId])->with('success', 'Form 2(J) saved successfully!');
             
         } catch (\Exception $e) {
             return redirect()->back()
@@ -85,14 +95,25 @@ class Form2JController extends Controller
         }
     }
 
-    public function edit()
+    public function edit($protocol)
     {
         $user = auth()->user();
         $userId = $user->user_ID;
 
-        // Fetch existing form data or create empty instance
-        $form2j = Form2J::where('user_ID', $userId)->first() ?? new Form2J();
+        // Fetch protocol data
+        $protocol_data = Protocol::where('protocol_ID', $protocol)->first();
+        if (!$protocol_data) {
+            abort(404, 'Protocol not found');
+        }
+        $pi = $protocol_data->user;
 
-        return view('erb-reviewer.forms.form2j', compact('form2j')); 
+        // Fetch existing form data for this user and protocol
+        $form2j = Form2J::where('user_ID', $userId)
+            ->where('protocol_ID', $protocol)
+            ->first();
+        
+        $form2j = $form2j ?? new Form2J();
+
+        return view('erb-reviewer.forms.form2j', compact('form2j', 'protocol_data', 'pi')); 
     }
 }

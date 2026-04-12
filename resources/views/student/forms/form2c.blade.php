@@ -127,6 +127,9 @@
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <h2 class="px-3 py-2 font-bold text-lg max-2xl:text-base max-sm:text-sm">PART III: RESEARCH STUDY</h2>
                 <div class="p-3">
+                    <p class="text-sm italic text-gray-700">
+                        Complete all research study fields below. If a section does not apply, type <strong>N/A</strong>.
+                    </p>
                     <div class="mt-2 space-y-2 text-base">
                         <div>
                             <label>
@@ -139,7 +142,8 @@
                                 </span>
                             </label>
                             <textarea name="description_purpose" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('description_purpose', $form2c->description_purpose ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('description_purpose', $form2c->description_purpose ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -156,7 +160,8 @@
                                 </span>
                             </label>
                             <textarea name="procedures" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('procedures', $form2c->procedures ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('procedures', $form2c->procedures ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -170,7 +175,8 @@
                                 </span>
                             </label>
                             <textarea name="participant_selection" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('participant_selection', $form2c->participant_selection ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('participant_selection', $form2c->participant_selection ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -183,7 +189,8 @@
                                 </span>
                             </label>
                             <textarea name="participation" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('participation', $form2c->participation ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('participation', $form2c->participation ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -196,7 +203,8 @@
                                 </span>
                             </label>
                             <textarea name="duration" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('duration', $form2c->duration ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('duration', $form2c->duration ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -210,7 +218,8 @@
                                 </span>
                             </label>
                             <textarea name="risks_hazards" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('risks_hazards', $form2c->risks_hazards ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('risks_hazards', $form2c->risks_hazards ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -225,7 +234,8 @@
                                 </span>
                             </label>
                             <textarea name="benefits" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('benefits', $form2c->benefits ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('benefits', $form2c->benefits ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -239,7 +249,8 @@
                                 </span>
                             </label>
                             <textarea name="injury_management" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('injury_management', $form2c->injury_management ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('injury_management', $form2c->injury_management ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -256,7 +267,8 @@
                                 </span>
                             </label>
                             <textarea name="compensation" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('compensation', $form2c->compensation ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('compensation', $form2c->compensation ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -270,7 +282,8 @@
                                 </span>
                             </label>
                             <textarea name="confidentiality" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('confidentiality', $form2c->confidentiality ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('confidentiality', $form2c->confidentiality ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -284,7 +297,8 @@
                                 </span>
                             </label>
                             <textarea name="right_to_refuse" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('right_to_refuse', $form2c->right_to_refuse ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('right_to_refuse', $form2c->right_to_refuse ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -356,7 +370,8 @@
                                 </span>
                             </label>
                             <textarea name="approval_mcueerb" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('approval_mcueerb', $form2c->approval_mcueerb ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('approval_mcueerb', $form2c->approval_mcueerb ?? '') }}</textarea>
                         </div>
                         <div>
                             <label>
@@ -369,7 +384,8 @@
                                 </span>
                             </label>
                             <textarea name="contact_mcueerb" id=""
-                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('contact_mcueerb', $form2c->contact_mcueerb ?? '') }}</textarea>
+                                placeholder="Type N/A if not applicable"
+                                class="mt-1 w-full resize-none max-sm:text-sm" required>{{ old('contact_mcueerb', $form2c->contact_mcueerb ?? '') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -390,7 +406,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q1" data-group="1" value="Yes" {{ old('consent_q1', $form2c->consent_q1 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q1" data-group="1" value="Yes" required {{ old('consent_q1', $form2c->consent_q1 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q1" data-group="1" value="No" {{ old('consent_q1', $form2c->consent_q1 ?? '') == 'No' ? 'checked' : '' }}>
@@ -405,7 +421,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q2" data-group="2" value="Yes" {{ old('consent_q2', $form2c->consent_q2 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q2" data-group="2" value="Yes" required {{ old('consent_q2', $form2c->consent_q2 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q2" data-group="2" value="No" {{ old('consent_q2', $form2c->consent_q2 ?? '') == 'No' ? 'checked' : '' }}>
@@ -420,7 +436,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q3" data-group="3" value="Yes" {{ old('consent_q3', $form2c->consent_q3 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q3" data-group="3" value="Yes" required {{ old('consent_q3', $form2c->consent_q3 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q3" data-group="3" value="No" {{ old('consent_q3', $form2c->consent_q3 ?? '') == 'No' ? 'checked' : '' }}>
@@ -435,7 +451,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q4" data-group="4" value="Yes" {{ old('consent_q4', $form2c->consent_q4 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q4" data-group="4" value="Yes" required {{ old('consent_q4', $form2c->consent_q4 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q4" data-group="4" value="No" {{ old('consent_q4', $form2c->consent_q4 ?? '') == 'No' ? 'checked' : '' }}>
@@ -450,7 +466,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q5" data-group="5" value="Yes" {{ old('consent_q5', $form2c->consent_q5 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q5" data-group="5" value="Yes" required {{ old('consent_q5', $form2c->consent_q5 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q5" data-group="5" value="No" {{ old('consent_q5', $form2c->consent_q5 ?? '') == 'No' ? 'checked' : '' }}>
@@ -466,7 +482,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q6" data-group="6" value="Yes" {{ old('consent_q6', $form2c->consent_q6 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q6" data-group="6" value="Yes" required {{ old('consent_q6', $form2c->consent_q6 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q6" data-group="6" value="No" {{ old('consent_q6', $form2c->consent_q6 ?? '') == 'No' ? 'checked' : '' }}>
@@ -483,7 +499,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q7" data-group="7" value="Yes" {{ old('consent_q7', $form2c->consent_q7 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q7" data-group="7" value="Yes" required {{ old('consent_q7', $form2c->consent_q7 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q7" data-group="7" value="No" {{ old('consent_q7', $form2c->consent_q7 ?? '') == 'No' ? 'checked' : '' }}>
@@ -498,7 +514,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q8" data-group="8" value="Yes" {{ old('consent_q8', $form2c->consent_q8 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q8" data-group="8" value="Yes" required {{ old('consent_q8', $form2c->consent_q8 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q8" data-group="8" value="No" {{ old('consent_q8', $form2c->consent_q8 ?? '') == 'No' ? 'checked' : '' }}>
@@ -513,7 +529,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q9" data-group="9" value="Yes" {{ old('consent_q9', $form2c->consent_q9 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q9" data-group="9" value="Yes" required {{ old('consent_q9', $form2c->consent_q9 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q9" data-group="9" value="No" {{ old('consent_q9', $form2c->consent_q9 ?? '') == 'No' ? 'checked' : '' }}>
@@ -529,7 +545,7 @@
                         </label>
                         <div class="flex mt-1 space-x-1">
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                name="consent_q10" data-group="10" value="Yes" {{ old('consent_q10', $form2c->consent_q10 ?? '') == 'Yes' ? 'checked' : '' }}>
+                                name="consent_q10" data-group="10" value="Yes" required {{ old('consent_q10', $form2c->consent_q10 ?? '') == 'Yes' ? 'checked' : '' }}>
                             <span>Yes</span>
                             <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
                                 name="consent_q10" data-group="10" value="No" {{ old('consent_q10', $form2c->consent_q10 ?? '') == 'No' ? 'checked' : '' }}>
@@ -557,7 +573,7 @@
                 <div class="p-3 flex items-center justify-center space-x-2">
                     <button type="submit"
                         class="bg-primary text-secondary hover:bg-secondary hover:text-primary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">SAVE</button>
-                    <a href="{{ route('export.form2c') }}">
+                    <a href="{{ route('export.form2c') }}" target="_blank">
                         <button type="button"
                             class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm"
                             @if(!$hasSavedForm) disabled style="opacity:0.5; cursor:not-allowed;" @endif>EXPORT

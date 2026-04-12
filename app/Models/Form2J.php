@@ -17,6 +17,7 @@ class Form2J extends Model
     protected $fillable = [
         'form2JID',
         'user_ID',
+        'protocol_ID',
         // Radio button fields
         'potential_manner',
         'conditions_characteristics',

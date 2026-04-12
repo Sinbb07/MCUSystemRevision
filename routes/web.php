@@ -332,11 +332,11 @@ Route::middleware(['auth', 'access:ERB Reviewer', CheckReviewerInformation::clas
         ->name('erb-reviewer.monitoring-process');
 
     Route::prefix('forms')->group(function () {
-        Route::get('/form2e', [Form2EController::class, 'edit'])->name('form2e.edit');
+        Route::get('/form2e/{protocol?}', [Form2EController::class, 'edit'])->name('form2e.edit');
         Route::post('/form2e', [Form2EController::class, 'store'])->name('form2e.store');
         Route::get('/export-form2e', [PdfExportController::class, 'exportForm2E'])->name('export.form2e');
 
-        Route::get('/form2j', [Form2JController::class, 'edit'])->name('form2j.edit');
+        Route::get('/form2j/{protocol}', [Form2JController::class, 'edit'])->name('form2j.edit');
         Route::post('/form2j', [Form2JController::class, 'store'])->name('form2j.store');
         Route::get('/export-form2j', [PdfExportController::class, 'exportForm2J'])->name('export.form2j');
 

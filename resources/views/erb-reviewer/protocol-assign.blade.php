@@ -43,11 +43,25 @@
                         <td>
                             @foreach($reviews as $review)
                                 @if($review->form?->form_type === 'Forms')
-                                    <a href="{{ url($review->form->form_view) }}" class="block mb-2">
-                                        <button class="border-2 p-[5px] hover:bg-gray">
-                                            {{ $review->form->form_code ?? 'N/A' }}
-                                        </button>
-                                    </a>
+                                    @if($review->form->form_code === 'FORM 2(E)')
+                                        <a href="{{ route('form2e.edit', ['protocol' => $firstReview->protocol?->protocol_ID]) }}" class="block mb-2">
+                                            <button class="border-2 p-[5px] hover:bg-gray">
+                                                {{ $review->form->form_code ?? 'N/A' }}
+                                            </button>
+                                        </a>
+                                    @elseif($review->form->form_code === 'FORM 2(J)')
+                                        <a href="{{ route('form2j.edit', ['protocol' => $firstReview->protocol?->protocol_ID]) }}" class="block mb-2">
+                                            <button class="border-2 p-[5px] hover:bg-gray">
+                                                {{ $review->form->form_code ?? 'N/A' }}
+                                            </button>
+                                        </a>
+                                    @else
+                                        <a href="{{ url($review->form->form_view) }}" class="block mb-2">
+                                            <button class="border-2 p-[5px] hover:bg-gray">
+                                                {{ $review->form->form_code ?? 'N/A' }}
+                                            </button>
+                                        </a>
+                                    @endif
                                 @endif
                             @endforeach
                         </td>

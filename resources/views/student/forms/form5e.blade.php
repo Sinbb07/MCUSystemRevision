@@ -13,6 +13,9 @@
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <h2 class="px-3 py-2 font-bold text-lg max-2xl:text-base max-sm:text-sm">PART I: INFORMATION</h2>
                 <h2 class="p-3 font-semibold text-lg max-2xl:text-base max-sm:text-sm">TO BE FILLED UP BY P.I.</h2>
+                <p class="px-3 pb-3 text-sm italic text-gray-700 max-sm:text-xs">
+                    Mark the documents that are being submitted. If a checklist item is not applicable, leave it unchecked.
+                </p>
                 <div
                     class="px-3 py-2 flex flex-col md:flex-row justify-between items-start md:space-x-5 space-y-5 md:space-y-0">
                     <div class="flex flex-col md:basis-1/3 w-full">
@@ -229,7 +232,7 @@
                 <div class="p-3 flex items-center justify-center space-x-2">
                     <button type="submit"
                         class="bg-primary text-secondary hover:bg-secondary hover:text-primary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">SAVE</button>
-                    <a href="{{ route('export.form5e') }}">
+                    <a href="{{ route('export.form5e') }}" target="_blank">
                         <button type="button"
                             class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm"
                             @if(!$hasSavedForm) disabled style="opacity:0.5; cursor:not-allowed;" @endif>EXPORT
