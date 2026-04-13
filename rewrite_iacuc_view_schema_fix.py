@@ -1,4 +1,5 @@
-@section('title', 'Protocol Review Checklist')
+from pathlib import Path
+content = '''@section('title', 'Protocol Review Checklist')
 <x-iacuc-reviewer>
     <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
         <form action="{{ route('iacuc-reviewer.protocol-review-checklist.store') }}" method="POST" class="block">
@@ -12,11 +13,11 @@
                 <div class="px-3 py-2 flex flex-col md:flex-row justify-between items-start md:space-x-5 space-y-5 md:space-y-0">
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">STUDY TITLE</label>
-                        <input type="text" name="study_title" value="{{ old('study_title', $form->study_title ?? $protocol->researchInformation->research_title ?? '') }}" class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]" required>
+                        <input type="text" name="study_title" value="{{ old('study_title', $form->study_title ?? '') }}" class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]" required>
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">PI/RESP. PERSON</label>
-                        <input type="text" name="pi_person" value="{{ old('pi_person', $form->pi_person ?? $protocol->user->full_name ?? '') }}" class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]" required>
+                        <input type="text" name="pi_person" value="{{ old('pi_person', $form->pi_person ?? '') }}" class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]" required>
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">ADVISER</label>
@@ -132,3 +133,6 @@
         </form>
     </main>
 </x-iacuc-reviewer>
+'''
+Path('resources/views/iacuc-reviewer/forms/protocol-review-checklist.blade.php').write_text(content, encoding='utf-8')
+print('view fixed')

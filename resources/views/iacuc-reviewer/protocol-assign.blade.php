@@ -41,15 +41,36 @@
 
                         {{-- Forms --}}
                         <td>
+                            @php
+                                $hasChecklistForm = false;
+                            @endphp
+
                             @foreach($reviews as $review)
                                 @if($review->form?->form_type === 'Forms')
-                                    <a href="{{ url($review->form->form_view) }}" class="block mb-2">
+                                    @php
+                                        $formCode = strtolower($review->form->form_code ?? '');
+                                        if (str_contains($formCode, 'protocol review checklist')) {
+                                            $hasChecklistForm = true;
+                                            $formUrl = url($review->form->form_view) . '?protocol=' . urlencode($firstReview->protocol->protocol_ID);
+                                        } else {
+                                            $formUrl = url($review->form->form_view);
+                                        }
+                                    @endphp
+                                    <a href="{{ $formUrl }}" class="block mb-2">
                                         <button class="border-2 p-[5px] hover:bg-gray">
                                             {{ $review->form->form_code ?? 'N/A' }}
                                         </button>
                                     </a>
                                 @endif
                             @endforeach
+
+                            @if($firstReview->protocol?->protocol_ID && !$hasChecklistForm)
+                                <a href="{{ route('iacuc-reviewer.protocol-review-checklist', ['protocol' => $firstReview->protocol->protocol_ID]) }}" class="block mb-2">
+                                    <button class="border-2 p-[5px] hover:bg-gray">
+                                        Protocol Review Checklist
+                                    </button>
+                                </a>
+                            @endif
                         </td>
 
                         {{-- Submissions --}}

@@ -407,9 +407,10 @@ Route::middleware(['auth', 'access:IACUC Reviewer',CheckReviewerInformation::cla
         return view('iacuc-reviewer.forms.protocol-review');
     });
 
-    Route::get('/forms/protocol-review-checklist', function () {
-        return view('iacuc-reviewer.forms.protocol-review-checklist');
-    });
+    Route::get('/forms/protocol-review-checklist', [ERBReviewer::class, 'iacucProtocolReviewChecklist'])
+        ->name('iacuc-reviewer.protocol-review-checklist');
+    Route::post('/forms/protocol-review-checklist', [ERBReviewer::class, 'iacucProtocolReviewChecklistStore'])
+        ->name('iacuc-reviewer.protocol-review-checklist.store');
 
     Route::get('/export-protocol-review-checklist', [PdfExportController::class, 'exportProtocolReviewChecklist'])->name('export.protocol-review-checklist');
 });

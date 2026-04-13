@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use App\Models\InitialReview;
 use App\Models\User;
 use App\Models\ResearchFiles;
@@ -14,6 +15,7 @@ use App\Notifications\ReviewCompleted;
 use App\Models\EvaluatedReviews;
 use App\Models\ProcessMonitoring;
 use App\Models\ReviewerFile;
+use App\Models\IacucProtocolReview;
 
 class ERBReviewer extends Controller
 {
@@ -334,6 +336,103 @@ class ERBReviewer extends Controller
             ->get();
 
         return view('iacuc-reviewer.submit-documents', compact('form', 'submittedFiles'));
+    }
+
+    public function iacucProtocolReviewChecklist(Request $request)
+    {
+        $protocolId = $request->query('protocol');
+        $reviewerId = Auth::user()->user_ID;
+
+        if (!$protocolId) {
+            return redirect()->route('iacuc-reviewer.protocol-assign')->with('error', 'Protocol is required.');
+        }
+
+        $assigned = InitialReview::where('protocol_ID', $protocolId)
+            ->where(function ($q) use ($reviewerId) {
+                $q->where('reviewer1_ID', $reviewerId)
+                    ->orWhere('reviewer2_ID', $reviewerId);
+            })
+            ->exists();
+
+        if (!$assigned) {
+            return redirect()->route('iacuc-reviewer.protocol-assign')->with('error', 'You are not assigned to this protocol.');
+        }
+
+        $form = IacucProtocolReview::where('protocol_ID', $protocolId)
+            ->where('user_ID', $reviewerId)
+            ->first();
+
+        $protocol = Protocol::with(['user', 'researchInformation'])
+            ->where('protocol_ID', $protocolId)
+            ->first();
+
+        return view('iacuc-reviewer.forms.protocol-review-checklist', compact('form', 'protocol'));
+    }
+
+    public function iacucProtocolReviewChecklistStore(Request $request)
+    {
+        $reviewerId = Auth::user()->user_ID;
+
+        $validated = $request->validate([
+            'protocol_id' => 'required',
+            'study_title' => 'nullable|string|max:255',
+            'pi_person' => 'nullable|string|max:255',
+            'adviser' => 'nullable|string|max:255',
+            'scientific_merit_comment' => 'nullable|string',
+            'training_experience_comment' => 'nullable|string',
+            'overview_section_comment' => 'nullable|string',
+            'rational_justification_comment' => 'nullable|string',
+            'adequate_justification_comment' => 'nullable|string',
+            'unnecessary_duplication_comment' => 'nullable|string',
+            'experimental_procedures_comment' => 'nullable|string',
+            'endpoint_duration_comment' => 'nullable|string',
+            'euthanasia_method_comment' => 'nullable|string',
+            'pain_category_comment' => 'nullable|string',
+            'alternative_housing_comment' => 'nullable|string',
+            'hazardous_material_comment' => 'nullable|string',
+            'multiple_survival_comment' => 'nullable|string',
+            'pain_relief_comment' => 'nullable|string',
+            'ill_debilitated_comment' => 'nullable|string',
+            'complications_comment' => 'nullable|string',
+            'veterinary_complications_comment' => 'nullable|string',
+            'proposed_anesthesia_comment' => 'nullable|string',
+            'post_procedural_comment' => 'nullable|string',
+            'appropriate_method_comment' => 'nullable|string',
+            'summary_comments' => 'nullable|string',
+        ]);
+
+        $protocolId = $validated['protocol_id'];
+
+        $assigned = InitialReview::where('protocol_ID', $protocolId)
+            ->where(function ($q) use ($reviewerId) {
+                $q->where('reviewer1_ID', $reviewerId)
+                    ->orWhere('reviewer2_ID', $reviewerId);
+            })
+            ->exists();
+
+        if (!$assigned) {
+            return redirect()->route('iacuc-reviewer.protocol-assign')->with('error', 'You are not assigned to this protocol.');
+        }
+
+        $data = collect($validated)
+            ->except(['protocol_id'])
+            ->all();
+
+        $review = IacucProtocolReview::firstOrNew([
+            'protocol_ID' => $protocolId,
+            'user_ID' => $reviewerId,
+        ]);
+
+        if (!$review->review_id) {
+            $review->review_id = (string) Str::uuid();
+        }
+
+        $review->fill($data);
+        $review->protocol_ID = $protocolId;
+        $review->user_ID = $reviewerId;
+        $review->save();
+
+        return redirect()->back()->with('success', 'Protocol review checklist saved.');
     }
 
     public function iacucSubmitForm(Request $request, $formId)
