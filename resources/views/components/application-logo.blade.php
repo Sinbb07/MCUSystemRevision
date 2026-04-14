@@ -1,0 +1,1 @@
+<img src="{{ asset('images/mcu-logo.png') }}" alt="" class="w-28 max-md:w-24">
