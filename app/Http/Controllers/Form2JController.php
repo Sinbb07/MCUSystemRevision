@@ -67,7 +67,6 @@ class Form2JController extends Controller
             if ($existingForm) {
                 // Update existing record
                 $existingForm->update($validated);
-                $form2JID = $existingForm->form2JID;
             } else {
                 // Generate form2JID for new record
                 $lastId = Form2J::max('form2JID');
@@ -78,9 +77,10 @@ class Form2JController extends Controller
                     $form2JID = 'f2j000001';
                 }
 
-                // Add user ID, protocol ID and form2JID to validated data
+                // Add necessary IDs to validated data before creating
                 $validated['user_ID'] = $userId;
                 $validated['form2JID'] = $form2JID;
+                $validated['protocol_ID'] = $protocolId; // <--- ADD THIS LINE
 
                 // Create new record
                 Form2J::create($validated);

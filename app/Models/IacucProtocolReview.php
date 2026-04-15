@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class IacucProtocolReview extends Model
 {
     protected $table = 'tbl_iacuc_protocol_review';
-    protected $primaryKey = 'review_id';
-    public $incrementing = false;
+    protected $primaryKey = 'review_id'; // Set this as primary if it's the UUID
+    public $incrementing = false;        // Required for string/UUID primary keys
     protected $keyType = 'string';
 
     protected $fillable = [
         'review_id',
-        'user_ID',
         'protocol_ID',
+        'reviewer_ID', // <--- Add this!
         'study_title',
         'pi_person',
         'adviser',
@@ -39,6 +39,5 @@ class IacucProtocolReview extends Model
         'post_procedural_comment',
         'appropriate_method_comment',
         'summary_comments',
-        'refinements_comment',
     ];
 }

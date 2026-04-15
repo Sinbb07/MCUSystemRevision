@@ -133,16 +133,17 @@ class Form2EController extends Controller
         $user = auth()->user();
         $userId = $user->user_ID;
 
-        // Fetch existing form data for this user and protocol, or create empty instance
-        $form2e = Form2E::where('user_ID', $userId)
+        // FIX: Change 'reviewer_ID' to 'user_ID' to match your migration
+        $form2e = Form2E::where('user_ID', $userId) 
             ->where('protocol_ID', $protocol)
             ->first() ?? new Form2E();
 
-        // Fetch protocol and PI details if protocol ID is provided
         $protocol_data = null;
         $pi = null;
+        
         if ($protocol) {
-            $protocol_data = Protocol::find($protocol);
+            // Ensure you're finding by the correct primary key 'protocol_ID'
+            $protocol_data = Protocol::where('protocol_ID', $protocol)->first();
             if ($protocol_data) {
                 $pi = $protocol_data->user;
             }

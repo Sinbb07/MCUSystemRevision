@@ -311,6 +311,7 @@ class assignReviewer extends Controller
                                     'direction' => 'in',
                                     'timestamp' => now(),
                                     'action_by_user_id' => auth()->user()->user_ID,
+                                    'action_by_user_type' => 'admin_iacuc', // 👈 ADD THIS LINE
                                     'affected_user_id' => $reviewerID,
                                     'affected_user_type' => 'reviewer_iacuc',
                                 ]);

@@ -7,89 +7,109 @@
         <br>
 
         <div class="top-controls">
-            <div class="search-wrapper max-sm:mt-3 max-sm:justify-center max-sm:items-center"></div>
+            <div class="search-wrapper mt-1 flex max-sm:justify-center max-sm:items-center"></div>
         </div>
 
-        <table id="myTable" class="display overflow-scroll border-collapse w-full">
-            <thead class="bg-primary text-white text-lg/7 max-lg:text-base/7">
+        <table id="myTable" class="display border-collapse w-full shadow-sm rounded-lg text-sm">
+            <thead class="bg-primary text-white">
                 <tr class="header-table">
-                    <th class="w-[20%]">Research Title</th>
-                    <th class="w-[15%]">P.I. Name</th>
-                    <th class="w-[15%]">Research Protocol</th>
-                    <th class="w-[15%]">Type of Review</th>
-                    <th class="w-[10%]">Forms</th>
-                    <th class="w-[15%]">Soft Copy Submission</th>
-                    <th class="w-[10%]">Decision</th> {{-- New Column --}}
+                    <th class="w-[25%] p-2 text-left">Research Title</th>
+                    <th class="w-[20%] p-2 text-left">P.I. Name</th>
+                    <th class="w-[15%] p-2 text-left">Research Protocol</th>
+                    <th class="w-[15%] p-2 text-left">Type of Review</th>
+                    <th class="p-2 text-center">Action / Forms</th>
                 </tr>
             </thead>
 
-            <tbody class="text-base/7 max-lg:text-sm/6">
+            <tbody>
                 @foreach($assignedProtocols as $protocolId => $reviews)
                     @php
                         $firstReview = $reviews->first();
                         $reviewerId = auth()->user()->user_ID;
-                        
+
                         // Fetch the current evaluation status for this reviewer
                         $evalRecord = DB::table('tbl_evaluated_reviews')
                             ->where('protocol_ID', $protocolId)
                             ->where('reviewer_ID', $reviewerId)
                             ->first();
+                        $currentStatus = $evalRecord->status ?? 'Pending';
                     @endphp
-                    <tr>
-                        <td>{{ $firstReview->pi?->researchInformation?->research_title ?? 'No Research Title' }}</td>
-                        <td>
-                            <a href="{{ route('erb-reviewer.submitted-documents', ['user_id' => $firstReview->protocol?->user?->user_ID]) }}">
+                    <tr class="border-b">
+                        <td class="p-2">{{ $firstReview->pi?->researchInformation?->research_title ?? 'No Research Title' }}</td>
+                        <td class="p-2">
+                            <a class="text-blue-600 underline" href="{{ route('erb-reviewer.submitted-documents', ['user_id' => $firstReview->protocol?->user?->user_ID]) }}">
                                 {{ $firstReview->protocol?->user?->full_name ?? 'No PI Name' }}
                             </a>
                         </td>
-                        <td>{{ $firstReview->protocol?->protocol_ID ?? 'N/A' }}</td>
-                        <td>{{ $firstReview->protocol?->review_type ?? 'N/A' }}</td>
+                        <td class="p-2 font-mono text-sm">{{ $firstReview->protocol?->protocol_ID ?? 'N/A' }}</td>
+                        <td class="p-2">{{ $firstReview->protocol?->review_type ?? 'N/A' }}</td>
 
-                        {{-- Forms --}}
-                        <td>
-                            @foreach($reviews as $review)
-                                @if($review->form?->form_type === 'Forms')
-                                    <a href="{{ route('form2e.edit', ['protocol' => $firstReview->protocol?->protocol_ID]) }}" class="block mb-2">
-                                        <button class="border-2 p-[5px] hover:bg-gray">
-                                            {{ $review->form->form_code ?? 'N/A' }}
+                        @if($currentStatus === 'Pending')
+                            <td class="p-2 bg-gray-50 border-l-4 border-yellow-500">
+                                <div class="flex flex-col items-center justify-center gap-1">
+                                    <span class="text-[10px] font-bold text-gray-600 uppercase">Review Invitation</span>
+                                    <div class="flex gap-2">
+                                        <button onclick="updateReviewStatus('{{ $protocolId }}', 'Accepted')"
+                                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-1 rounded font-bold shadow transition-all text-xs">
+                                            ACCEPT
                                         </button>
-                                    </a>
-                                @endif
-                            @endforeach
-                        </td>
-
-                        {{-- Submissions --}}
-                        <td>
-                            @foreach($reviews as $review)
-                                @if($review->form?->form_type === 'Submission')
-                                    <a href="{{ route('erb-reviewer.submit-documents', ['form' => $review->form->form_id]) }}" class="block mb-2">
-                                        <button class="border-2 p-[5px] hover:bg-gray">
-                                            Submit {{ $review->form->form_code ?? '' }}
+                                        <button onclick="updateReviewStatus('{{ $protocolId }}', 'Declined')"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-6 py-1 rounded font-bold shadow transition-all text-xs">
+                                            DECLINE
                                         </button>
-                                    </a>
-                                @endif
-                            @endforeach
-                        </td>
-
-                        {{-- DECISION COLUMN LOGIC --}}
-                        <td>
-                            @if(!$evalRecord || $evalRecord->status === 'Pending')
-                                <div class="flex flex-col gap-2">
-                                    <button onclick="updateReviewStatus('{{ $protocolId }}', 'Accepted')" 
-                                            class="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700 transition">
-                                        Accept
-                                    </button>
-                                    <button onclick="updateReviewStatus('{{ $protocolId }}', 'Declined')" 
-                                            class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition">
-                                        Decline
-                                    </button>
+                                    </div>
                                 </div>
-                            @else
-                                <span class="font-bold px-2 py-1 rounded {{ $evalRecord->status === 'Accepted' ? 'text-green-600' : 'text-blue' }}">
-                                    {{ strtoupper($evalRecord->status) }}
-                                </span>
-                            @endif
-                        </td>
+                            </td>
+
+                        @elseif($currentStatus === 'Declined')
+                            <td class="p-2 text-center text-red-600 italic font-bold bg-red-50 text-xs">
+                                Assignment Declined
+                            </td>
+
+                        @else
+                            {{-- ACCEPTED: Show Forms and Submissions in a single column --}}
+                            <td class="p-2 border-l">
+                                {{-- Forms Section --}}
+                                <div class="mb-2">
+                                    <div class="text-[10px] font-bold text-gray-600 mb-1 uppercase border-b pb-0.5">Forms to Accomplish</div>
+                                    @foreach($reviews as $review)
+                                        @if(is_object($review) && isset($review->form) && $review->form->form_type === 'Forms')
+                                            @php
+                                                $route = match($review->form->form_code) {
+                                                    'FORM 2(E)' => 'form2e.edit',
+                                                    'FORM 2(J)' => 'form2j.edit',
+                                                    default     => null
+                                                };
+                                            @endphp
+
+                                            @if($route)
+                                                <a href="{{ route($route, ['protocol' => $firstReview->protocol?->protocol_ID]) }}" class="block mb-1">
+                                                    <button class="border border-black p-1 w-full text-[10px] font-bold hover:bg-black hover:text-white transition-all uppercase">
+                                                        {{ $review->form->form_code ?? 'N/A' }}
+                                                    </button>
+                                                </a>
+                                            @else
+                                                <span class="text-[10px] text-red-500 block mb-1">Route not defined for {{ $review->form->form_code }}</span>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                </div>
+
+                                {{-- Submissions Section --}}
+                                <div>
+                                    <div class="text-[10px] font-bold text-gray-600 mb-1 uppercase border-b pb-0.5">Soft Copy Submissions</div>
+                                    @foreach($reviews as $review)
+                                        @if($review->form?->form_type === 'Submission')
+                                            <a href="{{ route('erb-reviewer.submit-documents', ['form' => $review->form->form_id]) }}" class="block mb-1">
+                                                <button class="border border-black p-1 w-full text-[10px] font-bold hover:bg-black hover:text-white transition-all uppercase">
+                                                    Submit {{ $review->form->form_code ?? '' }}
+                                                </button>
+                                            </a>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>
@@ -100,11 +120,11 @@
 <script>
     // AJAX Function to update status
     function updateReviewStatus(protocolId, status) {
-        const message = status === 'Declined' 
+        const message = status === 'Declined'
             ? "Are you sure you want to DECLINE this protocol? This will notify the Admin to re-assign it."
             : "Are you sure you want to ACCEPT this protocol?";
 
-        if(!confirm(message)) return;
+        if (!confirm(message)) return;
 
         fetch("{{ route('erb-reviewer.update-status') }}", {
             method: "POST",
@@ -119,11 +139,11 @@
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) {
-                alert(data.message);
-                location.reload(); // Refresh to update the UI and counts
+            if (data.success) {
+                alert(status === 'Accepted' ? 'You have accepted this review assignment.' : 'You have declined this review assignment.');
+                location.reload();
             } else {
-                alert("Error: " + data.message);
+                alert("Error: " + (data.message || 'Something went wrong. Please try again.'));
             }
         })
         .catch(error => {
@@ -133,15 +153,32 @@
     }
 
     $(document).ready(function () {
-        if (!$.fn.dataTable.isDataTable('#myTable')) {
-            const table = new DataTable('#myTable', {
-                responsive: true,
-                paging: false,
-                scrollY: '400px',
-                order: [[2, 'desc']] // Order by Protocol ID
-            });
+        // Destroy existing DataTable if it exists
+        if ($.fn.dataTable.isDataTable('#myTable')) {
+            $('#myTable').DataTable().destroy();
+        }
+        
+        // Clear the search wrapper first
+        $('.search-wrapper').empty();
+        
+        // Initialize DataTable with default settings (includes search box)
+        const table = $('#myTable').DataTable({
+            responsive: true,
+            paging: false,
+            scrollY: '400px',
+            order: [[2, 'desc']],
+            columns: [
+                { title: "Research Title" },
+                { title: "P.I. Name" },
+                { title: "Research Protocol" },
+                { title: "Type of Review" },
+                { title: "Action / Forms" }
+            ]
+        });
 
-            const dtSearch = $('div.dt-search');
+        // Move the search box to our custom wrapper
+        const dtSearch = $('#myTable_filter');
+        if (dtSearch.length) {
             $('.search-wrapper').append(dtSearch);
         }
     });

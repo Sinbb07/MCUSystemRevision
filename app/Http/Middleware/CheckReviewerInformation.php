@@ -34,7 +34,9 @@ class CheckReviewerInformation
             
             // Check for ERB Reviewers
             elseif ($user->user_Access === 'ERB Reviewer') {
-                $exists = ReviewerInformation::where('user_ID', $user->user_ID)->exists();
+                $exists = \DB::table('tbl_reviewer_information')
+                            ->where('user_ID', $user->user_ID)
+                            ->exists();
                 if (!$exists) {
                     return redirect()->route('erb-reviewer.college-dept');
                 }

@@ -171,7 +171,8 @@ class RegisteredUserController extends Controller
                     throw new \Exception('Could not open endorsement file for streaming.');
                 }
 
-                $research_Endorsement = Storage::disk('public')->put($folderPath . '/' . $filename, $stream);
+                Storage::disk('public')->put($folderPath . '/' . $filename, $stream);
+                $research_Endorsement = $folderPath . '/' . $filename;
                 if (is_resource($stream)) {
                     fclose($stream);
                 }
@@ -227,7 +228,8 @@ class RegisteredUserController extends Controller
                     throw new \Exception('Could not open receipt file for streaming.');
                 }
 
-                $research_Receipts = Storage::disk('public')->put($folderPath . '/' . $filename, $stream);
+                Storage::disk('public')->put($folderPath . '/' . $filename, $stream);
+                $research_Receipts = $folderPath . '/' . $filename;
                 if (is_resource($stream)) {
                     fclose($stream);
                 }

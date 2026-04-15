@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tbl_form2e', function (Blueprint $table) {
             $table->string('form2EID')->primary();
             $table->string('user_ID');
+            $table->string('protocol_ID');
             
             // Radio button fields
             $table->string('main_idea_study')->nullable();
@@ -83,10 +84,10 @@ return new class extends Migration
 
             $table->timestamps();
             
-            $table->foreign('user_ID')
-                  ->references('user_ID')
-                  ->on('tbl_users')
-                  ->onDelete('cascade');
+            $table->foreign('protocol_ID')
+            ->references('protocol_ID')
+            ->on('tbl_protocol') // Replace with your actual protocol table name
+            ->onDelete('cascade');
         });
     }
 

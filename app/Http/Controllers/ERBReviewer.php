@@ -23,12 +23,18 @@ class ERBReviewer extends Controller
     {
         $reviewerId = Auth::user()->user_ID;
 
-        // Fetch from EvaluatedReviews instead of InitialReview 
-        // to respect the 'Declined' status.
-        $assignedProtocols = EvaluatedReviews::with(['protocol.user', 'protocol.initialReviews.form'])
-            ->where('reviewer_ID', $reviewerId)
-            ->where('status', '!=', 'Declined') // Hide declined ones
-            ->get();
+        // Get assignments from InitialReview, but exclude those the reviewer declined
+        $assignedProtocols = InitialReview::with(['protocol.user', 'protocol.initialReviews.form'])
+            ->where(function ($q) use ($reviewerId) {
+                $q->where('reviewer1_ID', $reviewerId)
+                ->orWhere('reviewer2_ID', $reviewerId);
+            })
+            ->whereDoesntHave('protocol.evaluatedReviews', function($q) use ($reviewerId) {
+                $q->where('reviewer_ID', $reviewerId)
+                ->where('status', 'Declined');
+            })
+            ->get()
+            ->groupBy('protocol_ID');
 
         return view('erb-reviewer.protocol-assign', compact('assignedProtocols'));
     }
@@ -275,22 +281,24 @@ class ERBReviewer extends Controller
         }
     }
 
+    // Replace your existing iacucIndex() method in ERBReviewer.php with this:
+
     public function iacucIndex()
     {
         $reviewerId = Auth::user()->user_ID;
-
-        $assignedProtocols = InitialReview::with([
-            'protocol.user', 
-            'pi',
-            'form' // fetch all forms
-        ])
-        ->where(function ($q) use ($reviewerId) {
-            $q->where('reviewer1_ID', $reviewerId)
-            ->orWhere('reviewer2_ID', $reviewerId);
-        })
-        ->get()
-        ->groupBy('protocol_ID');
-
+    
+        $assignedProtocols = InitialReview::with(['protocol.user', 'pi', 'form'])
+            ->where(function ($q) use ($reviewerId) {
+                $q->where('reviewer1_ID', $reviewerId)
+                ->orWhere('reviewer2_ID', $reviewerId);
+            })
+            ->whereDoesntHave('protocol.evaluatedReviews', function($q) use ($reviewerId) {
+                $q->where('reviewer_ID', $reviewerId)
+                ->where('status', 'Declined');
+            })
+            ->get()
+            ->groupBy('protocol_ID');
+    
         return view('iacuc-reviewer.protocol-assign', compact('assignedProtocols'));
     }
 
@@ -385,25 +393,22 @@ class ERBReviewer extends Controller
         $protocolId = $request->query('protocol');
         $reviewerId = Auth::user()->user_ID;
 
-        if (!$protocolId) {
-            return redirect()->route('iacuc-reviewer.protocol-assign')->with('error', 'Protocol is required.');
-        }
-
+        // Ensure authorization
         $assigned = InitialReview::where('protocol_ID', $protocolId)
             ->where(function ($q) use ($reviewerId) {
-                $q->where('reviewer1_ID', $reviewerId)
-                    ->orWhere('reviewer2_ID', $reviewerId);
-            })
-            ->exists();
+                $q->where('reviewer1_ID', $reviewerId)->orWhere('reviewer2_ID', $reviewerId);
+            })->exists();
 
         if (!$assigned) {
-            return redirect()->route('iacuc-reviewer.protocol-assign')->with('error', 'You are not assigned to this protocol.');
+            return redirect()->route('iacuc-reviewer.protocol-assign')->with('error', 'Access denied.');
         }
 
+        // Fetch existing form data if any
         $form = IacucProtocolReview::where('protocol_ID', $protocolId)
-            ->where('user_ID', $reviewerId)
+            ->where('reviewer_ID', $reviewerId) // Match your migration column name
             ->first();
 
+        // Fetch Protocol info for the default values in the inputs
         $protocol = Protocol::with(['user', 'researchInformation'])
             ->where('protocol_ID', $protocolId)
             ->first();
@@ -414,67 +419,59 @@ class ERBReviewer extends Controller
     public function iacucProtocolReviewChecklistStore(Request $request)
     {
         $reviewerId = Auth::user()->user_ID;
+        $protocolId = $request->protocol_id;
 
-        $validated = $request->validate([
-            'protocol_id' => 'required',
-            'study_title' => 'nullable|string|max:255',
-            'pi_person' => 'nullable|string|max:255',
-            'adviser' => 'nullable|string|max:255',
-            'scientific_merit_comment' => 'nullable|string',
-            'training_experience_comment' => 'nullable|string',
-            'overview_section_comment' => 'nullable|string',
-            'rational_justification_comment' => 'nullable|string',
-            'adequate_justification_comment' => 'nullable|string',
-            'unnecessary_duplication_comment' => 'nullable|string',
-            'experimental_procedures_comment' => 'nullable|string',
-            'endpoint_duration_comment' => 'nullable|string',
-            'euthanasia_method_comment' => 'nullable|string',
-            'pain_category_comment' => 'nullable|string',
-            'alternative_housing_comment' => 'nullable|string',
-            'hazardous_material_comment' => 'nullable|string',
-            'multiple_survival_comment' => 'nullable|string',
-            'pain_relief_comment' => 'nullable|string',
-            'ill_debilitated_comment' => 'nullable|string',
-            'complications_comment' => 'nullable|string',
-            'veterinary_complications_comment' => 'nullable|string',
-            'proposed_anesthesia_comment' => 'nullable|string',
-            'post_procedural_comment' => 'nullable|string',
-            'appropriate_method_comment' => 'nullable|string',
-            'summary_comments' => 'nullable|string',
-        ]);
+        // 1. Update or Create the Checklist Entry
+        // We match by protocol_ID and reviewer_ID
+        $review = IacucProtocolReview::updateOrCreate(
+            [
+                'protocol_ID' => $protocolId,
+                'reviewer_ID' => $reviewerId,
+            ],
+            [
+                // Unique ID if your table uses a non-incrementing string ID
+                'review_id' => (string) Str::uuid(), 
+                
+                // Fields from your Blade file
+                'study_title' => $request->study_title,
+                'pi_person'   => $request->pi_person,
+                'adviser'     => $request->adviser,
 
-        $protocolId = $validated['protocol_id'];
+                // Textareas: All Protocols
+                'scientific_merit_comment'      => $request->scientific_merit_comment,
+                'training_experience_comment'   => $request->training_experience_comment,
+                'overview_section_comment'      => $request->overview_section_comment,
+                'rational_justification_comment' => $request->rational_justification_comment,
+                'adequate_justification_comment' => $request->adequate_justification_comment,
+                'unnecessary_duplication_comment' => $request->unnecessary_duplication_comment,
+                'experimental_procedures_comment' => $request->experimental_procedures_comment,
+                'endpoint_duration_comment'     => $request->endpoint_duration_comment,
+                'euthanasia_method_comment'     => $request->euthanasia_method_comment,
+                'pain_category_comment'         => $request->pain_category_comment,
+                'alternative_housing_comment'   => $request->alternative_housing_comment,
 
-        $assigned = InitialReview::where('protocol_ID', $protocolId)
-            ->where(function ($q) use ($reviewerId) {
-                $q->where('reviewer1_ID', $reviewerId)
-                    ->orWhere('reviewer2_ID', $reviewerId);
-            })
-            ->exists();
+                // Textareas: As Applicable
+                'hazardous_material_comment'    => $request->hazardous_material_comment,
+                'multiple_survival_comment'     => $request->multiple_survival_comment,
+                'pain_relief_comment'           => $request->pain_relief_comment,
+                'ill_debilitated_comment'       => $request->ill_debilitated_comment,
+                'complications_comment'         => $request->complications_comment,
 
-        if (!$assigned) {
-            return redirect()->route('iacuc-reviewer.protocol-assign')->with('error', 'You are not assigned to this protocol.');
-        }
+                // Textareas: Veterinary Review
+                'veterinary_complications_comment' => $request->veterinary_complications_comment,
+                'proposed_anesthesia_comment'      => $request->proposed_anesthesia_comment,
+                'post_procedural_comment'          => $request->post_procedural_comment,
+                'appropriate_method_comment'       => $request->appropriate_method_comment,
 
-        $data = collect($validated)
-            ->except(['protocol_id'])
-            ->all();
+                // Summary
+                'summary_comments' => $request->summary_comments,
+            ]
+        );
 
-        $review = IacucProtocolReview::firstOrNew([
-            'protocol_ID' => $protocolId,
-            'user_ID' => $reviewerId,
-        ]);
+        // 2. Log the process
+        $this->logProcess('REV_IAC_SAVE', "Saved IACUC Protocol Checklist for: $protocolId", 'reviewer_iacuc', 'out', $reviewerId);
 
-        if (!$review->review_id) {
-            $review->review_id = (string) Str::uuid();
-        }
-
-        $review->fill($data);
-        $review->protocol_ID = $protocolId;
-        $review->user_ID = $reviewerId;
-        $review->save();
-
-        return redirect()->back()->with('success', 'Protocol review checklist saved.');
+        return redirect()->back()->with('success', 'Protocol review checklist has been saved successfully.');
     }
 
     public function iacucSubmitForm(Request $request, $formId)
@@ -678,5 +675,19 @@ class ERBReviewer extends Controller
                 }
             }
         }
+    }
+    private function logProcess($code, $desc, $uType, $dir, $actorId, $affectedId = null, $affectedType = null)
+    {
+        ProcessMonitoring::create([
+            'process_code' => $code,
+            'process_description' => $desc,
+            'user_type' => $uType,
+            'direction' => $dir,
+            'timestamp' => now(),
+            'action_by_user_id' => $actorId,
+            'action_by_user_type' => $uType,
+            'affected_user_id' => $affectedId,
+            'affected_user_type' => $affectedType,
+        ]);
     }
 }

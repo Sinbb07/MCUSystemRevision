@@ -42,18 +42,32 @@ class ReviewerInformationController extends Controller
     public function erbStore(Request $request)
     {
         $request->validate([
-            'college' => 'required',
-            'department' => 'required',
+            'Reviewer_Dept' => 'required',
+            'Reviewer_Prog' => 'required',
         ]);
 
-        \DB::table('tbl_reviewer_info')->updateOrInsert(
-            ['user_ID' => auth()->user()->user_ID],
-            [
-                'college' => $request->college,
-                'department' => $request->department,
-                'updated_at' => now()
-            ]
-        );
+        $exists = \DB::table('tbl_reviewer_information')
+             ->where('user_ID', auth()->user()->user_ID)
+             ->exists();
+
+            if ($exists) {
+                \DB::table('tbl_reviewer_information')
+                    ->where('user_ID', auth()->user()->user_ID)
+                    ->update([
+                        'Reviewer_Dept' => $request->Reviewer_Dept,
+                        'Reviewer_Prog' => $request->Reviewer_Prog,
+                        'updated_at'    => now()
+                    ]);
+            } else {
+                \DB::table('tbl_reviewer_information')->insert([
+                    'Reviewer_ID'   => $this->generateReviewerID(),
+                    'user_ID'       => auth()->user()->user_ID,
+                    'Reviewer_Dept' => $request->Reviewer_Dept,
+                    'Reviewer_Prog' => $request->Reviewer_Prog,
+                    'created_at'    => now(),
+                    'updated_at'    => now()
+                ]);
+            }
 
         return redirect()->route('erb-reviewer.dashboard')->with('success', 'Profile updated!');
     }
