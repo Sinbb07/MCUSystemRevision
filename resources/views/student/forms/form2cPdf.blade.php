@@ -98,13 +98,13 @@
 
     <p class = "text-sm w-full flex flex-wrap italic text-justify mt-2">Briefly describe background of the problem, justification and the objectives of the research in layman’s terms.</p>
 
-    <p class = "text-sm w-full flex flex-wrap underline text-justify mt-2">>{{ $protocol->description_purpose }}</p>
+    <p class = "text-sm w-full flex flex-wrap underline text-justify mt-2">{{ $protocol->description_purpose }}</p>
 
     <p class = "text-sm font-bold text-center mt-4">Procedures of Research:</p>
 
     <p class = "text-sm w-full flex flex-wrap italic text-justify mt-2">In layman’s terms, give a concise description of the procedures in the exact order in a step-by-step manner. Include information on the assessments, tests, measurements that will be performed. Please indicate which procedures are routine and which are experimental or research. Participants should understand clearly what to expect and what is expected of them.</p>
 
-    <p class = "text-sm w-full flex flex-wrap underline text-justify mt-2"><{{ $protocol->procedures }}</p>
+    <p class = "text-sm w-full flex flex-wrap underline text-justify mt-2">{{ $protocol->procedures }}</p>
 
     <p class = "text-sm font-bold text-center mt-4">Participant selection and voluntary:</p>
 

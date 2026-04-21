@@ -6,8 +6,13 @@
             <form action="" class="w-full px-2">
                 <div class="flex justify-between items-center mb-2">
                     <div class="text-xl font-bold">Filter</div>
-                    <button type="button" onclick="closeModal('filterModal')" class="material-symbols-outlined">
-                        close
+                    <button type="button" onclick="closeModal('filterModal')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-x-icon lucide-x">
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                        </svg>
                     </button>
                 </div>
                 <div class="w-full">
@@ -35,12 +40,7 @@
         <br>
         
         <!-- CSS NG FILTER + SEARCH BAR -->
-        <div class="top-controls flex items-center justify-between max-md:flex-col">
-            <!-- FUNCTIONALITY TO DISPLAY THE DATAS BASED ON DATE -->
-            <div class="filter-box">
-                Total Submission Count:
-                <span class="font-bold" id="submissionCount"></span>
-            </div>
+        <div class="top-controls flex items-center justify-end max-md:flex-col">
             <div class="flex items-center max-sm:block max-sm:text-center max-md:mt-2">
                 <button type="button" onclick="openModal('filterModal')" class="bg-primary text-white p-1.5 rounded">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -115,9 +115,7 @@
 <script>
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
-    const countSpan = document.getElementById("submissionCount");
 
-    // ✅ Register BEFORE DataTable initializes (this runs first since it's in the slot)
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
         if (settings.nTable.id !== 'myTable') return true;
 
@@ -138,11 +136,5 @@
     function updateTable() {
         const table = $('#myTable').DataTable();
         table.draw();
-        countSpan.textContent = table.rows({ search: 'applied' }).count();
     }
-
-    // ✅ Set initial count after DataTables is ready
-    $(document).ready(function () {
-        countSpan.textContent = $('#myTable').DataTable().rows().count();
-    });
 </script>

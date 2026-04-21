@@ -52,14 +52,14 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             TELEPHONE NO.
                         </label>
-                        <input type="text" name="tel_no" pattern="02-\d{4}-\d{4}"
+                        <input type="text" name="tel_no" maxlength="10"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             MOBILE NO.
                         </label>
-                        <input type="tel" name="contact_no" pattern="09\d{2}-\d{3}-\d{4}"
+                        <input type="tel" name="contact_no" maxlength="11"
                             class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>

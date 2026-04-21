@@ -41,12 +41,7 @@
         <br>
 
         <!-- CSS NG FILTER + SEARCH BAR -->
-        <div class="top-controls flex items-center justify-between max-md:flex-col">
-            <!-- FUNCTIONALITY TO DISPLAY THE DATAS BASED ON DATE -->
-            <div class="filter-box">
-                Total Submission Count:
-                <span class="font-bold" id="submissionCount"></span>
-            </div>
+        <div class="top-controls flex items-center justify-end max-md:flex-col">
             <div class="flex items-center max-sm:block max-sm:text-center max-md:mt-2">
                 <button type="button" onclick="openModal('filterModal')" class="bg-primary text-white p-1.5 rounded">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -108,9 +103,6 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-3">No reviews found.</td>
-                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -119,9 +111,7 @@
 <script>
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
-    const countSpan = document.getElementById("submissionCount");
 
-    // ✅ Register BEFORE DataTable initializes (this runs first since it's in the slot)
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
         if (settings.nTable.id !== 'myTable') return true;
 
@@ -142,11 +132,5 @@
     function updateTable() {
         const table = $('#myTable').DataTable();
         table.draw();
-        countSpan.textContent = table.rows({ search: 'applied' }).count();
     }
-
-    // ✅ Set initial count after DataTables is ready
-    $(document).ready(function () {
-        countSpan.textContent = $('#myTable').DataTable().rows().count();
-    });
 </script>

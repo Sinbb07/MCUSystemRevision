@@ -17,11 +17,21 @@
                 </div>
                 <div class="w-full">
                     <!-- FILTER BY COLUMN -->
+                     <div class="filter-box mt-4">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter"
+                            class="w-full max-md:text-sm h-[35px] leading-[15px] max-sm:h-[31px] max-sm:leading-[11px]">
+                            <option value="" selected disabled>-- Choose type -- </option>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
                     <div class="filter-box mt-4">
-                        <label for="filter">Filter:</label>
+                        <label for="filter">Submitted/Reviewed:</label>
                         <select id="filter"
                             class="w-full max-md:text-sm h-[35px] leading-[15px] max-sm:h-[31px] max-sm:leading-[11px]">
-                            <option value="" selected disabled>All</option>
+                            <option value="" selected disabled>-- Choose type --</option>
                             <option value="Date Submitted">Date Submitted</option>
                             <option value="Review Date">Review Date</option>
                         </select>
@@ -55,18 +65,20 @@
         <br>
 
         <!-- CSS NG FILTER + SEARCH BAR -->
-        <div class="top-controls flex items-center justify-between max-md:flex-col">
-            <!-- FUNCTIONALITY TO DISPLAY THE DATAS BASED ON DATE -->
-            <div class="filter-box">
-                Total Submission Count:
-                <span class="font-bold" id="submissionCount"></span>
-            </div>
+        <div class="top-controls flex items-center justify-end max-md:flex-col">
             <div class="flex items-center max-sm:block max-sm:text-center max-md:mt-2">
-                <button type="button" onclick="openModal('filterModal')"
-                    class="material-symbols-outlined bg-primary text-white p-1.5 rounded">filter_alt</button>
+                <button type="button" onclick="openModal('filterModal')" class="bg-primary text-white p-1.5 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-funnel-icon lucide-funnel">
+                        <path
+                            d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z" />
+                    </svg>
+                </button>
                 <div class="search-wrapper max-sm:mt-3 max-sm:justify-center max-sm:items-center"></div>
             </div>
         </div>
+
 
         <table id="myTable" class="display overflow-w-scroll border-collapse w-full">
             <!-- Table header -->
@@ -168,7 +180,7 @@
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
     const filterType = document.getElementById('filter');
-    const countSpan = document.getElementById('submissionCount');
+    const statusFilter = document.getElementById('statusFilter')
 
     // ✅ Register DataTables filter plugin BEFORE table initializes
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
@@ -177,18 +189,17 @@
         const from = fromDate.value;
         const to = toDate.value;
         const type = filterType.value;
-
-        if (!from && !to) return true;
-        if (!type) return true;
+        const status = statusFilter.value;
 
         const row = settings.aoData[dataIndex].nTr;
+        const rowStatusFilter = data[4];
         if (!row) return true;
 
         let rowDate = '';
 
-        if (type === 'Date Submitted') {
+        if (data[5]) {
             rowDate = row.getAttribute('data-submitted') || '';
-        } else if (type === 'Review Date') {
+        } else if (data[6]) {
             rowDate = row.getAttribute('data-review') || '';
         }
 
@@ -199,19 +210,15 @@
         if (from && date < from) return false;
         if (to && date > to) return false;
 
+        if (status && rowStatusFilter !== status) return false;
+
         return true;
     });
 
     function updateTable() {
         const table = $('#myTable').DataTable();
         table.draw();
-        countSpan.textContent = table.rows({ search: 'applied' }).count();
     }
-
-    // ✅ Set initial count after DataTables is ready
-    $(document).ready(function () {
-        countSpan.textContent = $('#myTable').DataTable().rows().count();
-    });
 
     // ✅ Keep your checkbox logic (only one can be selected)
     const protocolCheckboxes = document.querySelectorAll(".protocol-checkbox");

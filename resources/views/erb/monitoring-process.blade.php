@@ -16,14 +16,32 @@
                     </button>
                 </div>
                 <div class="w-full">
-                    <!-- CALENDAR FILTERING FOR THE COUNT OF SUBMISSION -->
-                    <div class="mt-4">
-                        <label for="fromDate">From:</label>
-                        <input type="date" id="fromDate" class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
+                    <!-- FILTER BY COLUMN -->
+                    <div class="filter-box mt-4">
+                        <label for="filter">User Type:</label>
+                        <select id="filter"
+                            class="w-full max-md:text-sm h-[35px] leading-[15px] max-sm:h-[31px] max-sm:leading-[11px]">
+                            <option value="" selected disabled>-- Choose type --</option>
+                            <option value="Superadmin">Superadmin</option>
+                            <option value="ERB Admin">ERB Admin</option>
+                            <option value="ERB Reviewer">ERB Reviewer</option>
+                            <option value="IACUC Admin">IACUC Admin</option>
+                            <option value="IACUC Reviewer">IACUC Reviewer</option>
+                            <option value="Principal Investigator">Principal Investigator</option>
+                        </select>
                     </div>
-                    <div class="mt-4">
-                        <label for="toDate">To:</label>
-                        <input type="date" id="toDate" class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
+                    <!-- CALENDAR FILTERING FOR THE COUNT OF SUBMISSION -->
+                    <div class="filter-box mt-4 flex items-center gap-x-2">
+                        <div>
+                            <label for="fromDate">From:</label>
+                            <input type="date" id="fromDate"
+                                class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
+                        </div>
+                        <div>
+                            <label for="toDate">To:</label>
+                            <input type="date" id="toDate"
+                                class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
+                        </div>
                     </div>
                 </div>
                 <button type="button" onclick="updateTable(); closeModal('filterModal')"
@@ -41,12 +59,7 @@
         <br>
 
         <!-- CSS NG FILTER + SEARCH BAR -->
-        <div class="top-controls flex items-center justify-between max-md:flex-col">
-            <!-- FUNCTIONALITY TO DISPLAY THE DATAS BASED ON DATE -->
-            <div class="filter-box">
-                Total Submission Count:
-                <span class="font-bold" id="submissionCount"></span>
-            </div>
+        <div class="top-controls flex items-center justify-end max-md:flex-col">
             <div class="flex items-center max-sm:block max-sm:text-center max-md:mt-2">
                 <button type="button" onclick="openModal('filterModal')" class="bg-primary text-white p-1.5 rounded">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -96,22 +109,23 @@
 <script>
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
-    const countSpan = document.getElementById("submissionCount");
-
-    // ✅ Register BEFORE DataTable initializes (this runs first since it's in the slot)
+    const accountFilter = document.getElementById('filter')
+    
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
         if (settings.nTable.id !== 'myTable') return true;
 
         const from = fromDate.value;
         const to = toDate.value;
-
-        if (!from && !to) return true;
+        const account = accountFilter.value;
 
         const row = settings.aoData[dataIndex].nTr;
         const rowDate = row ? row.getAttribute('data-date') : '';
+        const rowAccountFilter = data[2];
 
         if (from && rowDate < from) return false;
         if (to && rowDate > to) return false;
+
+        if (account && rowAccountFilter !== account) return false;
 
         return true;
     });
@@ -119,11 +133,5 @@
     function updateTable() {
         const table = $('#myTable').DataTable();
         table.draw();
-        countSpan.textContent = table.rows({ search: 'applied' }).count();
     }
-
-    // ✅ Set initial count after DataTables is ready
-    $(document).ready(function () {
-        countSpan.textContent = $('#myTable').DataTable().rows().count();
-    });
 </script>

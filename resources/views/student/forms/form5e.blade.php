@@ -53,8 +53,8 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             PI CONTACT NO.
                         </label>
-                        <input type="tel" name="pi_contact" pattern="[0-9]{4}-[0-9]{3}-[0-9]{4}" value="{{ old('pi_contact', $form5e->pi_contact ?? '') }}"
-                            placeholder="09XX-XXX-XX34"
+                        <input type="tel" name="pi_contact" maxlength="11" value="{{ old('pi_contact', $form5e->pi_contact ?? '') }}"
+                            placeholder="09XXXXXXX34"
                             class="mt-1 rounded border border-darkgray w-full text-sm max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>

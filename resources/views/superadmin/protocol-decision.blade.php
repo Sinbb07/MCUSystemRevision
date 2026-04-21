@@ -1,12 +1,12 @@
 @section('title', 'Protocol Decision')
 <x-superadmin-layout>
-    <div id="filterModal" onclick="outsideClick(event)"
+    <div id="roleFilterModal" onclick="outsideClick(event)"
         class="fixed inset-0 bg-black z-[9999] bg-opacity-50 hidden items-center justify-center overflow-auto overscroll-contain">
         <div class="relative flex items-center justify-center bg-white w-[400px] p-6 rounded-[10px] shadow-md">
             <form action="" class="w-full px-2">
                 <div class="flex justify-between items-center mb-2">
                     <div class="text-xl font-bold">Filter</div>
-                    <button type="button" onclick="closeModal('filterModal')">
+                    <button type="button" onclick="closeModal('roleFilterModal')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="lucide lucide-x-icon lucide-x">
@@ -17,8 +17,18 @@
                 </div>
                 <div class="w-full">
                     <!-- FILTER BY COLUMN -->
+                     <div class="filter-box mt-4">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter"
+                            class="w-full max-md:text-sm h-[35px] leading-[15px] max-sm:h-[31px] max-sm:leading-[11px]">
+                            <option value="" selected disabled>-- Choose status --</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+
                     <div class="filter-box mt-4">
-                        <label for="filter">Filter:</label>
+                        <label for="filter">Submit/Review Filter:</label>
                         <select id="filter"
                             class="w-full max-md:text-sm h-[35px] leading-[15px] max-sm:h-[31px] max-sm:leading-[11px]">
                             <option value="" selected disabled>All</option>
@@ -40,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" onclick="updateTable(); closeModal('filterModal')"
+                <button type="button" onclick="updateTable(); closeModal('roleFilterModal')"
                     class="mt-4 bg-primary text-white tracking-widest uppercase px-4 py-2 rounded">
                     Apply
                 </button>
@@ -55,14 +65,9 @@
         <br>
 
         <!-- CSS NG FILTER + SEARCH BAR -->
-        <div class="top-controls flex items-center justify-between max-md:flex-col">
-            <!-- FUNCTIONALITY TO DISPLAY THE DATAS BASED ON DATE -->
-            <div class="filter-box">
-                Total Submission Count:
-                <span class="font-bold" id="submissionCount"></span>
-            </div>
+        <div class="top-controls flex items-center justify-end max-md:flex-col">
             <div class="flex items-center max-sm:block max-sm:text-center max-md:mt-2">
-                <button type="button" onclick="openModal('filterModal')"
+                <button type="button" onclick="openModal('roleFilterModal')"
                     class="material-symbols-outlined bg-primary text-white p-1.5 rounded">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -139,27 +144,25 @@
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
     const filterType = document.getElementById('filter');
-    const countSpan = document.getElementById('submissionCount');
+    const statusFilter = document.getElementById('statusFilter')
 
-    // ✅ Register DataTables filter plugin BEFORE table initializes
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
         if (settings.nTable.id !== 'myTable') return true;
 
         const from = fromDate.value;
         const to = toDate.value;
         const type = filterType.value;
-
-        if (!from && !to) return true;
-        if (!type) return true;
+        const status = statusFilter.value;
 
         const row = settings.aoData[dataIndex].nTr;
+        const rowStatusFilter = data[4]
         if (!row) return true;
 
         let rowDate = '';
 
-        if (type === 'Date Submitted') {
+        if (data[5]) {
             rowDate = row.getAttribute('data-submitted') || '';
-        } else if (type === 'Review Date') {
+        } else if (data[6]) {
             rowDate = row.getAttribute('data-review') || '';
         }
 
@@ -170,17 +173,13 @@
         if (from && date < from) return false;
         if (to && date > to) return false;
 
+        if (status && rowStatusFilter !== status) return false;
+
         return true;
     });
 
     function updateTable() {
         const table = $('#myTable').DataTable();
         table.draw();
-        countSpan.textContent = table.rows({ search: 'applied' }).count();
     }
-
-    // ✅ Set initial count after DataTables is ready
-    $(document).ready(function () {
-        countSpan.textContent = $('#myTable').DataTable().rows().count();
-    });
 </script>

@@ -103,7 +103,7 @@
             </li>
             <li>
                 <a href="{{ url('/iacuc/research-records') }}" class="w-full flex items-center px-2 py-3 border-none no-underline gap-x-3 hover:text-secondary transition-all duration-300 
-                    {{ Request::is('iacuc/research-records') ? 'text-secondary' : '' }}">
+                    {{ Request::is('iacuc/research-records') || Request::is('iacuc/submitted-documents/*') ? 'text-secondary' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="lucide lucide-database-icon lucide-database">
@@ -141,6 +141,21 @@
                         <rect x="2" y="3" width="20" height="14" rx="2" />
                     </svg>
                     Process Monitoring
+                </a>
+            </li>
+            <li>
+                <a href="{{ url('/iacuc/submitted-tickets') }}" class="w-full flex items-center px-2 py-3 border-none no-underline gap-x-3 hover:text-secondary transition-all duration-300 
+                    {{ Request::is('iacuc/submitted-tickets') || Request::is('iacuc/tickets/*') ? 'text-secondary' : ''}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-folder-kanban-icon lucide-folder-kanban">
+                        <path
+                            d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
+                        <path d="M8 10v4" />
+                        <path d="M12 10v2" />
+                        <path d="M16 10v6" />
+                    </svg>
+                    Submitted Inquiries
                 </a>
             </li>
         </ul>
@@ -278,7 +293,7 @@
                 </li>
                 <li>
                     <a href="{{ url('/iacuc/research-records') }}" class="flex items-center max-sm:text-[15px] px-2 py-3 max-sm:py-2.5 border-0 no-underline gap-x-2 cursor-pointer transition-all duration-300 hover:text-secondary 
-                        {{ Request::is('iacuc/research-records') ? 'text-secondary' : '' }}">
+                        {{ Request::is('iacuc/research-records') || Request::is('iacuc/submitted-documents/*') ? 'text-secondary' : '' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="lucide lucide-database-icon lucide-database">
