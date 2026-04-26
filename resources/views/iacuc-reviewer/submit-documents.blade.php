@@ -5,6 +5,20 @@
             SUBMIT DOCUMENTS
         </h2>
         <br>
+        
+        {{-- Only ADDED: Display session messages (no design changes) --}}
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
+        
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="p-6 max-md:p-0 space-y-10">
 
             {{-- Only display a single submission form --}}
@@ -48,11 +62,12 @@
                         <p class="max-md:text-[15px]">Attach the files here</p>
 
                         <form action="{{ route('iacuc-reviewer.submit-form', $form->form_id) }}" 
-                              method="POST" 
-                              enctype="multipart/form-data"
-                              onsubmit="return validateFiles();">
+                            method="POST" 
+                            enctype="multipart/form-data"
+                            onsubmit="return validateFiles();">
                             @csrf
-
+                            <input type="hidden" name="protocol_id" value="{{ $protocolId ?? '' }}">
+                            
                             <div class="max-w-xs w-xs cursor-pointer">
                                 <div>
                                     <input type="file" name="uploadForms[]" id="upload" accept=".doc,.docx,.pdf" multiple hidden>
@@ -85,6 +100,12 @@
                     @endif
 
                 </div>
+            @else
+                {{-- Only ADDED: Handle case when no form is found --}}
+                <div class="text-center p-8 bg-yellow-50 border border-yellow-200 rounded">
+                    <p class="text-yellow-600">No form assigned for submission.</p>
+                    <a href="{{ route('iacuc-reviewer.protocol-assign') }}" class="text-primary underline mt-2 inline-block">Return to Protocol Assignments</a>
+                </div>
             @endif
 
         </div>
@@ -98,9 +119,20 @@ window.addEventListener("load", () => {
 
     if(input){
         input.addEventListener("change", (e) => {
+            // Clear existing file displays
+            filewrapper.innerHTML = '';
+            
             const files = e.target.files;
-            for (let i = 0; i < files.length; i++) {
-                fileshow(files[i].name);
+            if(files.length === 0) {
+                // Optional: Show message if no files
+                const emptyMsg = document.createElement("p");
+                emptyMsg.classList.add("text-gray-500", "text-center", "py-8");
+                emptyMsg.innerHTML = "No files selected";
+                filewrapper.appendChild(emptyMsg);
+            } else {
+                for (let i = 0; i < files.length; i++) {
+                    fileshow(files[i].name);
+                }
             }
         });
     }
@@ -121,7 +153,20 @@ window.addEventListener("load", () => {
         filewrapper.append(showfileboxElem);
 
         rightElem.addEventListener("click", () => {
-            filewrapper.removeChild(showfileboxElem);
+            showfileboxElem.remove();
+            
+            // Update the file input to remove this file
+            const input = document.getElementById('upload');
+            if(input && input.files) {
+                // Create new FileList without the removed file (simplified - just clear and re-add others)
+                const dt = new DataTransfer();
+                const files = Array.from(input.files);
+                const fileToRemove = files.find(f => f.name === filename);
+                const remainingFiles = files.filter(f => f.name !== filename);
+                
+                remainingFiles.forEach(file => dt.items.add(file));
+                input.files = dt.files;
+            }
         });
     }
 });
@@ -133,6 +178,16 @@ function validateFiles(){
         alert("Please select at least one file before submitting.");
         return false;
     }
+    
+    // Optional: Add file size validation (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    for(let i = 0; i < input.files.length; i++) {
+        if(input.files[i].size > maxSize) {
+            alert(`File "${input.files[i].name}" exceeds 10MB limit.`);
+            return false;
+        }
+    }
+    
     return true;
 }
 </script>

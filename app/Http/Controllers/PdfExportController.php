@@ -7,53 +7,52 @@ use App\Models\Form2A;
 use App\Models\Form2B;
 use App\Models\Form2C;
 use App\Models\Form2D;
+use App\Models\Form2E;
+use App\Models\Form2J;
 use App\Models\Form5E;
 use App\Models\Protocol;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+
 class PdfExportController extends Controller
 {
     public function exportForm2A()
     {
-        //sample code
         $user = auth()->user();
 
         $protocol = Form2A::where('user_ID', $user->user_ID)
-            ->with('researchInfo') // if you need related info
+            ->with('researchInfo')
             ->firstOrFail();
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form2aPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->inline('FORM-2A.pdf');
     }
+
     public function exportForm2B()
     {
-        //sample code
         $user = auth()->user();
 
-        // Fetch the Form2B record for this user
         $protocol = Form2B::where('user_ID', $user->user_ID)
-            ->with('researchInfo') // if you need related info
+            ->with('researchInfo')
             ->firstOrFail();
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form2bPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->inline('FORM-2B.pdf');
     }
+
     public function exportForm2C()
     {
-        //sample code
         $user = auth()->user();
 
-        // Fetch the Form2B record for this user
         $protocol = Form2C::where('user_ID', $user->user_ID)
-            ->with('researchInfo') // if you need related info
+            ->with('researchInfo')
             ->firstOrFail();
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form2cPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
@@ -62,32 +61,141 @@ class PdfExportController extends Controller
 
     public function exportForm2D()
     {
-        //sample code
         $user = auth()->user();
 
-        // Fetch the Form2B record for this user
         $protocol = Form2D::where('user_ID', $user->user_ID)
-            ->with('researchInfo') // if you need related info
+            ->with('researchInfo')
             ->firstOrFail();
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form2dPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->inline('FORM-2D.pdf');
     }
 
+    public function exportForm2E(Request $request, $protocolId = null)
+    {
+        \Log::info('exportForm2E called with protocolId: ' . $protocolId);
+        
+        $user = auth()->user();
+        \Log::info('Current user: ' . $user->user_ID);
+        
+        // If protocol ID is provided in URL, use it
+        if ($protocolId) {
+            $form2e = Form2E::where('protocol_ID', $protocolId)->first();
+            \Log::info('Searching by protocol_ID: ' . $protocolId);
+        } else {
+            // Get the form2e data for the current reviewer
+            $form2e = Form2E::where('user_ID', $user->user_ID)->first();
+            \Log::info('Searching by user_ID: ' . $user->user_ID);
+        }
+        
+        \Log::info('Form2E found: ' . ($form2e ? 'Yes' : 'No'));
+        
+        if ($form2e) {
+            \Log::info('Form2E protocol_ID: ' . $form2e->protocol_ID);
+            \Log::info('Form2E data: ' . json_encode($form2e->toArray()));
+        }
+        
+        if (!$form2e) {
+            // Log all form2e records for debugging
+            $allForms = Form2E::all();
+            \Log::info('Total Form2E records in database: ' . $allForms->count());
+            foreach ($allForms as $form) {
+                \Log::info('Form2E record - ID: ' . $form->form2EID . ', Protocol: ' . $form->protocol_ID . ', User: ' . $form->user_ID);
+            }
+            abort(404, 'Form 2E not found for this protocol');
+        }
+        
+        // Get protocol data
+        $protocol_data = Protocol::where('protocol_ID', $form2e->protocol_ID)->first();
+        \Log::info('Protocol found: ' . ($protocol_data ? 'Yes' : 'No'));
+        
+        // Get PI information
+        $pi = User::where('user_ID', $protocol_data?->user_ID)->first();
+        if ($pi) {
+            $pi->full_name = $pi->user_Fname . ' ' . ($pi->user_MI ? $pi->user_MI . ' ' : '') . $pi->user_Lname;
+            $pi->phone_number = $pi->user_Phone ?? 'N/A';
+            $pi->email = $pi->user_Email ?? 'N/A';
+        }
+        
+        // Get co-investigator from research information
+        $coInvestigator = $protocol_data?->researchInformation?->research_CoInvestigator ?? 'N/A';
+        
+        $data = [
+            'form2e' => $form2e,
+            'protocol_data' => $protocol_data,
+            'protocol' => $protocol_data,
+            'pi' => $pi,
+            'co_investigator' => $coInvestigator,
+            'reviewer' => $user
+        ];
+        
+        \Log::info('Data passed to view: ' . json_encode(array_keys($data)));
+        
+        $filename = "FORM-2E-{$form2e->protocol_ID}.pdf";
+        
+        return Pdf::view('erb-reviewer.forms.form2ePdf', $data)
+            ->format('Letter')
+            ->margins(15, 15, 15, 15)
+            ->inline($filename);
+    }
+
+    public function exportForm2J(Request $request, $protocolId = null)
+    {
+        $user = auth()->user();
+        
+        // If protocol ID is provided in URL, use it
+        if ($protocolId) {
+            $form2j = Form2J::where('protocol_ID', $protocolId)->first();
+        } else {
+            // Get the form2j data for the current reviewer
+            $form2j = Form2J::where('user_ID', $user->user_ID)->first();
+        }
+        
+        if (!$form2j) {
+            abort(404, 'Form 2J not found for this protocol');
+        }
+        
+        // Get protocol data
+        $protocol_data = Protocol::where('protocol_ID', $form2j->protocol_ID)->first();
+        
+        // Get PI information
+        $pi = User::where('user_ID', $protocol_data?->user_ID)->first();
+        if ($pi) {
+            $pi->full_name = $pi->user_Fname . ' ' . ($pi->user_MI ? $pi->user_MI . ' ' : '') . $pi->user_Lname;
+            $pi->phone_number = $pi->user_Phone ?? 'N/A';
+            $pi->email = $pi->user_Email ?? 'N/A';
+        }
+        
+        // Get co-investigator from research information
+        $coInvestigator = $protocol_data?->researchInformation?->research_CoInvestigator ?? 'N/A';
+        
+        $data = [
+            'form2j' => $form2j,
+            'protocol_data' => $protocol_data,
+            'protocol' => $protocol_data,
+            'pi' => $pi,
+            'co_investigator' => $coInvestigator,
+            'reviewer' => $user
+        ];
+        
+        $filename = "FORM-2J-{$form2j->protocol_ID}.pdf";
+        
+        return Pdf::view('erb-reviewer.forms.form2jPdf', $data)
+            ->format('Letter')
+            ->margins(15, 15, 15, 15)
+            ->inline($filename);
+    }
+
     public function exportForm5E()
     {
-        //sample code
         $user = auth()->user();
 
-        // Fetch the Form2B record for this user
         $protocol = Form5E::where('user_ID', $user->user_ID)
-            ->with('researchInfo') // if you need related info
+            ->with('researchInfo')
             ->firstOrFail();
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form5ePdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
@@ -96,12 +204,10 @@ class PdfExportController extends Controller
 
     public function exportForm3C()
     {
-        //sample code
         $protocol = (object)[
             
         ];
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form3cPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
@@ -110,55 +216,84 @@ class PdfExportController extends Controller
 
     public function exportForm3D()
     {
-        //sample code
         $protocol = (object)[
             
         ];
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form3dPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->inline('FORM-3D.pdf');
     }
 
-
     public function exportForm3L()
     {
-        //sample code
         $protocol = (object)[
             
         ];
 
-        //dito din palitan mo nalang din
         return Pdf::view('student.forms.form3lPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->inline('FORM-3L.pdf');
     }
 
-    public function exportProtocolReviewCheckList()
+    public function exportProtocolReviewChecklist(Request $request, $protocolId = null)
     {
-        //sample code
-        $protocol = (object)[
-            
+        $user = auth()->user();
+        
+        // If protocol ID is not in URL, get it from query parameter
+        if (!$protocolId) {
+            $protocolId = $request->query('protocol');
+        }
+        
+        if (!$protocolId) {
+            abort(404, 'Protocol ID is required');
+        }
+        
+        // Get the form data for the current reviewer and protocol
+        $form = \App\Models\IacucProtocolReview::where('reviewer_ID', $user->user_ID)
+            ->where('protocol_ID', $protocolId)
+            ->first();
+        
+        if (!$form) {
+            // Create empty form structure if not found
+            $form = new \App\Models\IacucProtocolReview();
+            $form->protocol_ID = $protocolId;
+            $form->reviewer_ID = $user->user_ID;
+        }
+        
+        // Get protocol data
+        $protocol_data = \App\Models\Protocol::where('protocol_ID', $protocolId)->first();
+        
+        // Get PI information
+        $pi = null;
+        if ($protocol_data && $protocol_data->user_ID) {
+            $pi = \App\Models\User::where('user_ID', $protocol_data->user_ID)->first();
+            if ($pi) {
+                $pi->full_name = $pi->user_Fname . ' ' . ($pi->user_MI ? $pi->user_MI . ' ' : '') . $pi->user_Lname;
+            }
+        }
+        
+        $data = [
+            'form' => $form,
+            'protocol_data' => $protocol_data,
+            'pi' => $pi,
+            'reviewer' => $user
         ];
-
-        //dito din palitan mo nalang din
-        return Pdf::view('iacuc-reviewer.forms.protocol-review-checklistPdf', compact('protocol'))
+        
+        return Pdf::view('iacuc-reviewer.forms.protocol-review-checklistPdf', $data)
             ->format('Letter')
             ->margins(15, 15, 15, 15)
-            ->inline('IACUC-Protocol-Review-Checklist.pdf');
+            ->inline("IACUC-Protocol-Review-Checklist-{$protocolId}.pdf");
     }
 
     public function exportProtocolReview()
     {
-        //sample code
         $protocol = (object)[
             
         ];
 
-        //dito din palitan mo nalang din
         return Pdf::view('iacuc-reviewer.forms.protocol-reviewPdf', compact('protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
@@ -168,7 +303,6 @@ class PdfExportController extends Controller
     public function exportForm2I($protocolId = null)
     {
         if ($protocolId) {
-            // Get protocol with relationships
             $protocol = Protocol::with('user', 'user.researchInformation')->where('protocol_ID', $protocolId)->first();
             
             if (!$protocol) {
@@ -188,7 +322,6 @@ class PdfExportController extends Controller
                 ->download("Exempted_Certificate_{$protocolId}.pdf");
         }
 
-        // Fallback if no protocol ID
         $protocol = (object)[
             'protocol_ID' => 'ERB-' . date('Y') . '-001',
             'user' => (object)[

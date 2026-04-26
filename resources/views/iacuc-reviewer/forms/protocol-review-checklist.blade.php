@@ -124,7 +124,7 @@
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <div class="p-3 flex items-center justify-center space-x-2">
                     <button type="submit" class="bg-primary text-secondary hover:bg-secondary hover:text-primary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">SAVE</button>
-                    <a href="{{ route('export.protocol-review-checklist') }}" class="inline-block">
+                    <a href="{{ route('export.protocol-review-checklist', ['protocolId' => request()->query('protocol')]) }}" target="_blank">
                         <button type="button" class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">EXPORT TO PDF</button>
                     </a>
                 </div>

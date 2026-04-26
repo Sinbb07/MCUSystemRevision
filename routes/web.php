@@ -84,6 +84,12 @@ Route::get('/reset-password', function () {
 |--------------------------------------------------------------------------
 */
 
+/*
+|--------------------------------------------------------------------------
+| ERB Admin Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth', 'access:ERB Admin', 'no-cache', 'prevent-back'])->prefix('erb')->group(function () {
     Route::get('/dashboard', [ERBDashboard::class, 'dashboard'])->name('erb.dashboard');
 
@@ -105,6 +111,14 @@ Route::middleware(['auth', 'access:ERB Admin', 'no-cache', 'prevent-back'])->pre
     // Decisions & Reviews
     Route::get('/protocol-decision', [ERBDecisionController::class, 'index'])->name('erb.protocol-decision');
     Route::post('/pending-reviews/store', [ERBDecisionController::class, 'store'])->name('erb.pending-reviews.store');
+    
+    // ✅ Resubmission & Final Completion - GET routes for displaying data
+    Route::get('/resubmission', [ERBDecisionController::class, 'resubmission'])->name('erb.resubmission');
+    Route::get('/final-completion', [ERBDecisionController::class, 'finalCompletion'])->name('erb.final-completion');
+    
+    // ✅ KEEP THIS POST ROUTE for the assignment functionality (used in resubmission.blade.php)
+    Route::post('/resubmission/assign', [AmendmentsERB::class, 'assignAmendments'])->name('assign.amendments');
+    
     Route::get('/view-reviews', [ERBViewReviews::class, 'index'])->name('erb.view-reviews');
     Route::get('/view-review-files/{protocolId}/{reviewerId}', [ERBViewReviews::class, 'showFiles'])->name('erb.view-review-files');
 
@@ -113,12 +127,9 @@ Route::middleware(['auth', 'access:ERB Admin', 'no-cache', 'prevent-back'])->pre
     Route::get('/tickets/{ticketId}', [SubmittedInquiries::class, 'show'])->name('erb.tickets');
 
     // Monitoring & Completion
-    Route::get('/resubmission', [AmendmentsERB::class, 'assignedAmendments'])->name('assigned.amendments');
-    Route::post('/resubmission', [AmendmentsERB::class, 'assignAmendments'])->name('assign.amendments');
     Route::get('/monitoring-process', [ProcessMonitoringController::class, 'erbindex'])->name('erb.monitoring-process');
     Route::get('/full-board-review', [FullBoardReview::class, 'index'])->name('erb.full-board-review');
     Route::post('/full-board/assign', [FullBoardReview::class, 'store'])->name('full-board.assign');
-    Route::get('/final-completion', [FinalCompletionController::class, 'index'])->name('erb.final-completion');
 
     // Settings & Notifications
     Route::get('/settings', function () { return view('erb.settings'); })->name('erb.settings');
@@ -231,11 +242,13 @@ Route::middleware(['auth', 'access:ERB Reviewer', 'no-cache', 'prevent-back'])->
         Route::prefix('forms')->group(function () {
             Route::get('/form2e/{protocol?}', [Form2EController::class, 'edit'])->name('form2e.edit');
             Route::post('/form2e', [Form2EController::class, 'store'])->name('form2e.store');
-            Route::get('/export-form2e', [PdfExportController::class, 'exportForm2E'])->name('export.form2e');
+            // Updated route with optional protocol parameter
+            Route::get('/export-form2e/{protocolId?}', [PdfExportController::class, 'exportForm2E'])->name('export.form2e');
 
             Route::get('/form2j/{protocol}', [Form2JController::class, 'edit'])->name('form2j.edit');
             Route::post('/form2j', [Form2JController::class, 'store'])->name('form2j.store');
-            Route::get('/export-form2j', [PdfExportController::class, 'exportForm2J'])->name('export.form2j');
+            // Updated route with optional protocol parameter
+            Route::get('/export-form2j/{protocolId?}', [PdfExportController::class, 'exportForm2J'])->name('export.form2j');
 
             Route::get('/form3e', function () { return view('erb-reviewer.forms.form3e'); })->name('form3e.view');
             Route::get('/form3b', function () { return view('erb-reviewer.forms.form3b'); })->name('form3b.view');
@@ -275,8 +288,13 @@ Route::middleware(['auth', 'access:IACUC Reviewer', 'no-cache', 'prevent-back'])
     Route::post('/college-dept', [ReviewerInformationController::class, 'iacucStore'])->name('iacuc-reviewer.college-dept.store');
 
     Route::middleware([CheckReviewerInformation::class])->group(function () {
-        Route::get('/dashboard', function () { return view('iacuc-reviewer.dashboard'); })->name('iacuc-reviewer.dashboard');
+        Route::get('/dashboard', [ERBReviewer::class, 'iacucDashboard'])->name('iacuc-reviewer.dashboard');
         
+        Route::post('/notification/mark-read/{id}', [ERBReviewer::class, 'markNotificationAsRead'])
+            ->name('iacuc-reviewer.notification.markRead');
+        Route::post('/notification/mark-all-read', [ERBReviewer::class, 'markAllNotificationsAsRead'])
+            ->name('iacuc-reviewer.notification.markAllRead');
+
         // Protocol Management
         Route::get('/protocol-assign', [ERBReviewer::class, 'iacucIndex'])->name('iacuc-reviewer.protocol-assign');
         Route::post('/protocol-assign/update-status', [ERBReviewer::class, 'updateReviewStatus'])->name('iacuc-reviewer.update-status');
@@ -293,7 +311,7 @@ Route::middleware(['auth', 'access:IACUC Reviewer', 'no-cache', 'prevent-back'])
             Route::post('/protocol-review-checklist', [ERBReviewer::class, 'iacucProtocolReviewChecklistStore'])->name('iacuc-reviewer.protocol-review-checklist.store');
         });
 
-        Route::get('/export-protocol-review-checklist', [PdfExportController::class, 'exportProtocolReviewChecklist'])->name('export.protocol-review-checklist');
+        Route::get('/export-protocol-review-checklist/{protocolId?}', [PdfExportController::class, 'exportProtocolReviewChecklist'])->name('export.protocol-review-checklist');
         Route::get('/monitoring-process', function() { return view('iacuc-reviewer.monitoring-process'); })->name('iacuc-reviewer.monitoring-process');
         Route::get('/settings', function () { return view('iacuc-reviewer.settings'); })->name('iacuc-reviewer.settings');
     });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>FORM-2E</title>
-    @vite('resources/css/app.css') {{-- loads Tailwind --}}
+    @vite('resources/css/app.css')
 </head>
 <style>
     .page-break {
@@ -27,49 +27,49 @@
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">MCUERB CODE:</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ $protocol_data->protocol_ID ?? $form2e->protocol_ID ?? 'N/A' }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">Study Protocol Title</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ $pi->researchInformation->research_title ?? 'N/A' }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">Principal Investigator (PI)</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ $pi->full_name ?? $pi->user_Fname . ' ' . ($pi->user_Lname ?? '') }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">Co-Investigators</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ $co_investigator ?? 'N/A' }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">PI Contact Numbers</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ $pi->phone_number ?? $pi->user_Phone ?? 'N/A' }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">PI Email Address</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ $pi->email ?? $pi->user_Email ?? 'N/A' }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">Study Protocol Submission Date</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ isset($protocol_data->created_at) ? \Carbon\Carbon::parse($protocol_data->created_at)->format('Y-m-d') : 'N/A' }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-1/4 border-r">
                 <p class = "text-sm font-bold text-l mb-2">Study Protocol Review Date</p>
             </div>
-            <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-sm text-l mb-2">{{ now()->format('Y-m-d') }}</p>
         </div>
         <div class = "flex items-center border-t">
             <div class = "px-2 w-full">
@@ -103,19 +103,15 @@
                 <p class = "text-xs text-l mb-2">• Does the title summarize the main idea under investigation and is able to stand alone as an explanation of the study?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->main_idea_summarize ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -124,19 +120,15 @@
                                                     and the expected applicability of study findings discussed clearly?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->significance_discuss ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -144,19 +136,15 @@
                 <p class = "text-xs text-l mb-2">• Does the study require human participants?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->require_human_participants ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -165,19 +153,15 @@
                                                     formulated and stated correctly, clearly, and concisely?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->problem_statement_address ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -185,19 +169,15 @@
                 <p class = "text-xs text-l mb-2">• Is the background of the study adequate?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->adequate ?? 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -212,19 +192,15 @@
                 <p class = "text-xs text-l mb-2">• Are relevant information discussed about the participant of the study based on a review of the literature?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->information_discuss ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -232,19 +208,15 @@
                 <p class = "text-xs text-l mb-2">• Is the population from which the participants and sample will be drawn defined?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->population_define ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -252,19 +224,15 @@
                 <p class = "text-xs text-l mb-2">• Is the approximate sample size specified and is it appropriate for the nature of the research?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->approx_size ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -274,19 +242,15 @@
                                                     in the study described?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->participants_manner ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -294,19 +258,15 @@
                 <p class = "text-xs text-l mb-2">• Is/Are the study site(s) clearly identified?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->site_identify ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -315,19 +275,15 @@
                                                     the objectives and research questions?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->appropriate_questions ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -338,19 +294,15 @@
                                                     included discussed? (Inclusion criteria)</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->apply_characteristics ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -359,19 +311,15 @@
                                                     participants from the study described? (Exclusion criteria)</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->characteristics_disqualify ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -383,19 +331,15 @@
                     and inconvenience of the study participants?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->involvement ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -405,19 +349,15 @@
                     of participation taken into account?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->vulnerability_evaluation ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -426,19 +366,15 @@
                                                     implemented to protect vulnerability of study participants?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->indicate_measures ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -446,19 +382,15 @@
                 <p class = "text-xs text-l mb-2">• Are the procedures to be done in the study clearly described and are understandable?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->describe_procedure ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -467,19 +399,16 @@
                         about study and methods and for obtaining consent clearly described?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                {{-- Form2J has this field, not Form2E --}}
+                <p class = "text-sm text-l mb-2">N/A</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -488,19 +417,15 @@
                         collected and the process for entering and editing data described?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->overall_procedure_describe ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -509,19 +434,15 @@
                     of the study participants and data collected clearly indicated?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->confidentiality_measures ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -532,19 +453,15 @@
                     described in the study?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->describe_maintain ?? 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -563,19 +480,15 @@
                     properly discussed?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->preserve_data ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -585,19 +498,15 @@
                     including location for any relevant information to be stored discussed?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->disposition_records ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -606,19 +515,15 @@
                     specified to minimize risks and maximize the likelihood of benefits?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->minimize_maximize ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -627,19 +532,15 @@
                     for implementing and completing key activities provided and specified?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->estimated_date ?? 'N/A' }}</p>
             </div>
         </div>
         <div class = "flex items-stretch border-t">
@@ -649,19 +550,15 @@
                     provided to investigators/researchers described?</p>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class="px-2 w-20 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if($protocol->review_type === 'FULL BOARD')✓@endif
                 </div>
             </div>
             <div class = "px-2 w-1/2">
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->techniques_described ?? 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -672,7 +569,10 @@
             <p class = "text-xs font-bold text-center m-1">Summary of Recommendations:</p>
         </div>
         <div class = "w-full border-t">
-            <p class = "text-xs font-bold text-center m-1"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-xs text-center m-1">1. {{ $form2e->summary_recommendation_1 ?? 'N/A' }}</p>
+            <p class = "text-xs text-center m-1">2. {{ $form2e->summary_recommendation_2 ?? 'N/A' }}</p>
+            <p class = "text-xs text-center m-1">3. {{ $form2e->summary_recommendation_3 ?? 'N/A' }}</p>
+            <p class = "text-xs text-center m-1">4. {{ $form2e->summary_recommendation_4 ?? 'N/A' }}</p>
         </div>
         <div class = "w-full border-t">
             <p class = "text-xs font-bold text-center m-1">Recommended Action:</p>
@@ -681,31 +581,31 @@
             <div class = "flex flex-col w-full items-start px-2">
                 <div class = "flex items-center pb-2">
                     <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                        @if($protocol->review_type === '')✓@endif
+                        @if(($form2e->action ?? '') === 'Approve')✓@endif
                     </div>
                     <span class="text-xs ml-2">Approve</span>
                 </div>
                 <div class = "flex items-center pb-2">
                     <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                        @if($protocol->review_type === '')✓@endif
+                        @if(($form2e->action ?? '') === 'Minor Modifications')✓@endif
                     </div>
                     <span class = "text-xs ml-2">Minor Modifications</span>
                 </div>
                 <div class = "flex items-center pb-2">
                     <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                        @if($protocol->review_type === '')✓@endif
+                        @if(($form2e->action ?? '') === 'Major Modifications')✓@endif
                     </div>
                     <span class="text-sm ml-2">Major Modifications</span>
                 </div>
                 <div class = "flex items-center pb-2">
                     <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                        @if($protocol->review_type === '')✓@endif
+                        @if(($form2e->action ?? '') === 'Disapprove')✓@endif
                     </div>
                     <span class="text-xs ml-2">Disapprove</span>
                 </div>
                 <div class = "flex items-center pb-2">
                     <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                        @if($protocol->review_type === '')✓@endif
+                        @if(($form2e->action ?? '') === 'Pending if Major Clarifications are Required Before a Decision can be Made')✓@endif
                     </div>
                     <span class="text-xs ml-2">Pending if Major Clarifications are Required Before a Decision can be Made</span>
                 </div>
@@ -714,7 +614,7 @@
         <div class ="flex items-center border-b">
             <div class = "w-full border-t">
                 <p class = "text-xs font-bold text-center m-1">Justification for Recommended Action:</p>
-                <p class = "text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-sm text-l mb-2">{{ $form2e->justification ?? 'N/A' }}</p>
             </div>
         </div>
         <div class ="flex items-center">
@@ -725,9 +625,9 @@
         </div>
         <div class ="flex items-center">
             <div class = "w-2/5">
-                <p class = "text-xs text-l ml-1 mt-4">Date:<!---{{ $protocol->mcuerb_code }}--></p>
+                <p class = "text-xs text-l ml-1 mt-4">Date: {{ now()->format('Y-m-d') }}</p>
             </div>
-            <p class = "text-xs text-l m-1">Name: <!---{{ $protocol->mcuerb_code }}--></p>
+            <p class = "text-xs text-l m-1">Name: {{ $reviewer->user_Fname ?? '' }} {{ $reviewer->user_Lname ?? '' }}</p>
         </div>
     </div>
 </body>

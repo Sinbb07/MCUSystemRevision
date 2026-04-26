@@ -23,7 +23,7 @@
                     IACUC Protocol No:
                 </p>
                 <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-80">
-                    {{-- date --}}
+                    {{ $protocol_data->protocol_ID ?? $form->protocol_ID ?? 'N/A' }}
                 </p>
 
                 <!-- DATE -->
@@ -31,7 +31,7 @@
                     Date:
                 </p>
                 <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-24">
-                    {{-- date --}}
+                    {{ now()->format('Y-m-d') }}
                 </p>
             </div>
         </div>
@@ -43,7 +43,7 @@
                     Study Protocol Title:
                 </p>
                 <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-96">
-                    {{-- study protocol title --}}
+                    {{ $form->study_title ?? $protocol_data->researchInformation->research_title ?? 'N/A' }}
                 </p>
             </div>
         </div>
@@ -55,7 +55,7 @@
                     PI/Resp. Person
                 </p>
                 <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-64">
-                    {{-- pi/responsible person --}}
+                    {{ $form->pi_person ?? $pi->full_name ?? $pi->user_Fname . ' ' . ($pi->user_Lname ?? '') }}
                 </p>
 
                 <!-- ADVISER -->
@@ -63,7 +63,7 @@
                     Adviser
                 </p>
                 <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-40">
-                    {{-- adviser --}}
+                    {{ $form->adviser ?? 'N/A' }}
                 </p>
             </div>
         </div>
@@ -96,24 +96,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->scientific_merit_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -125,24 +117,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->training_experience_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -154,24 +138,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->overview_section_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -183,24 +159,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->rational_justification_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -212,24 +180,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->adequate_justification_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -241,24 +201,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->unnecessary_duplication_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -270,24 +222,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->experimental_procedures_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -299,24 +243,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->endpoint_duration_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -328,24 +264,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->pain_category_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -357,24 +285,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->alternative_housing_comment ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -412,24 +332,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->hazardous_material_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -441,24 +353,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->multiple_survival_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -470,24 +374,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->pain_relief_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -495,29 +391,20 @@
             <div class="flex border-t">
                 <div class="border-r py-1 w-[45.00%]">
                     <p class="mx-1 items-center">
-                        If animals may become seriously ill or debilitated, are criteria for interventional euthanasia
-                        defined?
+                        If animals may become seriously ill or debilitated, are criteria for interventional euthanasia defined?
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->ill_debilitated_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -529,24 +416,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->complications_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
@@ -572,7 +451,28 @@
                 </div>
             </div>
 
-            <!-- QUESTION 1 -->
+            <!-- QUESTION 1 - Veterinary -->
+            <div class="flex border-t">
+                <div class="border-r py-1 w-[45.00%]">
+                    <p class="mx-1 items-center">
+                        Do you anticipate complications to the procedures not considered by the Investigator?
+                    </p>
+                </div>
+                <div class="border-r py-1 w-[7.00%]">
+                    <p class="text-center items-center"></p>
+                </div>
+                <div class="border-r py-1 w-[7.00%]">
+                    <p class="text-center items-center"></p>
+                </div>
+                <div class="border-r py-1 w-[7.00%]">
+                    <p class="text-center items-center"></p>
+                </div>
+                <div class="py-1 w-[34.00%]">
+                    <p class="items-center mx-1">{{ $form->veterinary_complications_comment ?? 'N/A' }}</p>
+                </div>
+            </div>
+
+            <!-- QUESTION 2 - Veterinary -->
             <div class="flex border-t">
                 <div class="border-r py-1 w-[45.00%]">
                     <p class="mx-1 items-center">
@@ -580,28 +480,20 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->proposed_anesthesia_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
-            <!-- QUESTION 2 -->
+            <!-- QUESTION 3 - Veterinary -->
             <div class="flex border-t">
                 <div class="border-r py-1 w-[45.00%]">
                     <p class="mx-1 items-center">
@@ -609,57 +501,20 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->post_procedural_comment ?? 'N/A' }}</p>
                 </div>
             </div>
 
-            <!-- QUESTION 3 -->
-            <div class="flex border-t">
-                <div class="border-r py-1 w-[45.00%]">
-                    <p class="mx-1 items-center">
-                        Are there refinements to the procedures which you would like the Investigator to consider?
-                    </p>
-                </div>
-                <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
-                </div>
-                <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
-                </div>
-                <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
-                </div>
-                <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
-                </div>
-            </div>
-
-            <!-- QUESTION 4 -->
+            <!-- QUESTION 4 - Veterinary -->
             <div class="flex border-t">
                 <div class="border-r py-1 w-[45.00%]">
                     <p class="mx-1 items-center">
@@ -667,24 +522,16 @@
                     </p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- yes --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- no --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="border-r py-1 w-[7.00%]">
-                    <p class="text-center items-center">
-                        {{-- n/a --}}
-                    </p>
+                    <p class="text-center items-center"></p>
                 </div>
                 <div class="py-1 w-[34.00%]">
-                    <p class="items-center">
-                        {{-- comments --}}
-                    </p>
+                    <p class="items-center mx-1">{{ $form->appropriate_method_comment ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -699,7 +546,7 @@
                     IACUC Protocol No:
                 </p>
                 <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-80">
-                    {{-- date --}}
+                    {{ $protocol_data->protocol_ID ?? $form->protocol_ID ?? 'N/A' }}
                 </p>
 
                 <!-- DATE -->
@@ -707,7 +554,7 @@
                     Date:
                 </p>
                 <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-24">
-                    {{-- date --}}
+                    {{ now()->format('Y-m-d') }}
                 </p>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-y-2">
@@ -752,7 +599,7 @@
         </div>
         <div class="border border-darkgray mb-2 mx-2 h-56">
             <p class="mx-1">
-                {{-- summary/comments --}}
+                {{ $form->summary_comments ?? 'N/A' }}
             </p>
         </div>
     </div>
@@ -765,7 +612,7 @@
                 Reviewer:
             </p>
             <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-52">
-                {{-- reviewer --}}
+                {{ $reviewer->user_Fname ?? '' }} {{ $reviewer->user_Lname ?? '' }}
             </p>
 
             <!-- SIGNATURE -->
@@ -773,7 +620,7 @@
                 Signature:
             </p>
             <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-36">
-                {{-- signature --}}
+                {{-- Signature field - leave blank for physical signature --}}
             </p>
 
             <!-- DATE -->
@@ -781,7 +628,7 @@
                 Date:
             </p>
             <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-16">
-                {{-- date --}}
+                {{ now()->format('Y-m-d') }}
             </p>
         </div>
         <div class="my-10">
@@ -796,7 +643,7 @@
                 IACUC Chair:
             </p>
             <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-48">
-                {{-- iacuc chair --}}
+                {{-- IACUC Chair name - leave blank or can be populated from settings --}}
             </p>
 
             <!-- SIGNATURE -->
@@ -804,7 +651,7 @@
                 Signature:
             </p>
             <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-36">
-                {{-- signature --}}
+                {{-- Signature field - leave blank for physical signature --}}
             </p>
 
             <!-- DATE -->
@@ -812,10 +659,10 @@
                 Date:
             </p>
             <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 ml-1 w-16">
-                {{-- date --}}
+                {{ now()->format('Y-m-d') }}
             </p>
         </div>
     </div>
 </body>
 
-</html>
+</html> 

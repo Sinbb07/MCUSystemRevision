@@ -58,23 +58,26 @@
         <table id="myTable" class="display overflow-scroll border-collapse w-full">
             <thead class="bg-primary text-white text-lg/7 max-lg:text-base/7">
                 <tr class="header-table">
-                    <th class="w-[33.33%]">P.I. Name</th>
-                    <th class="w-[33.33%]">Research Title</th>
-                    <th class="w-[33.33%]">Date Assigned</th>
+                    <th class="w-[25%]">Protocol ID</th>  <!-- NEW COLUMN -->
+                    <th class="w-[25%]">P.I. Name</th>
+                    <th class="w-[25%]">Research Title</th>
+                    <th class="w-[25%]">Date Assigned</th>
                 </tr>
             </thead>
             <tbody class="text-base/7 max-lg:text-sm/6">
                 @forelse($approvedProtocols as $approved)
                     <tr data-date="{{ $approved->created_at->format('Y-m-d') }}">
                         <td>
-                            <input type="checkbox" class="user-checkbox w-[14px] h-[14px] mb-1"
-                                data-user-id="{{ $approved->user_ID }}" data-protocol-id="{{ $approved->Protocol_ID }}"
+                            <input type="checkbox" class="user-checkbox w-[14px] h-[14px] mb-1 mr-2"
+                                data-user-id="{{ $approved->user_ID }}" 
+                                data-protocol-id="{{ $approved->Protocol_ID }}"
                                 data-user-name="{{ trim(($approved->user->user_Fname ?? '') . ' ' . ($approved->user->user_MI ?? '') . ' ' . ($approved->user->user_Lname ?? '')) }}">
-                            <span>
-                                {{ $approved->user->user_Fname ?? '' }}
-                                {{ $approved->user->user_MI ?? '' }}
-                                {{ $approved->user->user_Lname ?? '' }}
-                            </span>
+                            <span class="font-mono text-sm">{{ $approved->Protocol_ID }}</span>
+                        </td>
+                        <td>
+                            {{ $approved->user->user_Fname ?? '' }}
+                            {{ $approved->user->user_MI ?? '' }}
+                            {{ $approved->user->user_Lname ?? '' }}
                         </td>
                         <td>
                             {{ $approved->protocol->researchInformation->research_title ?? 'N/A' }}
@@ -85,6 +88,11 @@
                         </td>
                     </tr>
                 @empty
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-gray-500">
+                            No resubmission records found.
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -94,8 +102,7 @@
             <div class="bg-lightgray p-4 shadow-md rounded-md">
                 <h3 class="font-semibold text-lg max-md:text-base mb-3">SELECTED PROTOCOLS FOR ASSIGNMENT</h3>
                 <div class="h-24 overflow-y-auto">
-                    <ul id="selectedUsers"
-                        class="list-disc pl-5 flex grid grid-cols-4 max-md:grid-cols-1 max-md:text-sm"></ul>
+                    <ul id="selectedUsers" class="list-disc pl-5 flex grid grid-cols-2 max-md:grid-cols-1 max-md:text-sm"></ul>
                 </div>
             </div>
             <div class="flex justify-start max-md:justify-center mx-4">
@@ -150,22 +157,21 @@
             }
         }
 
-        // Add event listeners to checkboxes
+        // Update the checkbox change event to include Protocol ID in display
         userCheckboxes.forEach(checkbox => {
             checkbox.addEventListener("change", function () {
                 const userId = this.getAttribute('data-user-id');
                 const protocolId = this.getAttribute('data-protocol-id');
                 const userName = this.getAttribute('data-user-name') ||
-                    this.closest('td').querySelector('span').textContent.trim();
-
-                console.log('Checkbox changed:', { userId, protocolId, userName });
+                    this.closest('td').querySelector('span:not(.font-mono)')?.textContent.trim() ||
+                    this.parentElement?.nextElementSibling?.textContent.trim() || 'Unknown';
 
                 const existing = selectedUsersList.querySelector(`[data-user-id="${userId}"][data-protocol-id="${protocolId}"]`);
 
                 if (this.checked && !existing) {
                     const li = document.createElement("li");
                     li.className = "text-sm mb-1";
-                    li.textContent = `${userName} (Protocol: ${protocolId})`;
+                    li.textContent = `${userName} (Protocol: ${protocolId})`;  // Shows Protocol ID
                     li.setAttribute("data-user-id", userId);
                     li.setAttribute("data-protocol-id", protocolId);
 
@@ -175,10 +181,8 @@
                     }
 
                     selectedUsersList.appendChild(li);
-                    console.log('Added to list:', { userId, protocolId });
                 } else if (!this.checked && existing) {
                     existing.remove();
-                    console.log('Removed from list:', { userId, protocolId });
                 }
 
                 updateSelectedList();

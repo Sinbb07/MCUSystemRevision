@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\InitialReview;
 use App\Models\User;
@@ -57,57 +58,91 @@ class ERBReviewer extends Controller
         return view('erb-reviewer.submitted-documents', compact('pi', 'files'));
     }
 
-    public function showSubmitDocuments($formId)
+    public function showSubmitDocuments($form, Request $request)
     {
         $reviewerId = Auth::user()->user_ID;
-
-        $assignedFormIds = InitialReview::where('reviewer1_ID', $reviewerId)
-            ->orWhere('reviewer2_ID', $reviewerId)
-            ->pluck('form_id'); // Make sure InitialReview has a `form_id` column
-
-        $form = FormsTable::where('form_id', $formId)
-            ->whereIn('form_id', $assignedFormIds)
-            ->firstOrFail();
-
-        // Get submitted files for this form by this reviewer
+        $formId = $form; // The route parameter is named 'form'
+        
+        // Get protocol_id from URL parameter
+        $protocolId = $request->query('protocol_id');
+        
+        // If not in URL, try to get from assignment
+        if (!$protocolId) {
+            $assignedForm = InitialReview::where('form_id', $formId)
+                ->where(function ($q) use ($reviewerId) {
+                    $q->where('reviewer1_ID', $reviewerId)
+                        ->orWhere('reviewer2_ID', $reviewerId);
+                })
+                ->first();
+            
+            if ($assignedForm) {
+                $protocolId = $assignedForm->protocol_ID;
+            }
+        }
+        
+        $formData = FormsTable::where('form_id', $formId)->firstOrFail();
+        
+        // Get submitted files for this specific form AND protocol
         $submittedFiles = ReviewerFile::where('form_id', $formId)
+            ->where('protocol_ID', $protocolId)
             ->where('reviewer_ID', $reviewerId)
             ->orderBy('created_at', 'desc')
             ->get();
-
-        return view('erb-reviewer.submit-documents', compact('form', 'submittedFiles'));
+        
+        return view('erb-reviewer.submit-documents', compact('formData', 'submittedFiles', 'protocolId'));
     }
 
-    public function submitForm(Request $request, $formId)
+    public function submitForm(Request $request, $form)
     {
         $reviewerId = Auth::user()->user_ID;
+        $formId = $form; // The route parameter is named 'form'
 
         // Validate uploaded files
         $request->validate([
             'uploadForms.*' => 'required|file|mimes:doc,docx,pdf|max:10240'
         ]);
 
-        // Verify if form is assigned to this reviewer
+        // Get protocol_id from request
+        $protocolId = $request->input('protocol_id');
+        
+        if (!$protocolId) {
+            $assignedForm = InitialReview::where('form_id', $formId)
+                ->where(function ($q) use ($reviewerId) {
+                    $q->where('reviewer1_ID', $reviewerId)
+                        ->orWhere('reviewer2_ID', $reviewerId);
+                })
+                ->first();
+
+            if ($assignedForm) {
+                $protocolId = $assignedForm->protocol_ID;
+            }
+        }
+
+        if (!$protocolId) {
+            return redirect()->back()->with('error', 'Unable to determine protocol for this submission.');
+        }
+
+        // Get form data
+        $formData = FormsTable::where('form_id', $formId)
+            ->where('form_type', 'Submission')
+            ->firstOrFail();
+
+        // Verify if form is assigned to this reviewer with this protocol
         $assignedForm = InitialReview::where('form_id', $formId)
+            ->where('protocol_ID', $protocolId)
             ->where(function ($q) use ($reviewerId) {
                 $q->where('reviewer1_ID', $reviewerId)
-                ->orWhere('reviewer2_ID', $reviewerId);
+                    ->orWhere('reviewer2_ID', $reviewerId);
             })
             ->first();
 
         if (!$assignedForm) {
-            return redirect()->back()->with('error', 'This form is not assigned to you.');
+            return redirect()->back()->with('error', 'This form is not assigned to you for this protocol.');
         }
 
-        $protocolId = $assignedForm->protocol_ID;
-
-        // Get form (must be a Submission-type form)
-        $form = FormsTable::where('form_id', $formId)
-            ->where('form_type', 'Submission')
-            ->firstOrFail();
-
-        // Check if reviewer has already submitted for this form
+        // Check if reviewer has already submitted for this form AND protocol
         $existingSubmission = ReviewerFile::where('form_id', $formId)
+            ->where('protocol_ID', $protocolId)
             ->where('reviewer_ID', $reviewerId)
             ->exists();
 
@@ -115,13 +150,13 @@ class ERBReviewer extends Controller
             return redirect()->back()->with('error', 'You have already submitted documents for this form.');
         }
 
-        // Save uploaded files under reviewer_files/{protocol_ID}/
+        // Save uploaded files
         foreach ($request->file('uploadForms') as $file) {
             $filename = $file->getClientOriginalName();
             $path = $file->store("reviewer_files/{$protocolId}", 'public');
 
             ReviewerFile::create([
-                'form_id' => $form->form_id,
+                'form_id' => $formData->form_id,
                 'protocol_ID' => $protocolId,
                 'reviewer_ID' => $reviewerId,
                 'file_name' => $filename,
@@ -129,17 +164,11 @@ class ERBReviewer extends Controller
             ]);
         }
 
-        /**
-         * --- EVALUATION LOGIC ---
-         * Always record in tbl_evaluated_reviews once any submission is made.
-         * Mark as "In Progress" unless all Submission-type forms are done.
-         */
-
         // All forms assigned to this reviewer for this protocol
         $assignedForms = InitialReview::where('protocol_ID', $protocolId)
             ->where(function ($q) use ($reviewerId) {
                 $q->where('reviewer1_ID', $reviewerId)
-                ->orWhere('reviewer2_ID', $reviewerId);
+                    ->orWhere('reviewer2_ID', $reviewerId);
             })
             ->pluck('form_id')
             ->unique();
@@ -320,25 +349,24 @@ class ERBReviewer extends Controller
         return view('iacuc-reviewer.submitted-documents', compact('pi', 'files'));
     }
 
-    public function iacucShowSubmitDocuments($formId)
+    public function iacucShowSubmitDocuments($formId, Request $request)
     {
         $reviewerId = Auth::user()->user_ID;
-
-        $assignedFormIds = InitialReview::where('reviewer1_ID', $reviewerId)
-            ->orWhere('reviewer2_ID', $reviewerId)
-            ->pluck('form_id'); // Make sure InitialReview has a `form_id` column
-
-        $form = FormsTable::where('form_id', $formId)
-            ->whereIn('form_id', $assignedFormIds)
-            ->firstOrFail();
-
-        // Get submitted files for this form by this reviewer
+        
+        // Get protocol_id from URL parameter
+        $protocolId = $request->query('protocol_id');
+        
+        // Get the form
+        $form = FormsTable::where('form_id', $formId)->firstOrFail();
+        
+        // Get submitted files for this specific form AND protocol
         $submittedFiles = ReviewerFile::where('form_id', $formId)
+            ->where('protocol_ID', $protocolId)
             ->where('reviewer_ID', $reviewerId)
             ->orderBy('created_at', 'desc')
             ->get();
-
-        return view('iacuc-reviewer.submit-documents', compact('form', 'submittedFiles'));
+        
+        return view('iacuc-reviewer.submit-documents', compact('form', 'submittedFiles', 'protocolId'));
     }
 
     public function updateReviewStatus(Request $request)
@@ -483,11 +511,36 @@ class ERBReviewer extends Controller
             'uploadForms.*' => 'required|file|mimes:doc,docx,pdf|max:10240'
         ]);
 
+        // Get protocol_id from request or from assignment
+        $protocolId = $request->input('protocol_id');
+        
+        if (!$protocolId) {
+            $assignedForm = InitialReview::where('form_id', $formId)
+                ->where(function ($q) use ($reviewerId) {
+                    $q->where('reviewer1_ID', $reviewerId)
+                        ->orWhere('reviewer2_ID', $reviewerId);
+                })
+                ->first();
+
+            if ($assignedForm) {
+                $protocolId = $assignedForm->protocol_ID;
+            }
+        }
+
+        if (!$protocolId) {
+            return redirect()->back()->with('error', 'Unable to determine protocol for this submission.');
+        }
+
+        // ✅ YOU MISSED THIS - Get the form object
+        $form = FormsTable::where('form_id', $formId)
+            ->where('form_type', 'Submission')
+            ->firstOrFail();
+
         // Verify if form is assigned to this reviewer
         $assignedForm = InitialReview::where('form_id', $formId)
             ->where(function ($q) use ($reviewerId) {
                 $q->where('reviewer1_ID', $reviewerId)
-                ->orWhere('reviewer2_ID', $reviewerId);
+                    ->orWhere('reviewer2_ID', $reviewerId);
             })
             ->first();
 
@@ -495,15 +548,9 @@ class ERBReviewer extends Controller
             return redirect()->back()->with('error', 'This form is not assigned to you.');
         }
 
-        $protocolId = $assignedForm->protocol_ID;
-
-        // Get form (must be a Submission-type form)
-        $form = FormsTable::where('form_id', $formId)
-            ->where('form_type', 'Submission')
-            ->firstOrFail();
-
-        // Check if reviewer has already submitted for this form
+        // Check if reviewer has already submitted for this form AND protocol
         $existingSubmission = ReviewerFile::where('form_id', $formId)
+            ->where('protocol_ID', $protocolId)
             ->where('reviewer_ID', $reviewerId)
             ->exists();
 
@@ -535,7 +582,7 @@ class ERBReviewer extends Controller
         $assignedForms = InitialReview::where('protocol_ID', $protocolId)
             ->where(function ($q) use ($reviewerId) {
                 $q->where('reviewer1_ID', $reviewerId)
-                ->orWhere('reviewer2_ID', $reviewerId);
+                    ->orWhere('reviewer2_ID', $reviewerId);
             })
             ->pluck('form_id')
             ->unique();
@@ -600,7 +647,6 @@ class ERBReviewer extends Controller
             foreach ($adminUsers as $admin) {
                 $admin->notify(new ReviewerProgress($protocolId, $reviewerId, $status, $formId));
 
-                // ✅ PROCESS MONITORING: Individual Admin Notification
                 ProcessMonitoring::create([
                     'process_code' => 'IAC4',
                     'process_description' => 'Reviewer progress notification: ' . $status . ' for protocol ' . $protocolId,
@@ -689,5 +735,68 @@ class ERBReviewer extends Controller
             'affected_user_id' => $affectedId,
             'affected_user_type' => $affectedType,
         ]);
+    }
+
+        /**
+     * Mark a single notification as read for IACUC reviewer
+     */
+    public function markNotificationAsRead($id)
+    {
+        $notification = auth()->user()->notifications()->where('id', $id)->first();
+        
+        if ($notification) {
+            $notification->markAsRead();
+            
+            // Log the action
+            $this->logProcess(
+                'NOTIF_READ',
+                "Notification marked as read: " . $notification->id,
+                auth()->user()->user_Access === 'IACUC Reviewer' ? 'reviewer_iacuc' : 'reviewer_erb',
+                'in',
+                auth()->user()->user_ID
+            );
+        }
+        
+        return back()->with('success', 'Notification marked as read.');
+    }
+
+    /**
+     * Mark all notifications as read for IACUC reviewer
+     */
+    public function markAllNotificationsAsRead()
+    {
+        $unreadCount = auth()->user()->unreadNotifications->count();
+        auth()->user()->unreadNotifications->markAsRead();
+        
+        // Log the action
+        $this->logProcess(
+            'NOTIF_ALL_READ',
+            "All notifications marked as read. Total: " . $unreadCount,
+            auth()->user()->user_Access === 'IACUC Reviewer' ? 'reviewer_iacuc' : 'reviewer_erb',
+            'in',
+            auth()->user()->user_ID
+        );
+        
+        return back()->with('success', 'All notifications marked as read.');
+    }
+
+    public function iacucDashboard()
+    {
+        $reviewerId = auth()->user()->user_ID;
+        
+        $pendingProtocolsCount = DB::table('tbl_evaluated_reviews')
+            ->where('reviewer_ID', $reviewerId)
+            ->whereNotIn('status', ['Completed', 'Declined'])
+            ->count();
+            
+        $evaluatedProtocolsCount = DB::table('tbl_evaluated_reviews')
+            ->where('reviewer_ID', $reviewerId)
+            ->where('status', 'Completed')
+            ->count();
+        
+        return view('iacuc-reviewer.dashboard', compact(
+            'pendingProtocolsCount', 
+            'evaluatedProtocolsCount'
+        ));
     }
 }

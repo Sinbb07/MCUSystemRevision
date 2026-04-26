@@ -100,7 +100,7 @@
                                     <div class="text-[10px] font-bold text-gray-600 mb-1 uppercase border-b pb-0.5">Soft Copy Submissions</div>
                                     @foreach($reviews as $review)
                                         @if($review->form?->form_type === 'Submission')
-                                            <a href="{{ route('erb-reviewer.submit-documents', ['form' => $review->form->form_id]) }}" class="block mb-1">
+                                            <a href="{{ route('erb-reviewer.submit-documents', ['form' => $review->form->form_id, 'protocol_id' => $protocolId]) }}" class="block mb-1">
                                                 <button class="border border-black p-1 w-full text-[10px] font-bold hover:bg-black hover:text-white transition-all uppercase">
                                                     Submit {{ $review->form->form_code ?? '' }}
                                                 </button>

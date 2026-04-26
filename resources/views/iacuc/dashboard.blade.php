@@ -62,7 +62,7 @@
                         <div class="bg-white shadow-sm border-2 border-gray">
                             <!-- Scroll area -->
                             <ul class="h-[32rem] max-md:h-[20rem] overflow-y-auto scrollbar divide-y divide-gray">
-                                @forelse($iacucNotifications ?? [] as $notification)
+                                @forelse(auth()->user()->unreadNotifications ?? [] as $notification)
                                 <li class="p-4 flex gap-4 hover:bg-gray duration-200 cursor-pointer">
                                     <form method="POST" action="{{ route('iacuc.notification.markRead', $notification->id) }}" class="hidden" id="form-{{ $notification->id }}">
                                         @csrf
@@ -75,19 +75,8 @@
                                         </div>
                                         <div class="flex-1">
                                             <p class="text-sm text-gray-800">
-                                                @if(isset($notification->data['type']) && $notification->data['type'] === 'protocol_decision')
-                                                    <span class="font-medium">Protocol Decision:</span> 
-                                                    {{ $notification->data['message'] ?? 'Protocol has been decided' }}
-                                                @elseif(isset($notification->data['type']) && $notification->data['type'] === 'reviewer_assignment')
-                                                    <span class="font-medium">Reviewer Assignment:</span> 
-                                                    {{ $notification->data['message'] ?? 'You have been assigned as a reviewer' }}
-                                                @elseif(isset($notification->data['type']) && $notification->data['type'] === 'form_submission')
-                                                    <span class="font-medium">Form Submission:</span> 
-                                                    {{ $notification->data['message'] ?? 'New form has been submitted' }}
-                                                @else
-                                                    <span class="font-medium">{{ $notification->data['name'] ?? 'IACUC System' }}</span> 
-                                                    {{ $notification->data['message'] ?? 'You have a new notification' }}
-                                                @endif
+                                                <span class="font-medium">{{ $notification->data['name'] ?? 'User' }}</span> 
+                                                {{ $notification->data['message'] ?? 'has been classified' }}
                                             </p>
                                             <p class="text-xs text-gray-500 mt-1">
                                                 {{ $notification->created_at->diffForHumans() }}
@@ -100,7 +89,7 @@
                                 </li>
                                 @empty
                                 <li class="p-4 text-center text-gray-500">
-                                    No new IACUC notifications
+                                    No new notifications
                                 </li>
                                 @endforelse
                             </ul>
@@ -151,20 +140,18 @@
     }
 
     function markAllAsRead() {
-        if (confirm('Mark all notifications as read?')) {
-            // Create a form and submit it
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("iacuc.notification.markAllRead") }}';
-            
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            
-            form.appendChild(csrfToken);
-            document.body.appendChild(form);
-            form.submit();
-        }
+        // Create a form and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("iacuc.notification.markAllRead") }}';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        form.appendChild(csrfToken);
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>

@@ -90,33 +90,47 @@
             <tbody class="text-base/7 max-lg:text-sm/6">
                 @foreach($researchRecords as $research)
                     @php
-                        $firstReview = optional($research->user->initialReviews->first());
-                        $protocol = optional($firstReview->protocol)->protocol_ID ?? 'N/A';
-                        $reviewType = optional($firstReview->protocol)->review_type ?? 'N/A';
-                        $reviewer1 = optional($firstReview->reviewer1)->full_name ?? 'N/A';
-                        $status1 = $firstReview->status ?? 'Ongoing';
-                        $reviewer2 = optional($firstReview->reviewer2)->full_name ?? 'N/A';
-                        $status2 = optional($research->user->initialReviews->skip(1)->first())->status ?? 'Ongoing';
-                        $decision = optional($research->user->approved->first())->Decision ?? 'Ongoing';
+                        // Get the protocol for this research
+                        $protocol = $research->user->protocol ?? null;
+                        $protocolId = $protocol->protocol_ID ?? 'N/A';
+                        $reviewType = $protocol->review_type ?? 'N/A';
+                        
+                        // Get evaluated reviews from tbl_evaluated_reviews
+                        $evaluatedReviews = $protocol ? $protocol->evaluatedReviews : collect();
+                        
+                        // Get reviewer 1 evaluation (first reviewer)
+                        $reviewer1Evaluation = $evaluatedReviews->first();
+                        $reviewer1 = optional($reviewer1Evaluation?->reviewer)->full_name ?? 'N/A';
+                        // Status from tbl_evaluated_reviews ('Pending', 'Accepted', 'Declined', 'Completed', 'In Progress')
+                        $status1 = $reviewer1Evaluation->status ?? 'Pending';
+                        
+                        // Get reviewer 2 evaluation (second reviewer)
+                        $reviewer2Evaluation = $evaluatedReviews->skip(1)->first();
+                        $reviewer2 = optional($reviewer2Evaluation?->reviewer)->full_name ?? 'N/A';
+                        $status2 = $reviewer2Evaluation->status ?? 'Pending';
+                        
+                        // Get decision from tbl_approved
+                        $decision = optional($research->user->approved)->Decision ?? 'Pending';
+                        
+                        // Latest submission date from research files
                         $latestSubmission = $research->user->researchFiles->max('submitted_at');
+                        $submissionDate = $latestSubmission ? \Carbon\Carbon::parse($latestSubmission)->format('Y-m-d') : '';
+                        
+                        // Format submission date for display
+                        $submissionDisplay = $latestSubmission 
+                            ? \Carbon\Carbon::parse($latestSubmission)->timezone(config('app.timezone'))->format('m/d/Y') . '<br>' . 
+                              \Carbon\Carbon::parse($latestSubmission)->timezone(config('app.timezone'))->format('h:i:s A')
+                            : 'N/A';
                     @endphp
-                    <tr
-                        data-date="{{ $latestSubmission ? \Carbon\Carbon::parse($latestSubmission)->format('Y-m-d') : '' }}">
+
+                    <tr data-date="{{ $submissionDate }}" data-review-type="{{ $reviewType }}">
                         <td>{{ $research->research_title }}</td>
                         <td>
-                            <a
-                                href="{{ route('erb.submitted-documents', $research->user->user_ID) }}">{{ $research->user->full_name }}</a>
+                            <a href="{{ route('erb.submitted-documents', $research->user->user_ID) }}">{{ $research->user->full_name }}</a>
                         </td>
-                        <td>
-                            @if($latestSubmission)
-                                {{ \Carbon\Carbon::parse($latestSubmission)->timezone(config('app.timezone'))->format('m/d/Y') }}<br>
-                                {{ \Carbon\Carbon::parse($latestSubmission)->timezone(config('app.timezone'))->format('h:i:s A') }}
-                            @else
-                                N/A
-                            @endif
-                        </td>
-                        <td>{{ $protocol }}</td>
-                        <td>{{ $reviewType }}</td>
+                        <td>{!! $submissionDisplay !!}</td>
+                        <td>{{ $protocolId }}</td>
+                        <td class="review-type">{{ $reviewType }}</td>
                         <td>{{ $reviewer1 }}</td>
                         <td>{{ $status1 }}</td>
                         <td>{{ $reviewer2 }}</td>
@@ -128,6 +142,7 @@
         </table>
     </main>
 </x-erb-layout>
+
 <script>
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
@@ -136,18 +151,22 @@
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
         if (settings.nTable.id !== 'myTable') return true;
 
-        const from = fromDate.value;
-        const to = toDate.value;
-        const reviewType = reviewTypeFilter.value;
+        const from = fromDate ? fromDate.value : '';
+        const to = toDate ? toDate.value : '';
+        const reviewType = reviewTypeFilter ? reviewTypeFilter.value : '';
 
         const row = settings.aoData[dataIndex].nTr;
         const rowDate = row ? row.getAttribute('data-date') : '';
-        const rowReviewTypeFilter = data[4]
+        
+        // Review type is at index 4 (5th column, 0-based index)
+        const rowReviewType = data[4];
 
+        // Date filtering
         if (from && rowDate < from) return false;
         if (to && rowDate > to) return false;
 
-        if (reviewType && rowReviewTypeFilter !== reviewType) return false;
+        // Review type filtering
+        if (reviewType && rowReviewType !== reviewType) return false;
 
         return true;
     });

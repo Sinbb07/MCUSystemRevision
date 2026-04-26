@@ -75,18 +75,33 @@
             <tbody class="text-base/7 max-lg:text-sm/6">
                 @foreach($researchRecords as $research)
                     @php
-                        $firstReview = optional($research->user->initialReviews->first());
-                        $protocol = optional($firstReview->protocol)->protocol_ID ?? 'N/A';
-                        $reviewType = optional($firstReview->protocol)->review_type ?? 'N/A';
-                        $reviewer1 = optional($firstReview->reviewer1)->full_name ?? 'N/A';
-                        $status1 = $firstReview->status ?? 'Ongoing';
-                        $reviewer2 = optional($firstReview->reviewer2)->full_name ?? 'N/A';
-                        $status2 = optional($research->user->initialReviews->skip(1)->first())->status ?? 'Ongoing';
-                        $decision = optional($research->user->approved->first())->Decision ?? 'Ongoing';
+                        // Get the protocol for this research
+                        $protocol = $research->user->protocol ?? null;
+                        $protocolId = $protocol->protocol_ID ?? 'N/A';
+                        $reviewType = $protocol->review_type ?? 'N/A';
+                        
+                        // Get evaluated reviews (status from tbl_evaluated_reviews)
+                        $evaluatedReviews = $protocol ? $protocol->evaluatedReviews : collect();
+                        
+                        // Get reviewer 1 evaluation
+                        $reviewer1Evaluation = $evaluatedReviews->first();
+                        $reviewer1 = optional($reviewer1Evaluation?->reviewer)->full_name ?? 'N/A';
+                        $status1 = $reviewer1Evaluation->status ?? 'Pending';
+                        
+                        // Get reviewer 2 evaluation (if exists)
+                        $reviewer2Evaluation = $evaluatedReviews->skip(1)->first();
+                        $reviewer2 = optional($reviewer2Evaluation?->reviewer)->full_name ?? 'N/A';
+                        $status2 = $reviewer2Evaluation->status ?? 'Pending';
+                        
+                        // Get decision from tbl_approved_iacuc (using approvedIacuc relationship)
+                        $decision = optional($research->user->approvedIacuc)->Decision ?? 'Pending';
+                        
+                        // Latest submission date
                         $latestSubmission = $research->user->researchFiles->max('submitted_at');
+                        $submissionDate = $latestSubmission ? \Carbon\Carbon::parse($latestSubmission)->format('Y-m-d') : '';
                     @endphp
 
-                    <tr>
+                    <tr data-date="{{ $submissionDate }}">
                         <td>{{ $research->research_title }}</td>
                         <td>
                             <a href="{{ route('iacuc.submitted-documents', $research->user->user_ID) }}">{{ $research->user->full_name }}</a>
@@ -99,7 +114,7 @@
                                 N/A
                             @endif
                         </td>
-                        <td>{{ $protocol }}</td>
+                        <td>{{ $protocolId }}</td>
                         <td>{{ $reviewType }}</td>
                         <td>{{ $reviewer1 }}</td>
                         <td>{{ $status1 }}</td>
@@ -112,6 +127,7 @@
         </table>
     </main>
 </x-iacuc-layout>
+
 <script>
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');

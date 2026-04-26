@@ -122,6 +122,10 @@ class User extends Authenticatable
         return $this->hasMany(Approved::class, 'user_ID', 'user_ID');
     }
 
+    public function approvedIacuc()
+    {
+        return $this->hasOne(ApprovedIacuc::class, 'user_ID', 'user_ID');
+    }
     public function assignReviewer()
     {
         return $this->hasMany(InitialReview::class, 'user_ID', 'user_ID');
@@ -138,3 +142,4 @@ class User extends Authenticatable
         return $this->hasMany(InitialReview::class, 'reviewer2_ID', 'user_ID');
     }
 }
+

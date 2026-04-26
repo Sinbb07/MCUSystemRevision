@@ -83,30 +83,22 @@
             <tbody class="text-base/7 max-lg:text-sm/6">
                 @foreach($principalInvestigators as $investigator)
                     @php
-                        // Get the latest submission date from research files
-                        $latestSubmission = $investigator->researchFiles
+                        $protocol = $investigator->protocol;
+                        $user = $investigator;
+                        $researchInfo = $investigator->researchInformation ?? null;
+                        $latestSubmission = $user->researchFiles
                             ->whereIn('form_id', [37, 38, 39, 40, 41, 42])
                             ->sortByDesc('submitted_at')
                             ->first();
-
-                        // Use latest submission date or fallback to research info updated date
-                        $displayDate = $latestSubmission->submitted_at ?? $investigator->researchInformation->updated_at ?? now();
+                        $displayDate = $latestSubmission->submitted_at ?? $researchInfo->updated_at ?? now();
                     @endphp
                     <tr data-date="{{ $displayDate->format('Y-m-d') }}">
-                        <td>{{ $investigator->protocol->protocol_ID ?? 'N/A' }}</td>
-                        <td>{{ $investigator->user_Fname }} {{ $investigator->user_Lname }}</td>
-                        <td>{{ $investigator->researchInformation->research_CoInvestigator ?? 'N/A' }}</td>
-                        <td>{{ $investigator->researchInformation->research_title ?? 'N/A' }}</td>
-                        <td>
-                            @if($investigator->status === 'Completed')
-                                <span class>Completed</span>
-                            @else
-                                <span class>Pending</span>
-                            @endif
-                        </td>
-                        <td>{{ $displayDate->format('m/d/Y') }}<br>
-                            {{ $displayDate->format('h:i:s A') }}
-                        </td>
+                        <td>{{ $protocol->protocol_ID ?? 'N/A' }}</td>
+                        <td>{{ $user->user_Fname ?? '' }} {{ $user->user_Lname ?? '' }}</td>
+                        <td>{{ $researchInfo->research_CoInvestigator ?? 'N/A' }}</td>
+                        <td>{{ $researchInfo->research_title ?? 'N/A' }}</td>
+                        <td>Completed</td>
+                        <td>{{ $displayDate->format('m/d/Y') }}<br>{{ $displayDate->format('h:i:s A') }}</td>
                     </tr>
                 @endforeach
             </tbody>

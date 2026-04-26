@@ -5,30 +5,40 @@
             SUBMIT DOCUMENTS
         </h2>
         <br>
+        
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
+        
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="p-6 max-md:p-0 space-y-10">
 
             {{-- Only display a single submission form --}}
-            @if($form)
+            @if($formData ?? $form ?? null)
+                @php $currentForm = $formData ?? $form; @endphp
                 <div class="duration-200 my-4 p-4 max-sm:p-2 border rounded-lg shadow-sm">
                     
-                    {{-- Dynamic form name --}}
                     <h2 class="font-semibold text-2xl max-sm:text-[19px]">
-                        {{ $form->form_name }}
+                        {{ $currentForm->form_name }}
                     </h2>
 
-                    {{-- Dynamic due date --}}
                     <p class="max-md:text-[15px]">
-                        @if($form->due_date)
-                            Due at {{ \Carbon\Carbon::parse($form->due_date)->format('F d, Y h:i A') }}
+                        @if($currentForm->due_date)
+                            Due at {{ \Carbon\Carbon::parse($currentForm->due_date)->format('F d, Y h:i A') }}
                         @else
                             No deadline specified
                         @endif
                     </p>
                     <br>
 
-                    {{-- Check if reviewer has already submitted documents for this form --}}
                     @if($submittedFiles && $submittedFiles->count() > 0)
-                        {{-- ✅ Show submitted files only --}}
                         <div id="fileWrapper">
                             <h3 class="my-[30px] max-md:mb-3 text-[20px] max-md:text-[17px] font-bold">
                                 Your Submitted Documents
@@ -44,14 +54,14 @@
                             </div>
                         </div>
                     @else
-                        {{-- Upload form --}}
                         <p class="max-md:text-[15px]">Attach the files here</p>
 
-                        <form action="{{ route('erb-reviewer.submit-documents.store', $form->form_id) }}" 
+                        <form action="{{ route('erb-reviewer.submit-documents.store', $currentForm->form_id) }}" 
                               method="POST" 
                               enctype="multipart/form-data"
                               onsubmit="return validateFiles();">
                             @csrf
+                            <input type="hidden" name="protocol_id" value="{{ $protocolId ?? '' }}">
 
                             <div class="max-w-xs w-xs cursor-pointer">
                                 <div>
@@ -84,6 +94,10 @@
                         </form>
                     @endif
 
+                </div>
+            @else
+                <div class="text-center p-8 bg-yellow-50 border border-yellow-200 rounded">
+                    <p class="text-yellow-600">No form found for submission.</p>
                 </div>
             @endif
 

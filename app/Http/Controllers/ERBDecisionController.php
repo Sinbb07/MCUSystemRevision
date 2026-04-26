@@ -388,4 +388,48 @@ class ERBDecisionController extends Controller
         ];
     }
     
+        /**
+     * Display resubmission records
+     * Shows protocols that were marked as "Resubmission"
+     */
+    public function resubmission()
+    {
+        $approvedProtocols = Approved::with(['user', 'protocol.researchInformation'])
+            ->where('Decision', 'Resubmission')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('erb.resubmission', compact('approvedProtocols'));
+    }
+
+    /**
+     * Display final completion records
+     * Shows protocols that were marked as "Approved"
+     */
+    public function finalCompletion()
+    {
+        $approvedProtocols = Approved::with(['user', 'protocol.researchInformation'])
+            ->where('Decision', 'Approved')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Transform to match the view's expected variable name
+        $principalInvestigators = [];
+        
+        foreach ($approvedProtocols as $approved) {
+            $user = $approved->user;
+            $protocol = $approved->protocol;
+            $researchInfo = $protocol->researchInformation ?? null;
+            
+            if ($user && $researchInfo) {
+                $user->protocol = $protocol;
+                $user->researchInformation = $researchInfo;
+                $user->status = 'Completed'; // Since it's approved
+                $principalInvestigators[] = $user;
+            }
+        }
+
+        return view('erb.final-completion', compact('principalInvestigators'));
+    }
+
 }
