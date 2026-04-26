@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('user_ID');
             $table->string('Reviewer_Dept');
             $table->string('Reviewer_Prog');
+            $table->string('reviewer_type')->nullable(); // Medical or Non-medical
             $table->timestamps();
 
             $table->foreign('user_ID')->references('user_ID')->on('tbl_users')->onDelete('cascade');

@@ -80,7 +80,7 @@
                     <th class="w-[14.28%]">Status</th>
                     <th class="w-[14.28%]">Date Submitted</th>
                     <th class="w-[14.28%]">Review Date</th>
-                </tr>
+                 </tr>
             </thead>
 
             <!-- Table body -->
@@ -150,12 +150,11 @@
                         <span>Approve</span>
                     </div>
                     <div class="flex gap-x-1">
-                        <input type="radio" name="decision" value="Rejected" class="mt-1 w-[14px] h-[14px]">
+                        <input type="radio" name="decision" value="Resubmission" class="mt-1 w-[14px] h-[14px]">
                         <span>Reject</span>
                     </div>
                 </div>
             </div>
-        </div>
 
         <!-- Submit Button -->
         <div class="flex justify-start mt-4 mx-4">
@@ -212,31 +211,36 @@
     const protocolCheckboxes = document.querySelectorAll(".protocol-checkbox");
     const selectedProtocolsList = document.getElementById("selectedProtocols");
 
-    protocolCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener("change", () => {
-            // Allow only one protocol selection at a time
-            protocolCheckboxes.forEach(cb => {
-                if (cb !== checkbox) cb.checked = false;
-            });
+    // Update function to show all selected protocols
+    function updateSelectedProtocolsList() {
+        const selectedCheckboxes = Array.from(protocolCheckboxes).filter(cb => cb.checked);
+        
+        selectedProtocolsList.innerHTML = "";
 
-            selectedProtocolsList.innerHTML = "";
-
-            if (checkbox.checked) {
+        if (selectedCheckboxes.length > 0) {
+            selectedCheckboxes.forEach(checkbox => {
                 const li = document.createElement("li");
                 li.textContent = `Protocol ID: ${checkbox.value} — ${checkbox.dataset.title}`;
                 li.setAttribute("data-protocol-id", checkbox.value);
                 selectedProtocolsList.appendChild(li);
-            }
+            });
+        }
+    }
+
+    // Remove the single-selection logic to allow multiple selections
+    protocolCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", () => {
+            updateSelectedProtocolsList();
         });
     });
 
-    // ✅ Handle decision submission
+    // Handle decision submission for multiple protocols
     document.getElementById("submitBtn").addEventListener("click", function () {
         const selectedRadio = document.querySelector('input[name="decision"]:checked');
-        const selectedProtocol = document.querySelector(".protocol-checkbox:checked");
+        const selectedProtocols = Array.from(protocolCheckboxes).filter(cb => cb.checked);
 
-        if (!selectedProtocol) {
-            alert("⚠️ Please select a protocol first.");
+        if (selectedProtocols.length === 0) {
+            alert("⚠️ Please select at least one protocol first.");
             return;
         }
 
@@ -246,34 +250,69 @@
         }
 
         const decision = selectedRadio.value;
-        const protocolID = selectedProtocol.value;
+        
+        // Confirm with user if multiple protocols are selected
+        if (selectedProtocols.length > 1) {
+            if (!confirm(`You are about to ${decision} ${selectedProtocols.length} protocols. Do you want to continue?`)) {
+                return;
+            }
+        }
 
-        fetch("{{ route('iacuc.pending-reviews.store') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                protocol_id: protocolID,
-                decision: decision
-            }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("✅ " + data.message);
-                    selectedProtocol.closest("tr").classList.add("bg-green-100");
-                    selectedProtocol.checked = false;
-                    document.querySelector('input[name="decision"]:checked').checked = false;
+        // Show loading state
+        const submitBtn = document.getElementById("submitBtn");
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Processing...";
+        submitBtn.disabled = true;
+
+        // Process all selected protocols
+        const promises = selectedProtocols.map(checkbox => {
+            return fetch("{{ route('iacuc.pending-reviews.store') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    protocol_id: checkbox.value,
+                    decision: decision
+                }),
+            }).then(response => response.json());
+        });
+
+        // Wait for all requests to complete
+        Promise.all(promises)
+            .then(results => {
+                const successCount = results.filter(r => r.success).length;
+                const failCount = results.length - successCount;
+                
+                if (failCount === 0) {
+                    alert(`✅ Successfully ${decision.toLowerCase()} ${successCount} protocol(s)!`);
+                    
+                    // Mark processed protocols
+                    selectedProtocols.forEach(checkbox => {
+                        checkbox.closest("tr").classList.add("bg-green-100");
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    });
+                    
+                    // Clear radio selection
+                    if (selectedRadio) {
+                        selectedRadio.checked = false;
+                    }
+                    
+                    // Clear selected protocols list
                     selectedProtocolsList.innerHTML = '';
                 } else {
-                    alert("❌ " + (data.message || "An error occurred."));
+                    alert(`⚠️ Processed ${successCount} protocol(s) successfully, but ${failCount} failed.`);
                 }
             })
             .catch(error => {
                 console.error(error);
                 alert("❌ Unexpected error occurred.");
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             });
     });
 </script>

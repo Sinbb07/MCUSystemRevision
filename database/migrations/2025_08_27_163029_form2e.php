@@ -16,34 +16,7 @@ return new class extends Migration
             $table->string('user_ID');
             $table->string('protocol_ID');
             
-            // Radio button fields
-            $table->string('main_idea_study')->nullable();
-            $table->string('scientific_significance')->nullable();
-            $table->string('human_participants')->nullable();
-            $table->string('problem_statement')->nullable();
-            $table->string('background_study')->nullable();
-            $table->string('relevant_information')->nullable();
-            $table->string('population')->nullable();
-            $table->string('sample_size')->nullable();
-            $table->string('manner')->nullable();
-            $table->string('study_site')->nullable();
-            $table->string('research_questions')->nullable();
-            $table->string('conditions_characteristics')->nullable();
-            $table->string('characteristics')->nullable();
-            $table->string('participant_vulnerability')->nullable();
-            $table->string('special_vulnerability')->nullable();
-            $table->string('special_measures')->nullable();
-            $table->string('study_procedure')->nullable();
-            $table->string('overall_procedures')->nullable();
-            $table->string('anonymity_confidentiality')->nullable();
-            $table->string('maintained')->nullable();
-            $table->string('data_confidentiality')->nullable();
-            $table->string('records_data')->nullable();
-            $table->string('risks_likelihood')->nullable();
-            $table->string('duration')->nullable();
-            $table->string('techniques')->nullable();
-            
-            // Textarea fields
+            // Textarea fields (all the comment fields from your blade)
             $table->text('main_idea_summarize')->nullable();
             $table->text('significance_discuss')->nullable();
             $table->text('require_human_participants')->nullable();
@@ -77,17 +50,31 @@ return new class extends Migration
             $table->text('summary_recommendation_4')->nullable();
             
             // Recommended Action
-            $table->string('action')->nullable();
+            $table->enum('action', [
+                'Approve', 
+                'Minor Modifications', 
+                'Major Modifications', 
+                'Disapprove', 
+                'Pending if Major Clarifications are Required Before a Decision can be Made'
+            ])->nullable();
             
             // Justification
             $table->text('justification')->nullable();
 
             $table->timestamps();
             
+            $table->foreign('user_ID')
+                  ->references('user_ID')
+                  ->on('tbl_users') // Update with your actual users table name
+                  ->onDelete('cascade');
+                  
             $table->foreign('protocol_ID')
-            ->references('protocol_ID')
-            ->on('tbl_protocol') // Replace with your actual protocol table name
-            ->onDelete('cascade');
+                  ->references('protocol_ID')
+                  ->on('tbl_protocol') // Update with your actual protocol table name
+                  ->onDelete('cascade');
+                  
+            // Add index for faster queries
+            $table->index(['user_ID', 'protocol_ID']);
         });
     }
 

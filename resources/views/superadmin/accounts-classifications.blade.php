@@ -78,10 +78,6 @@
                         <input type="radio" name="reviewClassification" value="IACUC" class="mt-1 w-[14px] h-[14px] max-sm:w-[12px] max-sm:h-[12px]">
                         <span>IACUC</span>
                     </div>
-                    <div class="flex gap-x-1">
-                        <input type="radio" name="reviewClassification" value="BOTH" class="mt-1 w-[14px] h-[14px] max-sm:w-[12px] max-sm:h-[12px]">
-                        <span>ERB/IACUC</span>
-                    </div>
                 </div>
             </div>
         </div>

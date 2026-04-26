@@ -1,43 +1,104 @@
-@section('title', 'Submitted Tickets')
-<x-iacuc-layout>
-    <!-- Main Content -->
-    <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
-        <h2 class="max-xl:hidden text-left bg-[#f2f2f2] shadow-lg p-[35px] rounded-[30px] font-medium text-[28px]">
-            SUBMITTED TICKETS
-        </h2>
-        <br>
+<?php
 
-        <div class="w-full mx-auto px-4 py-6 bg-white rounded-lg border-2 border-gray">
-            <h1 class="text-primary text-2xl max-md:text-lg font-semibold mb-4">Ticket Details</h1>
-            <div class="text-primary gap-x-20 gap-y-3 max-w-full max-sm:text-sm">
-                <div class="flex max-sm:block gap-x-3 my-2">
-                    <div class="font-bold max-sm:mb-2">User:</div>
-                    <div class="max-sm:mb-2 font-medium">John Doe</div>
-                </div>
+namespace App\Http\Controllers;
 
-                <div class="flex max-sm:block gap-x-3 my-2">
-                    <div class="font-bold max-sm:mb-2">Research Title:</div>
-                    <div class="max-sm:mb-2 font-medium">MCU-RRS</div>
-                </div>
-                <div class="flex max-sm:block gap-x-3 my-2">
-                    <div class="font-bold max-sm:mb-2">Subject:</div>
-                    <div class="max-sm:mb-2 font-medium">Amendments</div>
-                </div>
-                <div class="flex max-sm:block gap-x-3 my-2">
-                    <div class="font-bold max-sm:mb-2">Category:</div>
-                    <div class="max-sm:mb-2 font-medium">Applying for Amendments</div>
-                </div>
-            </div>
-            <br>
-            <label class="font-bold text-primary">Concern</label>
-            <textarea name="" id="" class="mt-2 resize-none w-full border-darkgray h-80 max-sm:h-32 max-sm:text-sm"
-                readonly>aweweawewewe</textarea>
-        </div>
-        <div class="mt-4">
-            <a href="{{ url('/iacuc/submitted-tickets') }}"
-                class="bg-secondary hover:bg-primary text-lg max-xl:text-base text-primary hover:text-secondary uppercase tracking-widest px-4 py-2 rounded-md duration-200">
-                Back
-            </a>
-        </div>
-    </main>
-</x-iacuc-layout>
+use Illuminate\Http\Request;
+use App\Models\Ticket;
+use App\Models\User;
+use App\Models\Classification;
+
+class SubmittedInquiries extends Controller
+{
+    /**
+     * Display submitted inquiries based on admin type (ERB or IACUC)
+     */
+    public function index()
+    {
+        // Determine which classification to filter based on the route prefix
+        $routePrefix = request()->route()->getPrefix();
+        
+        // If route contains 'iacuc', show IACUC classified PIs, otherwise show ERB
+        if (str_contains($routePrefix, 'iacuc')) {
+            $classificationType = 'IACUC';
+        } else {
+            $classificationType = 'ERB';
+        }
+        
+        // Get all user IDs that are classified with the determined type
+        $classifiedUserIds = Classification::where('reviewClassification', $classificationType)
+            ->pluck('user_ID')
+            ->toArray();
+
+        if (empty($classifiedUserIds)) {
+            $inquiries = collect();
+        } else {
+            $inquiries = Ticket::with(['user.researchInformation'])
+                ->whereIn('User_ID', $classifiedUserIds)
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($ticket) {
+                    return [
+                        'pi_name' => $ticket->user ? 
+                            $ticket->user->user_Fname . ' ' . 
+                            ($ticket->user->user_MI ? $ticket->user->user_MI . ' ' : '') . 
+                            $ticket->user->user_Lname : 'Unknown',
+                        'research_title' => $ticket->user && $ticket->user->researchInformation ? 
+                            $ticket->user->researchInformation->research_title : 'N/A',
+                        'subject' => $ticket->Ticket_Subject,
+                        'date_submitted' => $ticket->created_at,
+                        'ticket_id' => $ticket->Ticket_ID,
+                    ];
+                });
+        }
+
+        // Return appropriate view based on route
+        if (str_contains($routePrefix, 'iacuc')) {
+            return view('iacuc.submitted-tickets', compact('inquiries'));
+        }
+        
+        return view('erb.submitted-tickets', compact('inquiries'));
+    }
+
+    /**
+     * Display a specific ticket based on admin type (ERB or IACUC)
+     */
+    public function show($ticketId)
+    {
+        try {
+            // Determine which classification to check based on the route prefix
+            $routePrefix = request()->route()->getPrefix();
+            
+            if (str_contains($routePrefix, 'iacuc')) {
+                $classificationType = 'IACUC';
+                $errorMessage = 'You are not authorized to view this ticket. This user is not classified for IACUC review.';
+                $viewPath = 'iacuc.tickets';
+            } else {
+                $classificationType = 'ERB';
+                $errorMessage = 'You are not authorized to view this ticket. This user is not classified for ERB review.';
+                $viewPath = 'erb.tickets';
+            }
+            
+            // Get the ticket with user and research information
+            $ticket = Ticket::with(['user.researchInformation'])
+                ->where('Ticket_ID', $ticketId)
+                ->firstOrFail();
+
+            // Check if this ticket's user is classified correctly
+            $classification = Classification::where('user_ID', $ticket->User_ID)
+                ->where('reviewClassification', $classificationType)
+                ->first();
+
+            if (!$classification) {
+                abort(403, $errorMessage);
+            }
+
+            // Pass the ticket to the view
+            return view($viewPath, compact('ticket'));
+            
+        } catch (\Exception $e) {
+            // If ticket not found or any other error, redirect back with error message
+            return redirect()->route($classificationType === 'IACUC' ? 'iacuc.submitted-tickets' : 'erb.submitted-tickets')
+                ->with('error', 'Ticket not found or you do not have permission to view it.');
+        }
+    }
+}

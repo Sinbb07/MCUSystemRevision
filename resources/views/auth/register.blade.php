@@ -106,7 +106,7 @@
                     <x-text-input id="research_Contact"
                         class="block mt-1 w-full text-[15px] max-sm:text-sm h-[35px]" type="text"
                         name="research_Contact" :value="old('research_Contact')" required
-                        autocomplete="research_Contact" placeholder="09XX-XXX-XX74" />
+                        autocomplete="research_Contact" placeholder="09XXXXXXX74" />
                     <x-input-error :messages="$errors->get('research_Contact')" class="mt-2" />
                 </div>
 

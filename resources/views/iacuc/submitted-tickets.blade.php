@@ -1,5 +1,5 @@
-@section('title', 'Submitted Inquiries')
-<x-erb-layout>
+@section('title', 'Submitted Tickets')
+<x-iacuc-layout>
     <div id="filterModal" onclick="outsideClick(event)"
         class="fixed inset-0 bg-black z-[9999] bg-opacity-50 hidden items-center justify-center overflow-auto overscroll-contain">
         <div class="relative flex items-center justify-center bg-white w-[400px] p-6 rounded-[10px] shadow-md">
@@ -35,7 +35,7 @@
 
     <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
         <h2 class="max-xl:hidden text-left bg-[#f2f2f2] shadow-lg p-[35px] rounded-[30px] font-medium text-[28px]">
-            SUBMITTED INQUIRIES
+            SUBMITTED TICKETS
         </h2>
         <br>
 
@@ -57,10 +57,10 @@
             <thead class="bg-primary text-white text-lg/7 max-lg:text-base/7">
                 <tr class="header-table">
                     <th class="w-[20%]">P.I. Name</th>
-                    <th class="w-[20%]">Research Title</th>
+                    <th class="w-[25%]">Research Title</th>
                     <th class="w-[20%]">Subject</th>
                     <th class="w-[20%]">Date Submitted</th>
-                    <th class="w-[20%]">View</th>
+                    <th class="w-[15%]">View</th>
                 </tr>
             </thead>
             <tbody class="text-base/7 max-lg:text-sm/6">
@@ -74,7 +74,7 @@
                             {{ $inquiry['date_submitted']->format('h:i:s A') }}
                         </td>
                         <td>
-                            <a href="{{ url('erb/tickets/' . $inquiry['ticket_id']) }}">
+                            <a href="{{ route('iacuc.tickets', $inquiry['ticket_id']) }}">
                                 <button type="button" class="border-2 px-3 py-1 hover:bg-gray-200 rounded transition">
                                     View
                                 </button>
@@ -84,14 +84,14 @@
                 @empty
                     <tr>
                         <td colspan="5" class="text-center py-8 text-gray-500">
-                            No inquiries found from ERB-classified Principal Investigators.
+                            No inquiries found from IACUC-classified Principal Investigators.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </main>
-</x-erb-layout>
+</x-iacuc-layout>
 
 <script>
     const fromDate = document.getElementById('fromDate');

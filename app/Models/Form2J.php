@@ -18,18 +18,8 @@ class Form2J extends Model
         'form2JID',
         'user_ID',
         'protocol_ID',
-        // Radio button fields
-        'potential_manner',
-        'conditions_characteristics',
-        'susceptible_risks',
-        'special_vulnerability',
-        'special_measures',
-        'study_methods',
-        'confidentiality',
-        'confidential_procedures',
-        'disposition_records',
         
-        // Textarea fields
+        // Textarea fields (all comment fields from your blade)
         'manner_described',
         'apply_characteristics',
         'exclusion_people',
@@ -52,9 +42,44 @@ class Form2J extends Model
         // Justification
         'justification',
     ];
+    
+    // Cast action enum to keep it consistent
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_ID');
+        return $this->belongsTo(User::class, 'user_ID', 'user_ID');
+    }
+
+    public function protocol()
+    {
+        return $this->belongsTo(Protocol::class, 'protocol_ID', 'protocol_ID');
+    }
+    
+    // Helper method to check if form is complete
+    public function isComplete()
+    {
+        return !is_null($this->action);
+    }
+    
+    // Scope for filtering by action
+    public function scopeWithAction($query, $action)
+    {
+        return $query->where('action', $action);
+    }
+    
+    // Scope for approved forms
+    public function scopeApproved($query)
+    {
+        return $query->where('action', 'Approve');
+    }
+    
+    // Scope for disapproved forms
+    public function scopeDisapproved($query)
+    {
+        return $query->where('action', 'Disapprove');
     }
 }

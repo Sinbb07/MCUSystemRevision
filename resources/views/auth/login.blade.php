@@ -81,22 +81,6 @@
             </x-primary-button>
         </div>
 
-        <div
-            class="relative flex items-center justify-center my-6 gap-4 before:content-[''] before:flex-1 before:h-px before:bg-primary after:content-[''] after:flex-1 after:h-px after:bg-primary">
-            <span class="text-primary text-sm whitespace-nowrap">
-                or continue with
-            </span>
-        </div>
-
-        <div class="flex mt-4 w-full bg-primary hover:bg-darkpurple transition-all duration-300 rounded-lg">
-            <a href="" class="w-full flex items-center justify-center text-white gap-x-2 px-2 py-2">
-                <i class="bi bi-microsoft-teams text-lg"></i>
-                <span>
-                    Microsoft Teams
-                </span>
-            </a>
-        </div>
-
         <!-- Sign Up Link -->
         <div class="flex justify-center items-center mt-4">
             <a href="{{ route('register') }}"

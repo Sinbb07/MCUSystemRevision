@@ -80,142 +80,164 @@ class assignReviewer extends Controller
     }
 
     public function ERBstore(Request $request)
-    {
-        $request->validate([
-            'pis' => 'required|array',
-            'review_type' => 'required|string',
-            'reviewer1_ID' => 'required|string',
-            'reviewer2_ID' => 'required|string',
-            'assigned_forms' => [
-                'array',
-                Rule::requiredIf(function () use ($request) {
-                    return ($request->reviewer1_ID !== 'N/A' || $request->reviewer2_ID !== 'N/A') 
-                        && $request->review_type !== 'Exempted';
-                }),
-            ],
-        ]);
+{
+    $request->validate([
+        'pis' => 'required|array',
+        'review_type' => 'required|string',
+        'reviewer1_ID' => 'required|string',
+        'reviewer2_ID' => 'required|string',
+        'assigned_forms' => [
+            'array',
+            Rule::requiredIf(function () use ($request) {
+                return ($request->reviewer1_ID !== 'N/A' || $request->reviewer2_ID !== 'N/A') 
+                    && $request->review_type !== 'Exempted';
+            }),
+        ],
+    ]);
 
-        $isExempted = $request->review_type === 'Exempted';
-        $protocolCodes = [];
+    $isExempted = $request->review_type === 'Exempted';
+    $protocolCodes = [];
+    $assignedCount = 0;
 
-        foreach ($request->pis as $piID) {
-            $existingProtocol = Protocol::where('user_ID', $piID)
-                ->where('protocol_ID', 'like', 'ERB%')
+    foreach ($request->pis as $piID) {
+        $existingProtocol = Protocol::where('user_ID', $piID)
+            ->where('protocol_ID', 'like', 'ERB%')
+            ->first();
+
+        if ($existingProtocol) {
+            // --- RE-ASSIGNMENT ---
+            $this->handleReassignment($existingProtocol, $request, $piID);
+            $protocolCodes[] = $existingProtocol->protocol_ID;
+            $assignedCount++;
+        } else {
+            // --- NEW ASSIGNMENT ---
+            $year = date('Y');
+            $latestProtocol = Protocol::where('protocol_ID', 'like', "ERB-$year-%")
+                ->orderBy('protocol_ID', 'desc')
                 ->first();
 
-            if ($existingProtocol) {
-                // --- RE-ASSIGNMENT ---
-                $this->handleReassignment($existingProtocol, $request, $piID);
-                $protocolCodes[] = $existingProtocol->protocol_ID;
-            } else {
-                // --- NEW ASSIGNMENT ---
-                $year = date('Y');
-                $latestProtocol = Protocol::where('protocol_ID', 'like', "ERB-$year-%")
-                    ->orderBy('protocol_ID', 'desc')
-                    ->first();
+            $nextNumber = $latestProtocol
+                ? intval(substr($latestProtocol->protocol_ID, strrpos($latestProtocol->protocol_ID, '-') + 1)) + 1
+                : 1;
 
-                $nextNumber = $latestProtocol
-                    ? intval(substr($latestProtocol->protocol_ID, strrpos($latestProtocol->protocol_ID, '-') + 1)) + 1
-                    : 1;
+            $protocolCode = sprintf("ERB-%s-%03d", $year, $nextNumber);
+            $protocolCodes[] = $protocolCode;
 
-                $protocolCode = sprintf("ERB-%s-%03d", $year, $nextNumber);
-                $protocolCodes[] = $protocolCode;
+            $protocol = Protocol::create([
+                'protocol_ID' => $protocolCode,
+                'user_ID' => $piID,
+                'review_type' => $request->review_type,
+            ]);
 
-                $protocol = Protocol::create([
-                    'protocol_ID' => $protocolCode,
-                    'user_ID' => $piID,
-                    'review_type' => $request->review_type,
-                ]);
+            $piUser = User::find($piID);
+            $piName = $piUser ? $piUser->user_Fname . ' ' . $piUser->user_Lname : 'Unknown';
 
-                $piUser = User::find($piID);
-                $piName = $piUser ? $piUser->user_Fname . ' ' . $piUser->user_Lname : 'Unknown';
+            // Monitor Admin Action
+            ProcessMonitoring::create([
+                'process_code' => 'ERB6',
+                'process_description' => 'Assign reviewer for protocol: ' . $protocolCode,
+                'user_type' => 'admin_erb',
+                'direction' => 'out',
+                'timestamp' => now(),
+                'action_by_user_id' => auth()->user()->user_ID,
+                'action_by_user_type' => 'admin_erb',
+                'affected_user_id' => $piID,
+                'affected_user_type' => 'pi',
+            ]);
 
-                // Monitor Admin Action
-                ProcessMonitoring::create([
-                    'process_code' => 'ERB6',
-                    'process_description' => 'Assign reviewer for protocol: ' . $protocolCode,
-                    'user_type' => 'admin_erb',
-                    'direction' => 'out',
-                    'timestamp' => now(),
-                    'action_by_user_id' => auth()->user()->user_ID,
-                    'action_by_user_type' => 'admin_erb',
-                    'affected_user_id' => $piID,
-                    'affected_user_type' => 'pi',
-                ]);
+            $reviewers = [
+                $request->reviewer1_ID !== 'N/A' ? $request->reviewer1_ID : null,
+                $request->reviewer2_ID !== 'N/A' ? $request->reviewer2_ID : null,
+            ];
 
-                $reviewers = [
-                    $request->reviewer1_ID !== 'N/A' ? $request->reviewer1_ID : null,
-                    $request->reviewer2_ID !== 'N/A' ? $request->reviewer2_ID : null,
-                ];
-
-                // Assign forms to initial_review
-                if (array_filter($reviewers) && !$isExempted) {
-                    foreach ($request->assigned_forms as $formID) {
-                        InitialReview::create([
-                            'protocol_ID' => $protocolCode,
-                            'user_ID' => $piID,
-                            'reviewer1_ID' => $reviewers[0],
-                            'reviewer2_ID' => $reviewers[1],
-                            'form_ID' => $formID,
-                        ]);
-                    }
-                }
-
-                // Handle Reviewer Records & Notifications
-                $hasReviewer = false;
-                foreach ($reviewers as $reviewerID) {
-                    if ($reviewerID) {
-                        $hasReviewer = true;
-                        EvaluatedReviews::create([
-                            'protocol_ID' => $protocolCode,
-                            'reviewer_ID' => $reviewerID,
-                            'status' => 'Pending',
-                        ]);
-
-                        $reviewer = User::find($reviewerID);
-                        if ($reviewer && !empty($reviewer->user_Email)) {
-                            Mail::to($reviewer->user_Email)->queue(new NewProtocolAssignedMail($protocolCode, $piName, $request->review_type));
-                            $reviewer->notify(new NewProtocolAssigned($protocolCode, $piName, $request->review_type));
-                        }
-                    }
-                }
-
-                // If no reviewers (Auto-Complete logic for Exempted/N/A)
-                if (!$hasReviewer) {
-                    EvaluatedReviews::create([
+            // Assign forms to initial_review
+            if (array_filter($reviewers) && !$isExempted) {
+                foreach ($request->assigned_forms as $formID) {
+                    InitialReview::create([
                         'protocol_ID' => $protocolCode,
-                        'reviewer_ID' => null,
-                        'status' => 'Completed',
-                        'completed_at' => now(),
+                        'user_ID' => $piID,
+                        'reviewer1_ID' => $reviewers[0],
+                        'reviewer2_ID' => $reviewers[1],
+                        'form_ID' => $formID,
                     ]);
                 }
-
-                // Notify PI
-                if ($piUser && !empty($piUser->user_Email)) {
-                    if ($isExempted) {
-                        Mail::to($piUser->user_Email)->queue(new CertificateExemptedMail($protocol, $piUser, $piUser->researchInformation));
-                    } else {
-                        Mail::to($piUser->user_Email)->queue(new ResearchUnderReviewMail($protocolCode, $request->review_type));
-                    }
-                    $piUser->notify(new ResearchUnderReview($protocolCode, $request->review_type));
-                }
             }
-        }
 
-        // PDF Generation for Exempted
-        if ($isExempted && !empty($protocolCodes)) {
-            $protocol = Protocol::with('user', 'user.researchInformation')->where('protocol_ID', $protocolCodes[0])->first();
-            $data = [
-                'date' => now()->format('F d, Y'),
-                'protocol' => $protocol,
-                'pi' => $protocol->user,
-                'research' => $protocol->user->researchInformation,
-            ];
-            return Pdf::view('erb.forms.form2iPdf', $data)->format('Letter')->margins(15, 15, 15, 15)->download("Exempted_Certificate_{$protocolCodes[0]}.pdf");
-        }
+            // Handle Reviewer Records & Notifications
+            // Handle Reviewer Records & Notifications
+$hasReviewer = false;
+foreach ($reviewers as $reviewerID) {
+    if ($reviewerID) {
+        $hasReviewer = true;
+        EvaluatedReviews::create([
+            'protocol_ID' => $protocolCode,
+            'reviewer_ID' => $reviewerID,
+            'status' => 'Pending',
+        ]);
 
-        return response()->json(['message' => 'Reviewers successfully assigned/re-assigned!']);
+        $reviewer = User::find($reviewerID);
+        if ($reviewer && !empty($reviewer->user_Email)) {
+            Mail::to($reviewer->user_Email)->queue(new NewProtocolAssignedMail($protocolCode, $piName, $request->review_type));
+            $reviewer->notify(new NewProtocolAssigned($protocolCode, $piName, $request->review_type));
+        }
     }
+}
+
+// If no reviewers (Auto-Complete logic for Exempted/N/A)
+// Skip creating EvaluatedReviews record when there are no reviewers
+// since the reviewer_ID cannot be null
+if (!$hasReviewer) {
+    // Don't create EvaluatedReviews record with null reviewer_ID
+    // Just mark the protocol as completed or handle differently
+    // You can update the protocol status instead
+    $protocol->update(['status' => 'Completed']);
+    
+    // Or if you really need an EvaluatedReviews record, use a placeholder like 'SYSTEM'
+    // But that would require changing your database schema
+}
+
+            // Notify PI
+            if ($piUser && !empty($piUser->user_Email)) {
+                if ($isExempted) {
+                    Mail::to($piUser->user_Email)->queue(new CertificateExemptedMail($protocol, $piUser, $piUser->researchInformation));
+                } else {
+                    Mail::to($piUser->user_Email)->queue(new ResearchUnderReviewMail($protocolCode, $request->review_type));
+                }
+                $piUser->notify(new ResearchUnderReview($protocolCode, $request->review_type));
+            }
+            
+            $assignedCount++;
+        }
+    }
+
+    // PDF Generation for Exempted - ONLY generate if single protocol
+    if ($isExempted && !empty($protocolCodes)) {
+        // If multiple protocols, just return JSON without PDF
+        if (count($protocolCodes) > 1) {
+            return response()->json([
+                'message' => $assignedCount . ' exempted protocol(s) assigned successfully! (No certificate generated for multiple assignments)',
+                'protocols' => $protocolCodes
+            ]);
+        }
+        
+        // Single protocol - generate PDF
+        $protocol = Protocol::with('user', 'user.researchInformation')->where('protocol_ID', $protocolCodes[0])->first();
+        $data = [
+            'date' => now()->format('F d, Y'),
+            'protocol' => $protocol,
+            'pi' => $protocol->user,
+            'research' => $protocol->user->researchInformation,
+        ];
+        
+        return Pdf::view('erb.forms.form2iPdf', $data)->format('Letter')->margins(15, 15, 15, 15)->download("Exempted_Certificate_{$protocolCodes[0]}.pdf");
+    }
+
+    return response()->json([
+        'message' => $assignedCount . ' PI(s) assigned/re-assigned successfully!',
+        'protocols' => $protocolCodes
+    ]);
+}
+
     public function IACUCstore(Request $request)
     {
         try {

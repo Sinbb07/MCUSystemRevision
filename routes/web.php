@@ -161,6 +161,10 @@ Route::middleware(['auth', 'access:IACUC Admin', 'no-cache', 'prevent-back'])->p
     Route::get('/tickets', function () { return view('iacuc.tickets'); })->name('iacuc.tickets');
     Route::get('/settings', function () { return view('iacuc.settings'); })->name('iacuc.settings');
 
+        // Support & Tickets for IACUC - Use the iacuc methods
+        Route::get('/submitted-tickets', [SubmittedInquiries::class, 'index'])->name('iacuc.submitted-tickets');
+        Route::get('/tickets/{ticketId}', [SubmittedInquiries::class, 'show'])->name('iacuc.tickets');
+
     // Notifications
     Route::post('/notifications/{id}/mark-read', function ($id) {
         $notification = auth()->user()->notifications()->find($id);

@@ -46,20 +46,6 @@
                                 and registered in the study described?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="potential_manner" value="Yes"
-                                    {{ old('potential_manner', $form2j->potential_manner ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="potential_manner" value="No"
-                                    {{ old('potential_manner', $form2j->potential_manner ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="manner_described" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('manner_described', $form2j->manner_described ?? '') }}</textarea>
                     </div>
@@ -71,20 +57,6 @@
                                 included discussed? (Inclusion criteria)
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="conditions_characteristics" value="Yes"
-                                    {{ old('conditions_characteristics', $form2j->conditions_characteristics ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="conditions_characteristics" value="No"
-                                    {{ old('conditions_characteristics', $form2j->conditions_characteristics ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="apply_characteristics" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('apply_characteristics', $form2j->apply_characteristics ?? '') }}</textarea>
                     </div>
@@ -95,20 +67,6 @@
                                 the study and who therefore ought to be excluded from the research?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="susceptible_risks" value="Yes"
-                                    {{ old('susceptible_risks', $form2j->susceptible_risks ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="susceptible_risks" value="No"
-                                    {{ old('susceptible_risks', $form2j->susceptible_risks ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="exclusion_people" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('exclusion_people', $form2j->exclusion_people ?? '') }}</textarea>
                     </div>
@@ -119,20 +77,6 @@
                                 relevant to evaluating the risk of participation taken into account?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="special_vulnerability" value="Yes"
-                                    {{ old('special_vulnerability', $form2j->special_vulnerability ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="special_vulnerability" value="No"
-                                    {{ old('special_vulnerability', $form2j->special_vulnerability ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="relevant" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('relevant', $form2j->relevant ?? '') }}</textarea>
                     </div>
@@ -143,20 +87,6 @@
                                 study participants?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="special_measures" value="Yes"
-                                    {{ old('special_measures', $form2j->special_measures ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="special_measures" value="No"
-                                    {{ old('special_measures', $form2j->special_measures ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="indicate_measures" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('indicate_measures', $form2j->indicate_measures ?? '') }}</textarea>
                     </div>
@@ -167,20 +97,6 @@
                                 consent clearly described?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="study_methods" value="Yes"
-                                    {{ old('study_methods', $form2j->study_methods ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="study_methods" value="No"
-                                    {{ old('study_methods', $form2j->study_methods ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="describe_study_methods" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('describe_study_methods', $form2j->describe_study_methods ?? '') }}</textarea>
                     </div>
@@ -191,20 +107,6 @@
                                 collected clearly indicated?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="confidentiality" value="Yes"
-                                    {{ old('confidentiality', $form2j->confidentiality ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="confidentiality" value="No"
-                                    {{ old('confidentiality', $form2j->confidentiality ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="anonymity" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('anonymity', $form2j->anonymity ?? '') }}</textarea>
                     </div>
@@ -217,20 +119,6 @@
                                 properly discussed?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="confidential_procedures" value="Yes"
-                                    {{ old('confidential_procedures', $form2j->confidential_procedures ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="confidential_procedures" value="No"
-                                    {{ old('confidential_procedures', $form2j->confidential_procedures ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="discussed_confidentiality" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('discussed_confidentiality', $form2j->discussed_confidentiality ?? '') }}</textarea>
                     </div>
@@ -242,20 +130,6 @@
                                 discussed?
                             </span>
                         </label>
-                        <div class="flex mt-1 space-x-1 gap-x-2">
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="disposition_records" value="Yes"
-                                    {{ old('disposition_records', $form2j->disposition_records ?? '') === 'Yes' ? 'checked' : '' }}>
-                                <span>Yes</span>
-                            </label>
-                            <label class="flex items-start space-x-2 max-sm:text-sm/6">
-                                <input type="radio" class="check mt-1 max-sm:w-[14px] max-sm:h-[14px]"
-                                    name="disposition_records" value="No"
-                                    {{ old('disposition_records', $form2j->disposition_records ?? '') === 'No' ? 'checked' : '' }}>
-                                <span>No</span>
-                            </label>
-                        </div>
                         <textarea name="disposition_discuss" id="" placeholder="Comments"
                             class="mt-1 w-full resize-none max-sm:text-sm">{{ old('disposition_discuss', $form2j->disposition_discuss ?? '') }}</textarea>
                     </div>

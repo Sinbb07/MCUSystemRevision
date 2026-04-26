@@ -7,20 +7,6 @@
         </h2>
         <br>
         <div class="p-6 max-md:p-0 space-y-10">
-            <!-- Announcement/Reminders -->
-            <div class="rounded-md shadow-md overflow-hidden bg-white">
-                <!-- Header bar -->
-                <div class="bg-primary max-sm:text-sm text-white font-semibold px-4 py-2">
-                    Reminder
-                </div>
-
-                <!-- Body -->
-                <div class="p-6 text-sm leading-relaxed">
-                    <p class="mb-4 max-sm:text-xs">
-                        sample text
-                    </p>
-                </div>
-            </div>
             <!-- User Account Cards -->
             <div>
                 <h2 class="text-[20px] max-sm:text-[17px] font-semibold mb-4">USERS ACCOUNT</h2>
@@ -36,10 +22,6 @@
                     <div class="card bg-lightgray p-4 rounded-lg border border-gray shadow">
                         <h3 class="text-2xl max-md:text-[22px] max-sm:text-xl font-semibold">{{ $approvedUsers }}</h3>
                         <p class="max-xl:text-sm">APPROVED</p>
-                    </div>
-                    <div class="card bg-lightgray p-4 rounded-lg border border-gray shadow">
-                        <h3 class="text-2xl max-md:text-[22px] max-sm:text-xl font-semibold">3</h3>
-                        <p class="max-xl:text-sm">DISABLED</p>
                     </div>
                 </div>
             </div>
@@ -61,10 +43,6 @@
                         <p class="max-xl:text-sm">ONGOING REVIEWS</p>
                     </div>
                     <div class="card bg-lightgray p-4 rounded-lg border border-gray shadow">
-                        <h3 class="text-2xl max-md:text-[22px] max-sm:text-xl font-semibold">5</h3>
-                        <p class="max-xl:text-sm">TERMINATED</p>
-                    </div>
-                    <div class="card bg-lightgray p-4 rounded-lg border border-gray shadow">
                         <h3 class="text-2xl max-md:text-[22px] max-sm:text-xl font-semibold">{{ $approvedProtocols }}</h3>
                         <p class="max-xl:text-sm">APPROVED</p>
                     </div>
@@ -84,7 +62,7 @@
                         <div class="bg-white shadow-sm border-2 border-gray">
                             <!-- Scroll area -->
                             <ul class="h-[32rem] max-md:h-[20rem] overflow-y-auto scrollbar divide-y divide-gray">
-                                @forelse(auth()->user()->unreadNotifications ?? [] as $notification)
+                                @forelse($iacucNotifications ?? [] as $notification)
                                 <li class="p-4 flex gap-4 hover:bg-gray duration-200 cursor-pointer">
                                     <form method="POST" action="{{ route('iacuc.notification.markRead', $notification->id) }}" class="hidden" id="form-{{ $notification->id }}">
                                         @csrf
@@ -97,8 +75,19 @@
                                         </div>
                                         <div class="flex-1">
                                             <p class="text-sm text-gray-800">
-                                                <span class="font-medium">{{ $notification->data['name'] ?? 'User' }}</span> 
-                                                {{ $notification->data['message'] ?? 'has been classified' }}
+                                                @if(isset($notification->data['type']) && $notification->data['type'] === 'protocol_decision')
+                                                    <span class="font-medium">Protocol Decision:</span> 
+                                                    {{ $notification->data['message'] ?? 'Protocol has been decided' }}
+                                                @elseif(isset($notification->data['type']) && $notification->data['type'] === 'reviewer_assignment')
+                                                    <span class="font-medium">Reviewer Assignment:</span> 
+                                                    {{ $notification->data['message'] ?? 'You have been assigned as a reviewer' }}
+                                                @elseif(isset($notification->data['type']) && $notification->data['type'] === 'form_submission')
+                                                    <span class="font-medium">Form Submission:</span> 
+                                                    {{ $notification->data['message'] ?? 'New form has been submitted' }}
+                                                @else
+                                                    <span class="font-medium">{{ $notification->data['name'] ?? 'IACUC System' }}</span> 
+                                                    {{ $notification->data['message'] ?? 'You have a new notification' }}
+                                                @endif
                                             </p>
                                             <p class="text-xs text-gray-500 mt-1">
                                                 {{ $notification->created_at->diffForHumans() }}
@@ -111,7 +100,7 @@
                                 </li>
                                 @empty
                                 <li class="p-4 text-center text-gray-500">
-                                    No new notifications
+                                    No new IACUC notifications
                                 </li>
                                 @endforelse
                             </ul>
@@ -162,18 +151,20 @@
     }
 
     function markAllAsRead() {
-        // Create a form and submit it
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("iacuc.notification.markAllRead") }}';
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
+        if (confirm('Mark all notifications as read?')) {
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("iacuc.notification.markAllRead") }}';
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
+        }
     }
 </script>

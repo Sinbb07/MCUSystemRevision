@@ -18,34 +18,8 @@ class Form2E extends Model
         'form2EID',
         'user_ID',
         'protocol_ID',
-        // Radio button fields
-        'main_idea_study',
-        'scientific_significance',
-        'human_participants',
-        'problem_statement',
-        'background_study',
-        'relevant_information',
-        'population',
-        'sample_size',
-        'manner',
-        'study_site',
-        'research_questions',
-        'conditions_characteristics',
-        'characteristics',
-        'participant_vulnerability',
-        'special_vulnerability',
-        'special_measures',
-        'study_procedure',
-        'overall_procedures',
-        'anonymity_confidentiality',
-        'maintained',
-        'data_confidentiality',
-        'records_data',
-        'risks_likelihood',
-        'duration',
-        'techniques',
         
-        // Textarea fields
+        // Textarea comment fields
         'main_idea_summarize',
         'significance_discuss',
         'require_human_participants',
@@ -84,9 +58,32 @@ class Form2E extends Model
         // Justification
         'justification',
     ];
+    
+    // Cast action enum to keep it consistent
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_ID');
+        return $this->belongsTo(User::class, 'user_ID', 'user_ID');
+    }
+
+    public function protocol()
+    {
+        return $this->belongsTo(Protocol::class, 'protocol_ID', 'protocol_ID');
+    }
+    
+    // Helper method to check if form is complete
+    public function isComplete()
+    {
+        return !is_null($this->action);
+    }
+    
+    // Scope for filtering by action
+    public function scopeWithAction($query, $action)
+    {
+        return $query->where('action', $action);
     }
 }

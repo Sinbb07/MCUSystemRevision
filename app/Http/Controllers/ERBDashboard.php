@@ -101,6 +101,21 @@ class ERBDashboard extends Controller
                 ];
             });
 
+        // Get ERB-related notifications only
+        $erbNotifications = auth()->user()->notifications()
+            ->where(function($query) {
+                $query->where('data->type', 'protocol_decision')
+                    ->orWhere('data->type', 'reviewer_assignment')
+                    ->orWhere('data->type', 'form_submission')
+                    ->orWhere('data->message', 'like', '%ERB%')
+                    ->orWhere('data->message', 'like', '%protocol%')
+                    ->orWhere('data->message', 'like', '%reviewer%')
+                    ->orWhere('data->message', 'like', '%evaluated%')
+                    ->orWhere('data->message', 'like', '%assigned%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('erb.dashboard', compact(
             'totalUsers',
             'pendingUsers',
@@ -109,7 +124,8 @@ class ERBDashboard extends Controller
             'pendingReviews',
             'ongoingReviews',
             'approvedProtocols',
-            'recentProtocols'
+            'recentProtocols',
+            'erbNotifications'  // Add this
         ));
     }
 
@@ -213,6 +229,21 @@ class ERBDashboard extends Controller
                 ];
             });
 
+        // Get IACUC-related notifications only
+        $iacucNotifications = auth()->user()->notifications()
+            ->where(function($query) {
+                $query->where('data->type', 'protocol_decision')
+                    ->orWhere('data->type', 'reviewer_assignment')
+                    ->orWhere('data->type', 'form_submission')
+                    ->orWhere('data->message', 'like', '%IACUC%')
+                    ->orWhere('data->message', 'like', '%protocol%')
+                    ->orWhere('data->message', 'like', '%reviewer%')
+                    ->orWhere('data->message', 'like', '%evaluated%')
+                    ->orWhere('data->message', 'like', '%assigned%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('iacuc.dashboard', compact(
             'totalUsers',
             'pendingUsers',
@@ -221,7 +252,8 @@ class ERBDashboard extends Controller
             'pendingReviews',
             'ongoingReviews',
             'approvedProtocols',
-            'recentProtocols'
+            'recentProtocols',
+            'iacucNotifications'  // Add this
         ));
     }
 }

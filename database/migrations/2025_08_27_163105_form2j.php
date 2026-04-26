@@ -13,20 +13,10 @@ return new class extends Migration
     {
         Schema::create('tbl_form2j', function (Blueprint $table) {
             $table->string('form2JID')->primary();
-            $table->string('user_ID')->constrained('tbl_users')->onDelete('cascade');
+            $table->string('user_ID');
+            $table->string('protocol_ID');
             
-            // Radio button fields
-            $table->string('potential_manner')->nullable();
-            $table->string('conditions_characteristics')->nullable();
-            $table->string('susceptible_risks')->nullable();
-            $table->string('special_vulnerability')->nullable();
-            $table->string('special_measures')->nullable();
-            $table->string('study_methods')->nullable();
-            $table->string('confidentiality')->nullable();
-            $table->string('confidential_procedures')->nullable();
-            $table->string('disposition_records')->nullable();
-            
-            // Textarea fields
+            // Textarea fields (all comment fields from your blade)
             $table->text('manner_described')->nullable();
             $table->text('apply_characteristics')->nullable();
             $table->text('exclusion_people')->nullable();
@@ -43,13 +33,27 @@ return new class extends Migration
             $table->text('summary_recommendation_3')->nullable();
             $table->text('summary_recommendation_4')->nullable();
             
-            // Recommended Action
-            $table->string('action')->nullable();
+            // Recommended Action (only Approve or Disapprove)
+            $table->enum('action', ['Approve', 'Disapprove'])->nullable();
             
             // Justification
             $table->text('justification')->nullable();
 
             $table->timestamps();
+            
+            // Foreign key constraints
+            $table->foreign('user_ID')
+                  ->references('user_ID')
+                  ->on('tbl_users') // Update with your actual users table name
+                  ->onDelete('cascade');
+                  
+            $table->foreign('protocol_ID')
+                  ->references('protocol_ID')
+                  ->on('tbl_protocol') // Update with your actual protocol table name
+                  ->onDelete('cascade');
+                  
+            // Add index for faster queries
+            $table->index(['user_ID', 'protocol_ID']);
         });
     }
 

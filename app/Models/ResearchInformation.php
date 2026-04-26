@@ -35,5 +35,4 @@ class ResearchInformation extends Model
     {
         return $this->belongsTo(User::class, 'user_ID', 'user_ID');
     }
-    
 }

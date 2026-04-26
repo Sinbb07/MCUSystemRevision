@@ -14,74 +14,48 @@ class Form2EController extends Controller
         $user = auth()->user();
         $userId = $user->user_ID;
 
-        // Validate the request data
+        // Validate the request data - REMOVED ALL RADIO BUTTON VALIDATIONS
         $validated = $request->validate([
-            // Radio button fields
-            'main_idea_study' => 'nullable|string|in:Yes,No',
-            'scientific_significance' => 'nullable|string|in:Yes,No',
-            'human_participants' => 'nullable|string|in:Yes,No',
-            'problem_statement' => 'nullable|string|in:Yes,No',
-            'background_study' => 'nullable|string|in:Yes,No',
-            'relevant_information' => 'nullable|string|in:Yes,No',
-            'population' => 'nullable|string|in:Yes,No',
-            'sample_size' => 'nullable|string|in:Yes,No',
-            'manner' => 'nullable|string|in:Yes,No',
-            'study_site' => 'nullable|string|in:Yes,No',
-            'research_questions' => 'nullable|string|in:Yes,No',
-            'conditions_characteristics' => 'nullable|string|in:Yes,No',
-            'characteristics' => 'nullable|string|in:Yes,No',
-            'participant_vulnerability' => 'nullable|string|in:Yes,No',
-            'special_vulnerability' => 'nullable|string|in:Yes,No',
-            'special_measures' => 'nullable|string|in:Yes,No',
-            'study_procedure' => 'nullable|string|in:Yes,No',
-            'overall_procedures' => 'nullable|string|in:Yes,No',
-            'anonymity_confidentiality' => 'nullable|string|in:Yes,No',
-            'maintained' => 'nullable|string|in:Yes,No',
-            'data_confidentiality' => 'nullable|string|in:Yes,No',
-            'records_data' => 'nullable|string|in:Yes,No',
-            'risks_likelihood' => 'nullable|string|in:Yes,No',
-            'duration' => 'nullable|string|in:Yes,No',
-            'techniques' => 'nullable|string|in:Yes,No',
-            
             // Textarea fields
-            'main_idea_summarize' => 'nullable|string|max:1000',
-            'significance_discuss' => 'nullable|string|max:1000',
-            'require_human_participants' => 'nullable|string|max:1000',
-            'problem_statement_address' => 'nullable|string|max:1000',
-            'adequate' => 'nullable|string|max:1000',
-            'information_discuss' => 'nullable|string|max:1000',
-            'population_define' => 'nullable|string|max:1000',
-            'approx_size' => 'nullable|string|max:1000',
-            'participants_manner' => 'nullable|string|max:1000',
-            'site_identify' => 'nullable|string|max:1000',
-            'appropriate_questions' => 'nullable|string|max:1000',
-            'apply_characteristics' => 'nullable|string|max:1000',
-            'characteristics_disqualify' => 'nullable|string|max:1000',
-            'involvement' => 'nullable|string|max:1000',
-            'vulnerability_evaluation' => 'nullable|string|max:1000',
-            'indicate_measures' => 'nullable|string|max:1000',
-            'describe_procedure' => 'nullable|string|max:1000',
-            'overall_procedure_describe' => 'nullable|string|max:1000',
-            'confidentiality_measures' => 'nullable|string|max:1000',
-            'describe_maintain' => 'nullable|string|max:1000',
-            'preserve_data' => 'nullable|string|max:1000',
-            'disposition_records' => 'nullable|string|max:1000',
-            'minimize_maximize' => 'nullable|string|max:1000',
-            'estimated_date' => 'nullable|string|max:1000',
-            'techniques_described' => 'nullable|string|max:1000',
+            'main_idea_summarize' => 'nullable|string|max:5000',
+            'significance_discuss' => 'nullable|string|max:5000',
+            'require_human_participants' => 'nullable|string|max:5000',
+            'problem_statement_address' => 'nullable|string|max:5000',
+            'adequate' => 'nullable|string|max:5000',
+            'information_discuss' => 'nullable|string|max:5000',
+            'population_define' => 'nullable|string|max:5000',
+            'approx_size' => 'nullable|string|max:5000',
+            'participants_manner' => 'nullable|string|max:5000',
+            'site_identify' => 'nullable|string|max:5000',
+            'appropriate_questions' => 'nullable|string|max:5000',
+            'apply_characteristics' => 'nullable|string|max:5000',
+            'characteristics_disqualify' => 'nullable|string|max:5000',
+            'involvement' => 'nullable|string|max:5000',
+            'vulnerability_evaluation' => 'nullable|string|max:5000',
+            'indicate_measures' => 'nullable|string|max:5000',
+            'describe_procedure' => 'nullable|string|max:5000',
+            'overall_procedure_describe' => 'nullable|string|max:5000',
+            'confidentiality_measures' => 'nullable|string|max:5000',
+            'describe_maintain' => 'nullable|string|max:5000',
+            'preserve_data' => 'nullable|string|max:5000',
+            'disposition_records' => 'nullable|string|max:5000',
+            'minimize_maximize' => 'nullable|string|max:5000',
+            'estimated_date' => 'nullable|string|max:5000',
+            'techniques_described' => 'nullable|string|max:5000',
             
             // Summary of Recommendations
-            'summary_recommendation_1' => 'nullable|string|max:1000',
-            'summary_recommendation_2' => 'nullable|string|max:1000',
-            'summary_recommendation_3' => 'nullable|string|max:1000',
-            'summary_recommendation_4' => 'nullable|string|max:1000',
+            'summary_recommendation_1' => 'nullable|string|max:5000',
+            'summary_recommendation_2' => 'nullable|string|max:5000',
+            'summary_recommendation_3' => 'nullable|string|max:5000',
+            'summary_recommendation_4' => 'nullable|string|max:5000',
             
             // Recommended Action
             'action' => 'nullable|string|in:Approve,Minor Modifications,Major Modifications,Disapprove,Pending if Major Clarifications are Required Before a Decision can be Made',
             
             // Justification
-            'justification' => 'nullable|string|max:2000',
-            'protocol_ID' => 'nullable|string',
+            'justification' => 'nullable|string|max:5000',
+            
+            'protocol_ID' => 'nullable|string|exists:tbl_protocol,protocol_ID',
         ]);
 
         try {
@@ -95,7 +69,7 @@ class Form2EController extends Controller
             if ($existingForm) {
                 // Update existing record
                 $existingForm->update($validated);
-                $form2EID = $existingForm->form2EID;
+                $message = 'Form 2(E) updated successfully!';
             } else {
                 // Generate form2EID for new record
                 $lastId = Form2E::max('form2EID');
@@ -113,13 +87,16 @@ class Form2EController extends Controller
 
                 // Create new record
                 Form2E::create($validated);
+                $message = 'Form 2(E) saved successfully!';
             }
 
             // Redirect back to the form with the protocol ID
-            $redirectRoute = $protocolId 
-                ? route('form2e.edit', ['protocol' => $protocolId])
-                : route('form2e.edit');
-            return redirect($redirectRoute)->with('success', 'Form 2(E) saved successfully!');
+            if ($protocolId) {
+                return redirect()->route('form2e.edit', ['protocol' => $protocolId])
+                    ->with('success', $message);
+            }
+            
+            return redirect()->back()->with('success', $message);
             
         } catch (\Exception $e) {
             return redirect()->back()
@@ -133,22 +110,42 @@ class Form2EController extends Controller
         $user = auth()->user();
         $userId = $user->user_ID;
 
-        // FIX: Change 'reviewer_ID' to 'user_ID' to match your migration
+        // Get existing form or create new empty instance
         $form2e = Form2E::where('user_ID', $userId) 
             ->where('protocol_ID', $protocol)
-            ->first() ?? new Form2E();
+            ->first();
+            
+        // If no existing form, create a new instance with default values
+        if (!$form2e) {
+            $form2e = new Form2E();
+        }
 
         $protocol_data = null;
         $pi = null;
         
         if ($protocol) {
-            // Ensure you're finding by the correct primary key 'protocol_ID'
-            $protocol_data = Protocol::where('protocol_ID', $protocol)->first();
+            $protocol_data = Protocol::with('user')->where('protocol_ID', $protocol)->first();
             if ($protocol_data) {
                 $pi = $protocol_data->user;
             }
         }
 
         return view('erb-reviewer.forms.form2e', compact('form2e', 'protocol_data', 'pi')); 
+    }
+    
+    // Optional: Add a method to view the form (read-only)
+    public function show($protocol = null)
+    {
+        $user = auth()->user();
+        $userId = $user->user_ID;
+
+        $form2e = Form2E::where('user_ID', $userId)
+            ->where('protocol_ID', $protocol)
+            ->firstOrFail();
+
+        $protocol_data = Protocol::with('user')->where('protocol_ID', $protocol)->first();
+        $pi = $protocol_data?->user;
+
+        return view('erb-reviewer.forms.form2e-show', compact('form2e', 'protocol_data', 'pi'));
     }
 }

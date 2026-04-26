@@ -10,7 +10,15 @@
             @csrf
 
             <!-- CSS NG FILTER + SEARCH BAR -->
-            <div class="top-controls flex items-center justify-end max-md:flex-col">
+            <div class="top-controls flex items-center justify-between max-md:flex-col mb-4">
+                <div class="flex items-center gap-2">
+                    <button type="button" id="selectAllBtn" class="bg-gray-500 text-white px-3 py-1.5 rounded text-sm">
+                        Select All
+                    </button>
+                    <button type="button" id="clearAllBtn" class="bg-gray-500 text-white px-3 py-1.5 rounded text-sm">
+                        Clear All
+                    </button>
+                </div>
                 <div class="flex items-center max-md:block max-md:text-center">
                     <div class="search-wrapper max-md:mt-3 max-sm:justify-center max-sm:items-center"></div>
                 </div>
@@ -164,17 +172,15 @@
             </div>
 
             {{-- ✅ Hidden Inputs --}}
-            <input type="hidden" name="user_id" id="user_id">
+            <input type="hidden" name="user_ids" id="user_ids">
             <input type="hidden" name="reviewer1_id" id="hidden_reviewer1">
             <input type="hidden" name="reviewer2_id" id="hidden_reviewer2">
             <input type="hidden" name="review_type" id="hidden_reviewtype">
             <input type="hidden" name="form_ids" id="hidden_forms">
         </form>
-        {{-- ✅ END FORM --}}
     </main>
 </x-erb-layout>
 
-{{-- ✅ SCRIPT --}}
 <script>
     // hide show cards after choosing type of reviews
     document.addEventListener("DOMContentLoaded", function () {
@@ -186,7 +192,7 @@
             const selected = reviewType.value;
 
             if (selected === "Expedite") {
-                reviewerSection.style.display = "grid"; // show the section
+                reviewerSection.style.display = "grid";
                 fullBoard.style.display = "none";
             }
             else if (selected === "Full Board") {
@@ -194,38 +200,62 @@
                 fullBoard.style.display = "block";
             }
             else {
-                reviewerSection.style.display = "none"; // hide the section
+                reviewerSection.style.display = "none";
                 fullBoard.style.display = "none";
             }
 
-            // Update form selection state when review type changes
             updateFormSelectionState();
         });
     });
 
-    // Modal controls
+    // Get all checkboxes
     const userCheckboxes = document.querySelectorAll(".user-checkbox");
     const selectedUsersList = document.getElementById("selectedUsers");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
 
+    // Function to update selected users list
+    function updateSelectedUsersList() {
+        const selectedCheckboxes = Array.from(userCheckboxes).filter(cb => cb.checked);
+        
+        selectedUsersList.innerHTML = "";
+
+        if (selectedCheckboxes.length > 0) {
+            selectedCheckboxes.forEach(checkbox => {
+                const li = document.createElement("li");
+                li.textContent = checkbox.dataset.name;
+                li.setAttribute("data-user-id", checkbox.value);
+                selectedUsersList.appendChild(li);
+            });
+        }
+    }
+
+    // Add event listeners to all checkboxes (removed single-selection logic)
     userCheckboxes.forEach(checkbox => {
         checkbox.addEventListener("change", () => {
-            const userId = checkbox.value;
-            const userName = checkbox.dataset.name;
-
-            const existing = selectedUsersList.querySelector(`[data-user-id="${userId}"]`);
-
-            if (checkbox.checked && !existing) {
-                // Add to list
-                const li = document.createElement("li");
-                li.textContent = userName;
-                li.setAttribute("data-user-id", userId);
-                selectedUsersList.appendChild(li);
-            } else if (!checkbox.checked && existing) {
-                // Remove from list
-                existing.remove();
-            }
+            updateSelectedUsersList();
         });
     });
+
+    // Select All functionality
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener("click", function() {
+            userCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateSelectedUsersList();
+        });
+    }
+
+    // Clear All functionality
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener("click", function() {
+            userCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateSelectedUsersList();
+        });
+    }
 
     const rooms = document.querySelectorAll(".room");
     const assignedList = document.getElementById("assignedList");
@@ -234,19 +264,16 @@
     const reviewer2 = document.getElementById("reviewer2");
     const reviewType = document.getElementById("reviewtype");
 
-    // Function to get assigned forms
     function getAssignedForms() {
         const forms = Array.from(assignedList.querySelectorAll("li")).map(li => li.textContent);
         return forms.length ? forms.join(", ") : "—";
     }
 
-    // Update forms display
     function updateFormsDisplay() {
         document.getElementById("r1_forms").textContent = reviewer1.value !== "N/A" ? getAssignedForms() : "—";
         document.getElementById("r2_forms").textContent = reviewer2.value !== "N/A" ? getAssignedForms() : "—";
     }
 
-    // Enable or disable form selection based on reviewer N/A and review type
     function updateFormSelectionState() {
         const bothNA = reviewer1.value === "N/A" && reviewer2.value === "N/A";
         const isExempted = reviewType.value === "Exempted";
@@ -265,7 +292,6 @@
         });
     }
 
-    // Toggle assigned forms visually
     rooms.forEach(room => {
         room.addEventListener("click", () => {
             const formId = room.dataset.formid;
@@ -276,10 +302,6 @@
             const isExempted = reviewType.value === "Exempted";
             const isFullBoard = reviewType.value === "Full Board";
 
-            // Don't allow form selection if:
-            // - Both reviewers are N/A OR
-            // - Review type is Exempted OR
-            // - Review type is Full Board
             if ((reviewer1NA && reviewer2NA) || isExempted || isFullBoard) return;
 
             const existingItem = assignedList.querySelector(`[data-formid="${formId}"]`);
@@ -299,7 +321,6 @@
         });
     });
 
-    // Reviewer change handlers
     function updateReviewerInfo(reviewerElem, rName, rCollege, rProg, rType) {
         const sel = reviewerElem.options[reviewerElem.selectedIndex];
         document.getElementById(rName).textContent = sel.dataset.name || "—";
@@ -316,26 +337,17 @@
     reviewType.addEventListener("change", () => {
         document.getElementById("r1_type").textContent = reviewType.value;
         document.getElementById("r2_type").textContent = reviewType.value;
-        updateFormSelectionState(); // Update form selection state when review type changes
+        updateFormSelectionState();
     });
 
-    // ✅ Select PI checkbox
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(cb => {
-        cb.addEventListener("change", function () {
-            checkboxes.forEach(c => { if (c !== this) c.checked = false; });
-            document.getElementById("user_id").value = this.checked ? this.value : '';
-        });
-    });
-
-    // ✅ AJAX submission
+    // ✅ AJAX submission for multiple PIs
     const submitBtn = document.getElementById("submitBtn");
-    const assignForm = document.getElementById("assignForm");
 
     submitBtn.addEventListener("click", function (e) {
         e.preventDefault();
 
-        const userId = document.getElementById("user_id").value;
+        const selectedUsers = Array.from(userCheckboxes).filter(cb => cb.checked);
+        const userIds = selectedUsers.map(cb => cb.value);
         const reviewer1Id = reviewer1.value;
         const reviewer2Id = reviewer2.value;
         const reviewTypeVal = reviewType.value;
@@ -344,16 +356,14 @@
         const isExempted = reviewTypeVal === "Exempted";
         const isFullBoard = reviewTypeVal === "Full Board";
 
-        if (!userId) return alert("Please select a Principal Investigator.");
+        if (userIds.length === 0) return alert("Please select at least one Principal Investigator.");
         if (!reviewTypeVal) return alert("Please select a review type.");
 
-        // ✅ For Exempted and Full Board reviews: don't require reviewers or forms
         if (isExempted || isFullBoard) {
             selectedForms = [];
         } else {
-            // For Expedited reviews, require reviewers
             if (!reviewer1Id || !reviewer2Id) return alert("Please select both reviewers.");
-
+            
             const bothNA = reviewer1Id === "N/A" && reviewer2Id === "N/A";
             if (!bothNA && selectedForms.length === 0) {
                 return alert("Please select at least one form to assign.");
@@ -362,12 +372,21 @@
             if (bothNA) selectedForms = [];
         }
 
+        // Confirm with user
+        let confirmMessage = `You are about to assign ${userIds.length} PI(s)`;
+        if (!isExempted && !isFullBoard && selectedForms.length > 0) {
+            confirmMessage += ` with ${selectedForms.length} form(s)`;
+        }
+        confirmMessage += `. Do you want to continue?`;
+        
+        if (!confirm(confirmMessage)) return;
+
         submitBtn.disabled = true;
         submitBtn.textContent = "Submitting...";
 
         const data = {
             _token: '{{ csrf_token() }}',
-            pis: [userId],
+            pis: userIds, // Send array of user IDs
             reviewer1_ID: (isExempted || isFullBoard) ? "N/A" : reviewer1Id,
             reviewer2_ID: (isExempted || isFullBoard) ? "N/A" : reviewer2Id,
             review_type: reviewTypeVal,
@@ -387,26 +406,19 @@
                 const contentType = response.headers.get('content-type');
 
                 if (contentType && contentType.includes('application/pdf')) {
-                    // Handle PDF response for exempted reviews only
                     return response.blob().then(blob => {
-                        if (blob.size === 0) {
-                            throw new Error('PDF is empty');
-                        }
+                        if (blob.size === 0) throw new Error('PDF is empty');
 
-                        // Create download link for PDF
                         const url = window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.style.display = 'none';
                         a.href = url;
 
-                        // Get filename from Content-Disposition header
                         const contentDisposition = response.headers.get('Content-Disposition');
                         let filename = `Exempted_Certificate_${Date.now()}.pdf`;
                         if (contentDisposition) {
                             const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-                            if (filenameMatch) {
-                                filename = filenameMatch[1];
-                            }
+                            if (filenameMatch) filename = filenameMatch[1];
                         }
 
                         a.download = filename;
@@ -414,10 +426,9 @@
                         a.click();
                         window.URL.revokeObjectURL(url);
 
-                        return { message: 'Exempted protocol assigned and certificate downloaded!' };
+                        return { message: `${userIds.length} exempted protocol(s) assigned and certificate downloaded!` };
                     });
                 } else if (contentType && contentType.includes('application/json')) {
-                    // Handle JSON response for non-exempted reviews (Full Board and Expedite)
                     return response.json();
                 } else {
                     throw new Error('Unexpected response type: ' + contentType);
@@ -428,11 +439,7 @@
                 submitBtn.textContent = "Submit";
 
                 if (res && res.message) {
-                    if (isFullBoard) {
-                        alert("✅ Full Board protocol assigned successfully!");
-                    } else {
-                        alert("✅ " + res.message);
-                    }
+                    alert("✅ " + res.message);
                     resetForm();
                 } else if (res && res.error) {
                     alert("❌ " + res.error);
@@ -446,7 +453,6 @@
             });
     });
 
-    // Function to reset form
     function resetForm() {
         assignedList.innerHTML = "";
         document.querySelectorAll(".room").forEach(r => {
@@ -460,17 +466,15 @@
         reviewer1.selectedIndex = 0;
         reviewer2.selectedIndex = 0;
 
-        // Clear selected users
         selectedUsersList.innerHTML = "";
         document.querySelectorAll('.user-checkbox').forEach(cb => {
             cb.checked = false;
         });
-        document.getElementById("user_id").value = '';
 
-        // Reset review type
         reviewType.selectedIndex = 0;
+        document.getElementById("reviewer_assignment").style.display = "none";
+        document.getElementById("fullboard").style.display = "none";
     }
 
-    // Initialize form selection state on page load
     updateFormSelectionState();
 </script>
