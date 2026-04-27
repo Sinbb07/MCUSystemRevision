@@ -75,8 +75,19 @@
                                         </div>
                                         <div class="flex-1">
                                             <p class="text-sm text-gray-800">
-                                                <span class="font-medium">{{ $notification->data['name'] ?? 'User' }}</span> 
-                                                {{ $notification->data['message'] ?? 'has been classified' }}
+                                                @if(isset($notification->data['type']) && $notification->data['type'] === 'protocol_decision')
+                                                    <span class="font-medium">Protocol Decision:</span> 
+                                                    {{ $notification->data['message'] ?? 'IACUC Protocol has been decided' }}
+                                                @elseif(isset($notification->data['type']) && $notification->data['type'] === 'reviewer_assignment')
+                                                    <span class="font-medium">Reviewer Assignment:</span> 
+                                                    {{ $notification->data['message'] ?? 'You have been assigned as an IACUC reviewer' }}
+                                                @elseif(isset($notification->data['type']) && $notification->data['type'] === 'form_submission')
+                                                    <span class="font-medium">Form Submission:</span> 
+                                                    {{ $notification->data['message'] ?? 'New IACUC form has been submitted' }}
+                                                @else
+                                                    <span class="font-medium">{{ $notification->data['name'] ?? 'System' }}</span> 
+                                                    {{ $notification->data['message'] ?? 'You have a new IACUC notification' }}
+                                                @endif
                                             </p>
                                             <p class="text-xs text-gray-500 mt-1">
                                                 {{ $notification->created_at->diffForHumans() }}
@@ -108,12 +119,14 @@
                         </thead>
                         <tbody class="text-base/7 max-lg:text-sm/6">
                             @foreach($recentProtocols as $protocol)
-                            <tr>
-                                <td>{{ $protocol['protocol_id'] }}</td>
-                                <td>{{ $protocol['research_title'] }}</td>
-                                <td>{{ $protocol['reviewer'] }}</td>
-                                <td>{{ $protocol['status'] }}</td>
-                            </tr>
+                                @if(str_starts_with($protocol['protocol_id'] ?? '', 'IACUC'))
+                                <tr>
+                                    <td>{{ $protocol['protocol_id'] }}</td>
+                                    <td>{{ $protocol['research_title'] }}</td>
+                                    <td>{{ $protocol['reviewer'] }}</td>
+                                    <td>{{ $protocol['status'] }}</td>
+                                </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>

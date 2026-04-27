@@ -373,7 +373,8 @@ class ERBReviewer extends Controller
     {
         $request->validate([
             'protocol_id' => 'required|string',
-            'status' => 'required|in:Accepted,Declined'
+            'status' => 'required|in:Accepted,Declined',
+            'decline_reason' => 'required_if:status,Declined|string|min:10|nullable'
         ]);
 
         $reviewerId = auth()->user()->user_ID;
@@ -387,15 +388,39 @@ class ERBReviewer extends Controller
             return response()->json(['success' => false, 'message' => 'Review record not found.'], 404);
         }
 
+        // Update evaluated_reviews
         $review->update([
             'status' => $request->status,
-            // CRITICAL: Do NOT set completed_at for Declined. 
-            // It should only be set when the actual work is done.
-            'completed_at' => null 
+            'decline_reason' => $request->status === 'Declined' ? $request->decline_reason : null,
+            'completed_at' => $request->status === 'Accepted' ? null : now()
         ]);
+
+        // ✅ CRITICAL: Update initial_review when declined
+        if ($request->status === 'Declined') {
+            // Find which position (reviewer1 or reviewer2) this reviewer holds
+            $initialReview = InitialReview::where('protocol_ID', $request->protocol_id)
+                ->where(function($q) use ($reviewerId) {
+                    $q->where('reviewer1_ID', $reviewerId)
+                    ->orWhere('reviewer2_ID', $reviewerId);
+                })
+                ->first();
+
+            if ($initialReview) {
+                // Clear the specific reviewer position
+                if ($initialReview->reviewer1_ID === $reviewerId) {
+                    $initialReview->update(['reviewer1_ID' => null]);
+                } elseif ($initialReview->reviewer2_ID === $reviewerId) {
+                    $initialReview->update(['reviewer2_ID' => null]);
+                }
+                
+                // Log the clearance
+                \Log::info("Reviewer {$reviewerId} cleared from position in protocol {$request->protocol_id}");
+            }
+        }
 
         // Dynamic Process Codes based on Protocol Type
         $processCode = '';
+        $userType = '';
         if ($isErb) {
             $processCode = $request->status === 'Accepted' ? 'REV_ERB_ACC' : 'REV_ERB_DEC';
             $userType = 'reviewer_erb';
@@ -406,7 +431,8 @@ class ERBReviewer extends Controller
 
         ProcessMonitoring::create([
             'process_code' => $processCode,
-            'process_description' => "Reviewer " . auth()->user()->user_Fname . " has " . strtolower($request->status) . " the review for protocol: " . $request->protocol_id,
+            'process_description' => "Reviewer " . auth()->user()->user_Fname . " has " . strtolower($request->status) . " the review for protocol: " . $request->protocol_id . 
+                ($request->status === 'Declined' ? " Reason: " . $request->decline_reason : ""),
             'user_type' => $userType,
             'direction' => 'out',
             'timestamp' => now(),
@@ -416,6 +442,7 @@ class ERBReviewer extends Controller
 
         return response()->json(['success' => true]);
     }
+
     public function iacucProtocolReviewChecklist(Request $request)
     {
         $protocolId = $request->query('protocol');
@@ -798,5 +825,68 @@ class ERBReviewer extends Controller
             'pendingProtocolsCount', 
             'evaluatedProtocolsCount'
         ));
+    }
+
+    /**
+ * Update IACUC review status (Accept/Decline)
+ */
+    public function iacucUpdateReviewStatus(Request $request)
+    {
+        $request->validate([
+            'protocol_id' => 'required|string',
+            'status' => 'required|in:Accepted,Declined',
+            'decline_reason' => 'required_if:status,Declined|string|min:10|nullable'
+        ]);
+
+        $reviewerId = auth()->user()->user_ID;
+
+        $review = EvaluatedReviews::where('protocol_ID', $request->protocol_id)
+            ->where('reviewer_ID', $reviewerId)
+            ->first();
+
+        if (!$review) {
+            return response()->json(['success' => false, 'message' => 'Review record not found.'], 404);
+        }
+
+        // Update evaluated_reviews
+        $review->update([
+            'status' => $request->status,
+            'decline_reason' => $request->status === 'Declined' ? $request->decline_reason : null,
+            'completed_at' => $request->status === 'Accepted' ? null : now()
+        ]);
+
+        // Update initial_review when declined
+        if ($request->status === 'Declined') {
+            $initialReview = InitialReview::where('protocol_ID', $request->protocol_id)
+                ->where(function($q) use ($reviewerId) {
+                    $q->where('reviewer1_ID', $reviewerId)
+                    ->orWhere('reviewer2_ID', $reviewerId);
+                })
+                ->first();
+
+            if ($initialReview) {
+                if ($initialReview->reviewer1_ID === $reviewerId) {
+                    $initialReview->update(['reviewer1_ID' => null]);
+                } elseif ($initialReview->reviewer2_ID === $reviewerId) {
+                    $initialReview->update(['reviewer2_ID' => null]);
+                }
+                
+                \Log::info("IACUC Reviewer {$reviewerId} cleared from protocol {$request->protocol_id}");
+            }
+        }
+
+        // Process Monitoring
+        ProcessMonitoring::create([
+            'process_code' => $request->status === 'Accepted' ? 'REV_IAC_ACC' : 'REV_IAC_DEC',
+            'process_description' => "Reviewer " . auth()->user()->user_Fname . " has " . strtolower($request->status) . " the review for protocol: " . $request->protocol_id . 
+                ($request->status === 'Declined' ? " Reason: " . $request->decline_reason : ""),
+            'user_type' => 'reviewer_iacuc',
+            'direction' => 'out',
+            'timestamp' => now(),
+            'action_by_user_id' => $reviewerId,
+            'action_by_user_type' => 'reviewer_iacuc',
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

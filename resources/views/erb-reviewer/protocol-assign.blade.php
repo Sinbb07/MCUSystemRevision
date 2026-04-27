@@ -49,11 +49,11 @@
                                 <div class="flex flex-col items-center justify-center gap-1">
                                     <span class="text-[10px] font-bold text-gray-600 uppercase">Review Invitation</span>
                                     <div class="flex gap-2">
-                                        <button onclick="updateReviewStatus('{{ $protocolId }}', 'Accepted')"
+                                        <button onclick="showAcceptModal('{{ $protocolId }}')"
                                             class="bg-green-600 hover:bg-green-700 text-white px-6 py-1 rounded font-bold shadow transition-all text-xs">
                                             ACCEPT
                                         </button>
-                                        <button onclick="updateReviewStatus('{{ $protocolId }}', 'Declined')"
+                                        <button onclick="showDeclineModal('{{ $protocolId }}')"
                                             class="bg-red-600 hover:bg-red-700 text-white px-6 py-1 rounded font-bold shadow transition-all text-xs">
                                             DECLINE
                                         </button>
@@ -63,7 +63,14 @@
 
                         @elseif($currentStatus === 'Declined')
                             <td class="p-2 text-center text-red-600 italic font-bold bg-red-50 text-xs">
-                                Assignment Declined
+                                <div>
+                                    Assignment Declined
+                                    @if($evalRecord->decline_reason)
+                                        <div class="text-xxs text-gray-500 mt-1">
+                                            Reason: {{ $evalRecord->decline_reason }}
+                                        </div>
+                                    @endif
+                                </div>
                             </td>
 
                         @else
@@ -117,69 +124,182 @@
     </main>
 </x-erb-reviewer>
 
+<!-- Accept Confirmation Modal -->
+<div id="acceptModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900">Accept Protocol Assignment</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500">Are you sure you want to ACCEPT this protocol? You will be required to complete all assigned forms.</p>
+                <input type="hidden" id="acceptProtocolId">
+            </div>
+            <div class="flex justify-end gap-2 px-4 py-3">
+                <button onclick="closeAcceptModal()" class="px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+                <button onclick="submitAccept()" class="px-4 py-2 bg-green-600 text-white rounded">Confirm Accept</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Decline Modal with Reason -->
+<div id="declineModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900">Decline Protocol Assignment</h3>
+            <div class="mt-2 px-7 py-3">
+                <input type="hidden" id="declineProtocolId">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Reason for declining:</label>
+                <textarea id="declineReason" rows="4" 
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm"
+                          placeholder="Please provide a detailed reason for declining this protocol..."></textarea>
+                <p class="text-xs text-gray-500 mt-2">This reason will be sent to the admin for reassignment.</p>
+            </div>
+            <div class="flex justify-end gap-2 px-4 py-3">
+                <button onclick="closeDeclineModal()" class="px-4 py-2 bg-gray-500 text-white rounded">Cancel</button>
+                <button onclick="submitDecline()" class="px-4 py-2 bg-red-600 text-white rounded">Confirm Decline</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // AJAX Function to update status
-    function updateReviewStatus(protocolId, status) {
-        const message = status === 'Declined'
-            ? "Are you sure you want to DECLINE this protocol? This will notify the Admin to re-assign it."
-            : "Are you sure you want to ACCEPT this protocol?";
+let currentProtocolId = null;
 
-        if (!confirm(message)) return;
+// Accept Modal Functions
+function showAcceptModal(protocolId) {
+    currentProtocolId = protocolId;
+    document.getElementById('acceptProtocolId').value = protocolId;
+    document.getElementById('acceptModal').classList.remove('hidden');
+}
 
-        fetch("{{ route('erb-reviewer.update-status') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                protocol_id: protocolId,
-                status: status
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(status === 'Accepted' ? 'You have accepted this review assignment.' : 'You have declined this review assignment.');
-                location.reload();
-            } else {
-                alert("Error: " + (data.message || 'Something went wrong. Please try again.'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert("Something went wrong. Please try again.");
-        });
+function closeAcceptModal() {
+    document.getElementById('acceptModal').classList.add('hidden');
+    currentProtocolId = null;
+}
+
+function submitAccept() {
+    updateReviewStatus(currentProtocolId, 'Accepted', null);
+    closeAcceptModal();
+}
+
+// Decline Modal Functions
+function showDeclineModal(protocolId) {
+    currentProtocolId = protocolId;
+    document.getElementById('declineProtocolId').value = protocolId;
+    document.getElementById('declineReason').value = '';
+    document.getElementById('declineModal').classList.remove('hidden');
+}
+
+function closeDeclineModal() {
+    document.getElementById('declineModal').classList.add('hidden');
+    currentProtocolId = null;
+}
+
+function submitDecline() {
+    const reason = document.getElementById('declineReason').value.trim();
+    if (!reason) {
+        alert('Please provide a reason for declining.');
+        return;
+    }
+    
+    if (reason.length < 10) {
+        alert('Please provide a more detailed reason (at least 10 characters).');
+        return;
+    }
+    
+    updateReviewStatus(currentProtocolId, 'Declined', reason);
+    closeDeclineModal();
+}
+
+// AJAX Function to update status
+function updateReviewStatus(protocolId, status, declineReason) {
+    const data = {
+        protocol_id: protocolId,
+        status: status
+    };
+    
+    if (declineReason) {
+        data.decline_reason = declineReason;
     }
 
-    $(document).ready(function () {
-        // Destroy existing DataTable if it exists
-        if ($.fn.dataTable.isDataTable('#myTable')) {
-            $('#myTable').DataTable().destroy();
-        }
-        
-        // Clear the search wrapper first
-        $('.search-wrapper').empty();
-        
-        // Initialize DataTable with default settings (includes search box)
-        const table = $('#myTable').DataTable({
-            responsive: true,
-            paging: false,
-            scrollY: '400px',
-            order: [[2, 'desc']],
-            columns: [
-                { title: "Research Title" },
-                { title: "P.I. Name" },
-                { title: "Research Protocol" },
-                { title: "Type of Review" },
-                { title: "Action / Forms" }
-            ]
-        });
+    // Show loading indicator
+    const acceptButtons = document.querySelectorAll('.bg-green-600');
+    const declineButtons = document.querySelectorAll('.bg-red-600');
+    
+    if (status === 'Accepted') {
+        acceptButtons.forEach(btn => btn.disabled = true);
+    } else {
+        declineButtons.forEach(btn => btn.disabled = true);
+    }
 
-        // Move the search box to our custom wrapper
-        const dtSearch = $('#myTable_filter');
-        if (dtSearch.length) {
-            $('.search-wrapper').append(dtSearch);
+    fetch("{{ route('erb-reviewer.update-status') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(status === 'Accepted' 
+                ? '✅ You have accepted this review assignment. You can now access the forms.' 
+                : '✅ You have declined this review assignment. Admin will be notified for reassignment.');
+            location.reload();
+        } else {
+            alert("❌ Error: " + (data.message || 'Something went wrong. Please try again.'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("❌ Something went wrong. Please try again.");
+    })
+    .finally(() => {
+        // Re-enable buttons
+        if (status === 'Accepted') {
+            acceptButtons.forEach(btn => btn.disabled = false);
+        } else {
+            declineButtons.forEach(btn => btn.disabled = false);
         }
     });
+}
+
+$(document).ready(function () {
+    // Destroy existing DataTable if it exists
+    if ($.fn.dataTable.isDataTable('#myTable')) {
+        $('#myTable').DataTable().destroy();
+    }
+    
+    // Clear the search wrapper first
+    $('.search-wrapper').empty();
+    
+    // Initialize DataTable with default settings (includes search box)
+    const table = $('#myTable').DataTable({
+        responsive: true,
+        paging: false,
+        scrollY: '400px',
+        order: [[2, 'desc']],
+        columns: [
+            { title: "Research Title" },
+            { title: "P.I. Name" },
+            { title: "Research Protocol" },
+            { title: "Type of Review" },
+            { title: "Action / Forms" }
+        ]
+    });
+
+    // Move the search box to our custom wrapper
+    const dtSearch = $('#myTable_filter');
+    if (dtSearch.length) {
+        $('.search-wrapper').append(dtSearch);
+    }
+});
 </script>
+
+<style>
+.text-xxs {
+    font-size: 0.65rem;
+}
+</style>

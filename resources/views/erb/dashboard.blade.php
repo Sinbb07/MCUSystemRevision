@@ -117,16 +117,18 @@
                                 <th class="w-[25.00%]">Research Title</th>
                                 <th class="w-[25.00%]">Reviewer</th>
                                 <th class="w-[25.00%]">Status</th>
-                            </tr>
+                            </td>
                         </thead>
                         <tbody class="text-base/7 max-lg:text-sm/6">
                             @foreach($recentProtocols as $protocol)
-                            <tr>
-                                <td>{{ $protocol['protocol_id'] }}</td>
-                                <td>{{ $protocol['research_title'] }}</td>
-                                <td>{{ $protocol['reviewer'] }}</td>
-                                <td>{{ $protocol['status'] }}</td>
-                            </tr>
+                                @if(str_starts_with($protocol['protocol_id'] ?? '', 'ERB'))
+                                <tr>
+                                    <td>{{ $protocol['protocol_id'] }}</td>
+                                    <td>{{ $protocol['research_title'] }}</td>
+                                    <td>{{ $protocol['reviewer'] }}</td>
+                                    <td>{{ $protocol['status'] }}</td>
+                                </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>

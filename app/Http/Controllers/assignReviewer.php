@@ -364,31 +364,69 @@ if (!$hasReviewer) {
         $piName = $piUser ? $piUser->user_Fname . ' ' . $piUser->user_Lname : 'PI';
         $reviewType = str_starts_with($protocolCode, 'ERB') ? 'ERB Review' : 'IACUC Review';
 
+        // Get all declined reviews for this protocol
         $declinedReviews = EvaluatedReviews::where('protocol_ID', $protocolCode)
             ->where('status', 'Declined')
             ->get();
 
-        foreach ($declinedReviews as $index => $oldReview) {
-            $newReviewerID = ($index == 0) ? $request->reviewer1_ID : $request->reviewer2_ID;
+        // Get the initial review record
+        $initialReview = InitialReview::where('protocol_ID', $protocolCode)->first();
 
-            if ($newReviewerID && $newReviewerID !== 'N/A') {
-                $oldReviewerID = $oldReview->reviewer_ID;
+        if (!$initialReview) {
+            \Log::warning("No initial review found for protocol: {$protocolCode}");
+            return;
+        }
 
-                InitialReview::where('protocol_ID', $protocolCode)
-                    ->where('reviewer1_ID', $oldReviewerID)
-                    ->update(['reviewer1_ID' => $newReviewerID]);
+        // Check which positions are NULL (declined reviewers)
+        $needReviewer1 = is_null($initialReview->reviewer1_ID);
+        $needReviewer2 = is_null($initialReview->reviewer2_ID);
 
-                InitialReview::where('protocol_ID', $protocolCode)
-                    ->where('reviewer2_ID', $oldReviewerID)
-                    ->update(['reviewer2_ID' => $newReviewerID]);
+        // Assign new reviewers to NULL positions
+        if ($needReviewer1 && $request->reviewer1_ID !== 'N/A') {
+            $initialReview->update(['reviewer1_ID' => $request->reviewer1_ID]);
+            
+            // Update or create evaluated_reviews for new reviewer1
+            EvaluatedReviews::updateOrCreate(
+                [
+                    'protocol_ID' => $protocolCode,
+                    'reviewer_ID' => $request->reviewer1_ID
+                ],
+                [
+                    'status' => 'Pending',
+                    'completed_at' => null,
+                    'decline_reason' => null
+                ]
+            );
 
-                $oldReview->update(['reviewer_ID' => $newReviewerID, 'status' => 'Pending', 'completed_at' => null]);
+            // Notify new reviewer
+            $newReviewer = User::find($request->reviewer1_ID);
+            if ($newReviewer && !empty($newReviewer->user_Email)) {
+                Mail::to($newReviewer->user_Email)->queue(new NewProtocolAssignedMail($protocolCode, $piName, $reviewType));
+                $newReviewer->notify(new NewProtocolAssigned($protocolCode, $piName, $reviewType));
+            }
+        }
 
-                $newReviewer = User::find($newReviewerID);
-                if ($newReviewer && !empty($newReviewer->user_Email)) {
-                    Mail::to($newReviewer->user_Email)->queue(new NewProtocolAssignedMail($protocolCode, $piName, $reviewType));
-                    $newReviewer->notify(new NewProtocolAssigned($protocolCode, $piName, $reviewType));
-                }
+        if ($needReviewer2 && $request->reviewer2_ID !== 'N/A') {
+            $initialReview->update(['reviewer2_ID' => $request->reviewer2_ID]);
+            
+            // Update or create evaluated_reviews for new reviewer2
+            EvaluatedReviews::updateOrCreate(
+                [
+                    'protocol_ID' => $protocolCode,
+                    'reviewer_ID' => $request->reviewer2_ID
+                ],
+                [
+                    'status' => 'Pending',
+                    'completed_at' => null,
+                    'decline_reason' => null
+                ]
+            );
+
+            // Notify new reviewer
+            $newReviewer = User::find($request->reviewer2_ID);
+            if ($newReviewer && !empty($newReviewer->user_Email)) {
+                Mail::to($newReviewer->user_Email)->queue(new NewProtocolAssignedMail($protocolCode, $piName, $reviewType));
+                $newReviewer->notify(new NewProtocolAssigned($protocolCode, $piName, $reviewType));
             }
         }
     }

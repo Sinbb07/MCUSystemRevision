@@ -10,7 +10,7 @@ use App\Notifications\FormsAssigned;
 use App\Models\ProcessMonitoring;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Classification;
-
+use Illuminate\Support\Facades\DB;
 class FormAssignment extends Controller
 {
     /**
@@ -102,12 +102,19 @@ class FormAssignment extends Controller
     {
         $request->validate([
             'user_ids' => 'required|array',
-            'form_ids' => 'required|array',
+            'user_ids.*' => 'required|string',
+            'form_ids' => 'nullable|array',
+            'form_ids.*' => 'nullable|integer',
+            'remove_form_ids' => 'nullable|array',
+            'remove_form_ids.*' => 'nullable|integer',
         ]);
 
         $erbUserIds = Classification::where('reviewClassification', 'ERB')
             ->pluck('user_ID')
             ->toArray();
+
+        $totalAssignedCount = 0;
+        $totalRemovedCount = 0;
 
         foreach ($request->user_ids as $userId) {
             if (!in_array($userId, $erbUserIds)) {
@@ -117,36 +124,56 @@ class FormAssignment extends Controller
             $user = User::find($userId);
 
             if ($user) {
-                $user->forms()->syncWithoutDetaching($request->form_ids);
-                $user->notify(new FormsAssigned($request->form_ids));
-
-                ProcessMonitoring::create([
-                    'process_code' => 'ERB5',
-                    'process_description' => 'Assign initial forms to PI',
-                    'user_type' => 'admin_erb',
-                    'direction' => 'out',
-                    'timestamp' => now(),
-                    'action_by_user_id' => auth()->user()->user_ID,
-                    'action_by_user_type' => 'admin_erb',
-                    'affected_user_id' => $user->user_ID,
-                    'affected_user_type' => 'pi',
-                ]);
-
-                ProcessMonitoring::create([
-                    'process_code' => 'PI2',
-                    'process_description' => 'Received initial forms from admin',
-                    'user_type' => 'pi',
-                    'direction' => 'in',
-                    'timestamp' => now(),
-                    'action_by_user_id' => auth()->user()->user_ID,
-                    'action_by_user_type' => 'admin_erb',
-                    'affected_user_id' => $user->user_ID,
-                    'affected_user_type' => 'pi',
-                ]);
+                // Assign new forms
+                if ($request->has('form_ids') && !empty($request->form_ids)) {
+                    $newForms = [];
+                    foreach ($request->form_ids as $formId) {
+                        $exists = DB::table('tbl_form_user')
+                            ->where('user_ID', $userId)
+                            ->where('form_id', $formId)
+                            ->exists();
+                        
+                        if (!$exists) {
+                            DB::table('tbl_form_user')->insert([
+                                'user_ID' => $userId,
+                                'form_id' => $formId,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+                            $totalAssignedCount++;
+                            $newForms[] = $formId;
+                        }
+                    }
+                    
+                    if (!empty($newForms)) {
+                        $user->notify(new FormsAssigned($newForms));
+                    }
+                }
+                
+                // Remove forms
+                if ($request->has('remove_form_ids') && !empty($request->remove_form_ids)) {
+                    foreach ($request->remove_form_ids as $formId) {
+                        DB::table('tbl_form_user')
+                            ->where('user_ID', $userId)
+                            ->where('form_id', $formId)
+                            ->delete();
+                        $totalRemovedCount++;
+                    }
+                }
             }
         }
 
-        return response()->json(['success' => true, 'message' => 'Forms assigned successfully!']);
+        $message = "";
+        if ($totalAssignedCount > 0) $message .= "✅ Assigned {$totalAssignedCount} new form(s). ";
+        if ($totalRemovedCount > 0) $message .= "🗑️ Removed {$totalRemovedCount} form(s). ";
+        if (empty($message)) $message = "No changes were made.";
+
+        return response()->json([
+            'success' => true, 
+            'message' => $message,
+            'assigned' => $totalAssignedCount,
+            'removed' => $totalRemovedCount
+        ]);
     }
 
     /**

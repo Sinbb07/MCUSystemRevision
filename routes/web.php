@@ -311,6 +311,9 @@ Route::middleware(['auth', 'access:IACUC Reviewer', 'no-cache', 'prevent-back'])
             Route::post('/protocol-review-checklist', [ERBReviewer::class, 'iacucProtocolReviewChecklistStore'])->name('iacuc-reviewer.protocol-review-checklist.store');
         });
 
+        Route::post('/protocol/update-status', [ERBReviewer::class, 'iacucUpdateReviewStatus'])
+        ->name('iacuc-reviewer.update-status');
+        
         Route::get('/export-protocol-review-checklist/{protocolId?}', [PdfExportController::class, 'exportProtocolReviewChecklist'])->name('export.protocol-review-checklist');
         Route::get('/monitoring-process', function() { return view('iacuc-reviewer.monitoring-process'); })->name('iacuc-reviewer.monitoring-process');
         Route::get('/settings', function () { return view('iacuc-reviewer.settings'); })->name('iacuc-reviewer.settings');

@@ -16,7 +16,6 @@
                     </button>
                 </div>
                 <div class="w-full">
-                    <!-- CALENDAR FILTERING FOR THE COUNT OF SUBMISSION -->
                     <div class="mt-4">
                         <label for="fromDate">From:</label>
                         <input type="date" id="fromDate" class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
@@ -33,14 +32,13 @@
             </form>
         </div>
     </div>
-    <!-- Main Content -->
+
     <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
         <h2 class="max-xl:hidden text-left bg-[#f2f2f2] shadow-lg p-[35px] rounded-[30px] font-medium text-[28px]">
             APPROVED ACCOUNTS
         </h2>
         <br>
 
-        <!-- CSS NG FILTER + SEARCH BAR -->
         <div class="top-controls flex items-center justify-end max-md:flex-col">
             <div class="flex items-center max-sm:block max-sm:text-center max-md:mt-2">
                 <button type="button" onclick="openModal('filterModal')" class="bg-primary text-white p-1.5 rounded">
@@ -56,7 +54,6 @@
         </div>
 
         <table id="myTable" class="display overflow-scroll border-collapse w-full">
-            <!-- Table header -->
             <thead class="bg-primary text-white text-lg/7 max-lg:text-base/7">
                 <tr class="header-table">
                     <th class="w-[20.00%]">P.I. Name</th>
@@ -66,8 +63,6 @@
                     <th class="w-[20.00%]">Status</th>
                 </tr>
             </thead>
-
-            <!-- Table body -->
             <tbody class="text-base/7 max-lg:text-sm/6">
                 @foreach($approvedAccounts as $user)
                     <tr data-date="{{ $user->created_at ? $user->created_at->format('Y-m-d') : '' }}"
@@ -93,39 +88,36 @@
                 @endforeach
             </tbody>
         </table>
-        <!-- Main Layout -->
+
         @if($approvedAccounts->isNotEmpty())
-            <!-- Main Layout -->
             <div class="flex mx-4 gap-6 grid grid-cols-2 max-md:grid-cols-1">
-                <!-- Left Selection -->
                 <div class="forms-assign bg-lightgray p-4 shadow-md rounded-md">
                     <h3 class="text-lg font-semibold max-md:text-base mb-3">Assignment of Forms</h3>
-                    <div
-                        class="flex h-40 max-md:h-28 overflow-y-auto grid grid-cols-3 max-sm:grid-cols-2 gap-y-3 gap-x-3 font-semibold max-md:text-sm">
+                    <div class="flex h-40 max-md:h-28 overflow-y-auto grid grid-cols-3 max-sm:grid-cols-2 gap-y-3 gap-x-3 font-semibold max-md:text-sm">
                         @foreach ($selectForms as $form)
                             <div class="room cursor-pointer bg-gray hover:bg-darkgray px-3 py-2 rounded-md"
-                                data-room="{{ $form->form_id }}" data-view="{{ $form->form_view }}">
+                                data-room="{{ $form->form_id }}" data-code="{{ $form->form_code }}" data-view="{{ $form->form_view }}">
                                 {{ $form->form_code }}
                             </div>
                         @endforeach
                     </div>
                 </div>
 
-                <!-- Right Display -->
-                <div class="assigned-formsbg-lightgray p-4 shadow-md rounded-md">
-                    <h3 class="text-lg font-semibold max-md:text-base mb-3">Assigned Forms</h3>
-                    <ul id="assignedList"
-                        class="list-disc h-40 max-md:h-28 overflow-y-auto mx-2 pl-6 pt-2 flex grid grid-cols-3 max-sm:grid-cols-2 gap-x-2 gap-y-3 max-md:text-sm">
-                        <!-- Already assigned forms and forms to be assigned will appear here -->
+                <div class="assigned-forms bg-lightgray p-4 shadow-md rounded-md">
+                    <h3 class="text-lg font-semibold max-md:text-base mb-3">Forms to Remove from Selected Users</h3>
+                    <div class="mb-2 text-sm text-red-600">
+                        ⚠️ Click the ✕ button next to a form to mark it for removal from ALL selected users
+                    </div>
+                    <ul id="assignedList" class="list-disc h-40 max-md:h-28 overflow-y-auto mx-2 pl-6 pt-2 flex flex-col gap-y-3 max-md:text-sm">
+                        <!-- Already assigned forms will appear here with delete buttons -->
                     </ul>
                 </div>
             </div>
-
-            <!-- Button Outside, Right-Aligned -->
+                
             <div class="flex justify-end mt-4 mx-4">
                 <button id="submitBtn"
                     class="bg-secondary hover:bg-primary text-primary hover:text-secondary px-4 py-3 rounded-md uppercase tracking-widest duration-200"
-                    type="button">
+                    type="button" disabled>
                     Submit
                 </button>
             </div>
@@ -136,10 +128,16 @@
         @endif
     </main>
 </x-erb-layout>
+
 <script>
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
+    let selectedUsers = [];
+    let formsToAssign = [];
+    let formsToRemove = [];  // Track forms to remove (selected from already assigned)
+    let currentAssignedForms = [];  // Track the original assigned forms for selected users
 
+    // DataTable filter
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
         if (settings.nTable.id !== 'myTable') return true;
 
@@ -162,117 +160,257 @@
         table.draw();
     }
 
-    const rooms = document.querySelectorAll(".room");
-    const assignedList = document.getElementById("assignedList");
-    const submitBtn = document.getElementById("submitBtn");
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.getElementById(modalId).style.display = 'flex';
+    }
 
-    // Store already assigned forms and forms to be assigned
-    let alreadyAssignedForms = [];
-    let formsToAssign = [];
-    let selectedUsers = [];
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.getElementById(modalId).style.display = 'none';
+    }
 
-    // Add/remove forms to the assigned list
-    rooms.forEach(room => {
-        room.addEventListener("click", () => {
-            // ✅ CHECK: Don't allow clicking if form is disabled
-            if (room.classList.contains('disabled-form')) {
-                return;
-            }
+    function outsideClick(event) {
+        if (event.target.id === 'filterModal') {
+            closeModal('filterModal');
+        }
+    }
 
-            const formId = room.dataset.room;
-            const formCode = room.textContent;
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-            // Check if form is already in formsToAssign
-            const existingIndex = formsToAssign.findIndex(form => form.id === formId);
+    function updateBothDisplays() {
+        updateRemoveListDisplay();
+        updateFormAvailability();
+        validateSubmitButton();
+    }
 
-            if (existingIndex > -1) {
-                // Remove from forms to assign
-                formsToAssign.splice(existingIndex, 1);
-                room.classList.remove("bg-darkgray");
-                room.classList.add("bg-gray");
-            } else {
-                // Add to forms to assign
-                formsToAssign.push({ id: formId, code: formCode });
-                room.classList.add("bg-darkgray");
-                room.classList.remove("bg-gray");
-            }
-
-            updateAssignedFormsDisplay();
-            validateSubmitButton(); // ✅ ADDED: Validate button state
-        });
-    });
-
-    // Update the assigned forms display
-    function updateAssignedFormsDisplay() {
+    function updateRemoveListDisplay() {
+        const assignedList = document.getElementById("assignedList");
+        if (!assignedList) return;
+        
         assignedList.innerHTML = '';
 
-        // Display already assigned forms (gray color)
-        alreadyAssignedForms.forEach(form => {
+        // Show forms that are currently assigned to ALL selected users (common forms only)
+        if (selectedUsers.length > 0 && currentAssignedForms.length > 0) {
+            currentAssignedForms.forEach(form => {
+                const isMarkedForRemoval = formsToRemove.some(f => f.id == form.id);
+                const li = document.createElement("li");
+                li.className = "flex justify-between items-center w-full hover:bg-gray-100 p-1 rounded";
+                li.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="${isMarkedForRemoval ? 'text-red-600 line-through' : 'text-gray-700'}">●</span>
+                        <span class="${isMarkedForRemoval ? 'line-through text-red-600' : ''}">${escapeHtml(form.code)}</span>
+                    </div>
+                    <button onclick="toggleRemoveForm('${form.id}', '${escapeHtml(form.code)}')" 
+                            class="ml-2 px-2 py-1 rounded transition ${isMarkedForRemoval ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'}"
+                            title="${isMarkedForRemoval ? 'Cancel removal' : 'Mark for removal'}">
+                        ${isMarkedForRemoval ? '✓ Undo' : '✕ Remove'}
+                    </button>
+                `;
+                li.setAttribute('data-form-id', form.id);
+                assignedList.appendChild(li);
+            });
+        } else {
             const li = document.createElement("li");
-            li.textContent = form.code;
-            li.classList.add('text-gray-500'); // Gray color for already assigned
-            li.setAttribute('data-room', form.id);
+            li.className = "text-gray-400 italic text-center";
+            li.textContent = "Select users to see their assigned forms";
             assignedList.appendChild(li);
-        });
-
-        // Display forms to be assigned (normal color)
-        formsToAssign.forEach(form => {
-            const li = document.createElement("li");
-            li.textContent = form.code;
-            li.setAttribute('data-room', form.id);
-            assignedList.appendChild(li);
-        });
+        }
     }
 
-    // ✅ ADDED: Validate submit button state
+    // Toggle form for removal
+    window.toggleRemoveForm = function(formId, formCode) {
+        const existingIndex = formsToRemove.findIndex(f => f.id == formId);
+        
+        if (existingIndex > -1) {
+            // Remove from removal list (keep the form)
+            formsToRemove.splice(existingIndex, 1);
+        } else {
+            // Add to removal list
+            formsToRemove.push({ id: formId, code: formCode });
+        }
+        
+        updateRemoveListDisplay();
+        validateSubmitButton();
+    }
+
     function validateSubmitButton() {
+        const submitBtn = document.getElementById("submitBtn");
         const hasSelectedUsers = selectedUsers.length > 0;
         const hasFormsToAssign = formsToAssign.length > 0;
-
-        submitBtn.disabled = !(hasSelectedUsers && hasFormsToAssign);
+        const hasFormsToRemove = formsToRemove.length > 0;
+        
+        if (submitBtn) {
+            submitBtn.disabled = !(hasSelectedUsers && (hasFormsToAssign || hasFormsToRemove));
+        }
     }
 
-    // ✅ ADDED: Disable forms that are already assigned to selected users
     function updateFormAvailability() {
-        // Reset all forms first
+        const rooms = document.querySelectorAll(".room");
+        
         rooms.forEach(room => {
             room.classList.remove('disabled-form', 'cursor-not-allowed', 'opacity-50');
             room.style.pointerEvents = 'auto';
         });
 
-        // If users are selected, disable their already assigned forms
         if (selectedUsers.length > 0) {
-            const assignedFormIds = alreadyAssignedForms.map(form => form.id);
+            const assignedFormIds = currentAssignedForms.map(form => parseInt(form.id));
 
             rooms.forEach(room => {
-                const formId = room.dataset.room;
+                const formId = parseInt(room.dataset.room);
                 if (assignedFormIds.includes(formId)) {
                     room.classList.add('disabled-form', 'cursor-not-allowed', 'opacity-50');
                     room.style.pointerEvents = 'none';
-
-                    // Also remove from formsToAssign if it was previously selected
-                    const index = formsToAssign.findIndex(form => form.id === formId);
-                    if (index > -1) {
-                        formsToAssign.splice(index, 1);
-                        room.classList.remove("bg-darkgray");
-                        room.classList.add("bg-gray");
-                    }
                 }
             });
         }
-
-        updateAssignedFormsDisplay();
-        validateSubmitButton();
     }
 
-    // Submit assigned forms
-    submitBtn.addEventListener("click", (e) => {
-        const selectedForms = formsToAssign.map(form => form.id);
-
-        if (selectedUsers.length === 0 || selectedForms.length === 0) {
-            alert("Please select at least one user and one form.");
+    // Load current assigned forms for selected users (common forms only)
+    function loadCurrentAssignedForms() {
+        currentAssignedForms = [];
+        const selectedCheckboxes = document.querySelectorAll(".user-checkbox:checked");
+        
+        if (selectedCheckboxes.length === 0) {
+            updateRemoveListDisplay();
             return;
         }
+        
+        // Get assigned forms for each selected user
+        const allUsersForms = [];
+        selectedCheckboxes.forEach(cb => {
+            const assignedFormsJson = cb.getAttribute('data-assigned-forms');
+            const assignedFormIds = assignedFormsJson ? JSON.parse(assignedFormsJson) : [];
+            const forms = [];
+            assignedFormIds.forEach(formId => {
+                const formElement = document.querySelector(`.room[data-room="${formId}"]`);
+                if (formElement) {
+                    forms.push({
+                        id: parseInt(formId),
+                        code: formElement.textContent.trim()
+                    });
+                }
+            });
+            allUsersForms.push(forms);
+        });
+        
+        // Find forms that are common to ALL selected users
+        if (allUsersForms.length > 0) {
+            // Start with the first user's forms
+            let commonForms = [...allUsersForms[0]];
+            
+            // Intersect with each subsequent user's forms
+            for (let i = 1; i < allUsersForms.length; i++) {
+                commonForms = commonForms.filter(form => 
+                    allUsersForms[i].some(f => f.id === form.id)
+                );
+            }
+            
+            currentAssignedForms = commonForms;
+        }
+        
+        updateRemoveListDisplay();
+    }
+
+    // Handle form room clicks (for assignment)
+    const rooms = document.querySelectorAll(".room");
+    rooms.forEach(room => {
+        room.addEventListener("click", () => {
+            if (room.classList.contains('disabled-form')) {
+                alert("This form is already assigned to all selected users.");
+                return;
+            }
+
+            const formId = room.dataset.room;
+            const formCode = room.textContent.trim();
+
+            const existingIndex = formsToAssign.findIndex(form => form.id == formId);
+
+            if (existingIndex > -1) {
+                formsToAssign.splice(existingIndex, 1);
+                room.classList.remove("bg-darkgray");
+                room.classList.add("bg-gray");
+            } else {
+                formsToAssign.push({ id: formId, code: formCode });
+                room.classList.add("bg-darkgray");
+                room.classList.remove("bg-gray");
+            }
+
+            validateSubmitButton();
+        });
+    });
+
+    // Handle user checkbox changes
+    const userCheckboxes = document.querySelectorAll(".user-checkbox");
+    userCheckboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+            const userId = cb.value;
+
+            if (cb.checked) {
+                selectedUsers.push(userId);
+            } else {
+                selectedUsers = selectedUsers.filter(id => id !== userId);
+                // Also remove any forms to assign that might be pending
+                if (selectedUsers.length === 0) {
+                    formsToAssign = [];
+                    formsToRemove = [];
+                    // Reset room colors
+                    rooms.forEach(room => {
+                        room.classList.remove("bg-darkgray");
+                        room.classList.add("bg-gray");
+                    });
+                }
+            }
+
+            // Reload current assigned forms
+            loadCurrentAssignedForms();
+            
+            // Clear forms to assign when user selection changes
+            formsToAssign.forEach(form => {
+                const room = document.querySelector(`.room[data-room="${form.id}"]`);
+                if (room) {
+                    room.classList.remove("bg-darkgray");
+                    room.classList.add("bg-gray");
+                }
+            });
+            formsToAssign = [];
+            
+            updateFormAvailability();
+            validateSubmitButton();
+        });
+    });
+
+    // Submit button
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.addEventListener("click", (e) => {
+        const newFormsToAssign = formsToAssign.map(form => form.id);
+        const formsToRemoveIds = formsToRemove.map(form => form.id);
+
+        if (selectedUsers.length === 0) {
+            alert("⚠️ Please select at least one user.");
+            return;
+        }
+
+        if (newFormsToAssign.length === 0 && formsToRemoveIds.length === 0) {
+            alert("⚠️ Please select forms to assign or mark forms for removal.");
+            return;
+        }
+
+        let message = "";
+        if (newFormsToAssign.length > 0) message += `📝 Assign ${newFormsToAssign.length} new form(s) to ALL selected users`;
+        if (newFormsToAssign.length > 0 && formsToRemoveIds.length > 0) message += " and ";
+        if (formsToRemoveIds.length > 0) message += `🗑️ Remove ${formsToRemoveIds.length} form(s) from ALL selected users`;
+        message += `\n\n👥 For ${selectedUsers.length} user(s).\n\nDo you want to continue?`;
+
+        if (!confirm(message)) return;
+
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Processing...";
 
         fetch("{{ route('assign.forms.ajax') }}", {
             method: "POST",
@@ -282,132 +420,82 @@
             },
             body: JSON.stringify({
                 user_ids: selectedUsers,
-                form_ids: selectedForms
+                form_ids: newFormsToAssign,
+                remove_form_ids: formsToRemoveIds
             })
         })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-
-                    // Reset everything
-                    formsToAssign = [];
-                    alreadyAssignedForms = [];
-                    selectedUsers = [];
-
-                    // Reset form colors and enable all forms
-                    rooms.forEach(room => {
-                        room.classList.remove("bg-darkgray", "disabled-form", "cursor-not-allowed", "opacity-50");
-                        room.classList.add("bg-gray");
-                        room.style.pointerEvents = 'auto';
-                    });
-
-                    // Update display
-                    updateAssignedFormsDisplay();
-
-                    // Uncheck all users
-                    document.querySelectorAll(".user-checkbox").forEach(cb => {
-                        cb.checked = false;
-                    });
-
-                    // Update button state
-                    validateSubmitButton();
-                } else {
-                    alert("Something went wrong.");
-                }
-            })
-            .catch(err => console.error("Fetch error:", err));
-    });
-
-    // When user checkbox is clicked, load their already assigned forms
-    const userCheckboxes = document.querySelectorAll(".user-checkbox");
-    userCheckboxes.forEach(cb => {
-        cb.addEventListener("change", () => {
-            const userId = cb.value;
-
-            if (cb.checked) {
-                // Add user to selected users
-                selectedUsers.push(userId);
-
-                // Load already assigned forms for this user from data attribute
-                const assignedFormsJson = cb.getAttribute('data-assigned-forms');
-                const assignedFormIds = assignedFormsJson ? JSON.parse(assignedFormsJson) : [];
-
-                // Get form details for assigned form IDs
-                loadAlreadyAssignedForms(assignedFormIds);
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ " + (data.message || "Operation completed successfully!"));
+                location.reload();
             } else {
-                // Remove user from selected users
-                selectedUsers = selectedUsers.filter(id => id !== userId);
-
-                // Clear already assigned forms if no users are selected
-                if (selectedUsers.length === 0) {
-                    alreadyAssignedForms = [];
-                } else {
-                    // Recalculate already assigned forms for remaining selected users
-                    recalculateAlreadyAssignedForms();
-                }
+                alert("❌ " + (data.message || "Something went wrong."));
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
-
-            // ✅ ADDED: Update form availability based on selected users
-            updateFormAvailability();
+        })
+        .catch(err => {
+            console.error("Fetch error:", err);
+            alert("❌ An error occurred. Please try again.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         });
     });
 
-    // Function to load already assigned forms
-    function loadAlreadyAssignedForms(assignedFormIds) {
-        // Add new assigned forms to the list
-        assignedFormIds.forEach(formId => {
-            const formElement = document.querySelector(`.room[data-room="${formId}"]`);
-            if (formElement && !alreadyAssignedForms.some(form => form.id === formId)) {
-                alreadyAssignedForms.push({
-                    id: formId,
-                    code: formElement.textContent
-                });
-            }
+    // Initialize DataTable
+    $(document).ready(function () {
+        if ($.fn.dataTable.isDataTable('#myTable')) {
+            $('#myTable').DataTable().destroy();
+        }
+        
+        $('.search-wrapper').empty();
+        
+        $('#myTable').DataTable({
+            responsive: true,
+            paging: false,
+            scrollY: '400px',
+            order: [[0, 'asc']],
+            columns: [
+                { title: "P.I. Name" },
+                { title: "Department" },
+                { title: "Research Title" },
+                { title: "Registration Date" },
+                { title: "Status" }
+            ]
         });
-    }
 
-    // ✅ ADDED: Recalculate already assigned forms when users are deselected
-    function recalculateAlreadyAssignedForms() {
-        alreadyAssignedForms = [];
-
-        // Get all selected users' assigned forms
-        const selectedCheckboxes = document.querySelectorAll(".user-checkbox:checked");
-        selectedCheckboxes.forEach(cb => {
-            const assignedFormsJson = cb.getAttribute('data-assigned-forms');
-            const assignedFormIds = assignedFormsJson ? JSON.parse(assignedFormsJson) : [];
-
-            assignedFormIds.forEach(formId => {
-                const formElement = document.querySelector(`.room[data-room="${formId}"]`);
-                if (formElement && !alreadyAssignedForms.some(form => form.id === formId)) {
-                    alreadyAssignedForms.push({
-                        id: formId,
-                        code: formElement.textContent
-                    });
-                }
-            });
-        });
-    }
-
-    // ✅ ADDED: Initialize button state
-    validateSubmitButton();
+        const dtSearch = $('#myTable_filter');
+        if (dtSearch.length) {
+            $('.search-wrapper').append(dtSearch);
+        }
+        
+        validateSubmitButton();
+    });
 </script>
 
 <style>
-    /* ✅ ADDED: Styles for disabled forms */
     .disabled-form {
         background-color: #d1d5db !important;
-        /* gray-300 */
         color: #9ca3af !important;
-        /* gray-400 */
         cursor: not-allowed !important;
         opacity: 0.5;
     }
 
     .disabled-form:hover {
         background-color: #d1d5db !important;
-        /* gray-300 */
         color: #9ca3af !important;
-        /* gray-400 */
     }
-</style>
+    
+    .room {
+        transition: all 0.2s ease;
+    }
+    
+    .room:hover:not(.disabled-form) {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    button {
+        cursor: pointer;
+    }

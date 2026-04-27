@@ -35,7 +35,7 @@
             <!-- Research Protocol -->
             <div>
                 <h2 class="text-[20px] max-sm:text-[17px] font-semibold mb-4">RESEARCH PROTOCOL</h2>
-                <div class="grid max-md:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid max-md:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="card bg-lightgray p-4 rounded-lg border border-gray shadow">
                         <h3 class="text-2xl max-md:text-[22px] max-sm:text-lg font-semibold">{{ $totalAssignedProtocols }}</h3>
                         <p class="max-xl:text-sm">ASSIGNED PROTOCOLS</p>
@@ -79,7 +79,6 @@
                                 $notifications = auth()->user()->notifications()->latest()->get();
                             @endphp
                             <ul class="h-[32rem] max-md:h-[20rem] overflow-y-auto scrollbar divide-y divide-gray">
-                                <!-- Notification item -->
                                 @forelse($notifications as $notification)
                                     @php
                                         $data = $notification->data;
@@ -92,9 +91,10 @@
                                         </div>
                                         <div class="flex-1">
                                             <p class="text-sm text-gray-800">
-                                                <span class="font-medium">{{ $data['name'] }}</span>
-                                                ({{ $data['email'] }})
-                                                </b>
+                                                <span class="font-medium">{{ $data['name'] ?? 'System' }}</span>
+                                                @if(isset($data['email']))
+                                                    ({{ $data['email'] }})
+                                                @endif
                                             </p>
                                             <p class="text-sm text-gray-700">
                                                 {{ $data['message'] ?? 'No message available' }}
@@ -106,21 +106,19 @@
                                         @endif
                                     </li>
                                 @empty
-                                    <li class="p-4 text-gray-500">No new notifications</li>
+                                    <li class="p-4 text-center text-gray-500">No new notifications</li>
                                 @endforelse
                             </ul>
                         </div>
                     </div>
                 </main>
                 <div class="flex-1 space-y-10 overflow-auto">
-                    <table id="myTable"
-                        class="display overflow-scroll border-collapse w-full">
+                    <table id="myTable" class="display overflow-scroll border-collapse w-full">
                         <thead class="bg-primary text-white text-lg/7 max-lg:text-base/7">
                             <tr class="header-table">
-                                <th class="w-[25.00%]">Research Protocol</th>
-                                <th class="w-[25.00%]">Research Title</th>
-                                <th class="w-[25.00%]">Reviewer</th>
-                                <th class="w-[25.00%]">Status</th>
+                                <th class="w-[33.33%]">Research Protocol</th>
+                                <th class="w-[33.33%]">Research Title</th>
+                                <th class="w-[33.33%]">Status</th>
                             </tr>
                         </thead>
                         <tbody class="text-base/7 max-lg:text-sm/6">
@@ -128,8 +126,13 @@
                             <tr>
                                 <td>{{ $protocol['protocol_id'] }}</td>
                                 <td>{{ $protocol['research_title'] }}</td>
-                                <td>{{ $protocol['reviewer'] }}</td>
-                                <td>{{ $protocol['status'] }}</td>
+                                <td>
+                                    @if($protocol['status'] === 'Evaluated' || $protocol['status'] === 'Completed')
+                                        Evaluated
+                                    @else
+                                        {{ $protocol['status'] }}
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
