@@ -17,13 +17,17 @@
                 </div>
                 <div class="w-full">
                     <!-- CALENDAR FILTERING FOR THE COUNT OF SUBMISSION -->
-                    <div class="mt-4">
-                        <label for="fromDate">From:</label>
-                        <input type="date" id="fromDate" class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
-                    </div>
-                    <div class="mt-4">
-                        <label for="toDate">To:</label>
-                        <input type="date" id="toDate" class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
+                    <div class="filter-box mt-4 flex items-center gap-x-2">
+                        <div>
+                            <label for="fromDate">From:</label>
+                            <input type="date" id="fromDate"
+                                class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
+                        </div>
+                        <div>
+                            <label for="toDate">To:</label>
+                            <input type="date" id="toDate"
+                                class="w-full max-md:text-sm h-[35px] text-sm max-sm:h-[31px]">
+                        </div>
                     </div>
                 </div>
                 <button type="button" onclick="updateTable(); closeModal('filterModal')"
@@ -41,12 +45,7 @@
         <br>
 
         <!-- CSS NG FILTER + SEARCH BAR -->
-        <div class="top-controls flex items-center justify-between max-md:flex-col">
-            <!-- FUNCTIONALITY TO DISPLAY THE DATAS BASED ON DATE -->
-            <div class="filter-box">
-                Total Submission Count:
-                <span class="font-bold" id="submissionCount"></span>
-            </div>
+        <div class="top-controls flex items-center justify-end max-md:flex-col">
             <div class="flex items-center max-sm:block max-sm:text-center max-md:mt-2">
                 <button type="button" onclick="openModal('filterModal')" class="bg-primary text-white p-1.5 rounded">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -60,27 +59,77 @@
             </div>
         </div>
 
-        <table id="myTable" class="display overflow-scroll border-collapse w-full">
+        <table id="myTable" class="display overflow-y-scroll overflow-x-hidden border-collapse w-full">
             <!-- Table header -->
             <thead class="bg-primary text-white text-lg/7 max-lg:text-base/7">
                 <tr class="header-table">
-                    <th class="w-[50%]">Description</th>
-                    <th class="w-[50%]">Process Date</th>
+                    <th class="w-[60%]">Description</th>
+                    <th class="w-[40%]">Process Date</th>
                 </tr>
             </thead>
 
             <!-- Table body -->
             <tbody class="text-base/7 max-lg:text-sm/6">
-                <tr>
-                    <td>
-                        Assign reviewer for protocol: ERB-2025-002
-                    </td>
-                    <td>
-                        10/22/2025<br>
-                        10:30:50 PM
-                    </td>
-                </tr>
+                @forelse($processes as $process)
+                    <tr data-date="{{ \Carbon\Carbon::parse($process['date'])->format('Y-m-d') }}">
+                        <td class="break-normal">
+                            {{ $process['description'] }}
+                        </td>
+                        <td>
+                            {{ $process['date'] }}<br>
+                            {{ $process['time'] }}
+                        </td>
+                    </tr>
+                @empty
+                @endforelse
             </tbody>
         </table>
     </main>
 </x-iacuc-reviewer>
+
+<script>
+    const fromDate = document.getElementById('fromDate');
+    const toDate = document.getElementById('toDate');
+    
+    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+        if (settings.nTable.id !== 'myTable') return true;
+
+        const from = fromDate.value;
+        const to = toDate.value;
+
+        const row = settings.aoData[dataIndex].nTr;
+        const rowDate = row ? row.getAttribute('data-date') : '';
+
+        if (from && rowDate < from) return false;
+        if (to && rowDate > to) return false;
+
+        return true;
+    });
+
+    function updateTable() {
+        const table = $('#myTable').DataTable();
+        table.draw();
+    }
+
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    function outsideClick(event) {
+        if (event.target.id === 'filterModal') {
+            closeModal('filterModal');
+        }
+    }
+</script>

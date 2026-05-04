@@ -41,13 +41,13 @@
                         <p class="mt-2 text-center max-sm:text-sm">STATUS OF REVIEW</p>
                     </div>
                     
-                    <!-- Deadline Card -->
+                    <!-- Deadline Card --> <!--
                     <div class="card bg-lightgray p-4 rounded-lg border border-gray shadow">
                         <h2 class="text-[25px] max-2xl:text-[22px] max-sm:text-base font-semibold text-center">
                             {{ $deadline }}
                         </h2>
                         <p class="mt-2 text-center max-sm:text-sm">DEADLINE OF SUBMISSION</p>
-                    </div>
+                    </div> -->
                     
                     <!-- Submitted Documents Card -->
                     <div data-modal="modal1"

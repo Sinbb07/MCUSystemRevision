@@ -168,7 +168,7 @@ Route::middleware(['auth', 'access:IACUC Admin', 'no-cache', 'prevent-back'])->p
     Route::get('/view-review-files/{protocolId}/{reviewerId}', [ERBViewReviews::class, 'iacucShowFiles'])->name('iacuc.view-review-files');
 
     // Monitoring & Settings
-    Route::get('/monitoring-process', function() { return view('iacuc.monitoring-process'); })->name('iacuc.monitoring-process');
+    Route::get('/monitoring-process', [ProcessMonitoringController::class, 'iacucIndex'])->name('iacuc.monitoring-process');
     Route::get('/tickets', function () { return view('iacuc.tickets'); })->name('iacuc.tickets');
     Route::get('/settings', function () { return view('iacuc.settings'); })->name('iacuc.settings');
 
@@ -315,7 +315,7 @@ Route::middleware(['auth', 'access:IACUC Reviewer', 'no-cache', 'prevent-back'])
         ->name('iacuc-reviewer.update-status');
         
         Route::get('/export-protocol-review-checklist/{protocolId?}', [PdfExportController::class, 'exportProtocolReviewChecklist'])->name('export.protocol-review-checklist');
-        Route::get('/monitoring-process', function() { return view('iacuc-reviewer.monitoring-process'); })->name('iacuc-reviewer.monitoring-process');
+        Route::get('/monitoring-process', [ProcessMonitoringController::class, 'iacucReviewerIndex'])->name('iacuc-reviewer.monitoring-process');
         Route::get('/settings', function () { return view('iacuc-reviewer.settings'); })->name('iacuc-reviewer.settings');
     });
 });

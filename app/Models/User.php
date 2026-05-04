@@ -142,4 +142,3 @@ class User extends Authenticatable
         return $this->hasMany(InitialReview::class, 'reviewer2_ID', 'user_ID');
     }
 }
-
