@@ -35,7 +35,7 @@
                 MCUERB Code
             </div>
             <div class="mx-2 py-1">
-                {{-- mcuerb code --}}
+                {{ $mcuerbCode ?? '2025-S1-001' }}
             </div>
         </div>
 
@@ -45,7 +45,7 @@
                 STUDY Protocol Title:
             </div>
             <div class="mx-2 py-1">
-                {{-- study protocol title --}}
+                {{ $form3c->study_title ?? 'N/A' }}
             </div>
         </div>
 
@@ -55,7 +55,7 @@
                 Prinicipal Investigator (PI)
             </div>
             <div class="mx-2 py-1">
-                {{-- principal investigator --}}
+                {{ $form3c->pi_name ?? $principalInvestigator ?? 'N/A' }}
             </div>
         </div>
 
@@ -65,7 +65,7 @@
                 PI Contact Numbers
             </div>
             <div class="mx-2 py-1">
-                {{-- pi contact numbers --}}
+                {{ $form3c->tel_no ?? '' }} {{ $form3c->contact_no ?? 'N/A' }}
             </div>
         </div>
 
@@ -75,7 +75,7 @@
                 PI Email Address
             </div>
             <div class="mx-2 py-1">
-                {{-- pi email address --}}
+                {{ $form3c->pi_email ?? 'N/A' }}
             </div>
         </div>
 
@@ -85,7 +85,7 @@
                 Study Protocol Submission Date
             </div>
             <div class="mx-2 py-1">
-                {{-- study protocol submission date --}}
+                {{ $form3c->created_at ? $form3c->created_at->format('Y-m-d') : 'N/A' }}
             </div>
         </div>
 
@@ -95,7 +95,7 @@
                 Study Protocol Review Date
             </div>
             <div class="mx-2 py-1">
-                {{-- study protocol review date --}}
+                {{ $form3c->updated_at ? $form3c->updated_at->format('Y-m-d') : 'N/A' }}
             </div>
         </div>
     </div>
@@ -117,7 +117,7 @@
                 <p>Title of Study</p>
             </div>
             <div class="mx-2 py-1">
-                {{-- title of study --}}
+                {{ $form3c->study_title ?? 'N/A' }}
             </div>
         </div>
 
@@ -128,7 +128,7 @@
                 <p>MCUERB Code (To be provided by MCUERB)</p>
             </div>
             <div class="w-[29.00%] border-r p-2">
-                <p>{{-- mcuerb code --}}</p>
+                <p>{{ $mcuerbCode ?? '2025-S1-001' }}</p>
             </div>
 
             <!-- STUDY SITE -->
@@ -136,7 +136,7 @@
                 <p>Study Site</p>
             </div>
             <div class="flex-1 p-2">
-                <p>{{-- study site --}}</p>
+                <p>{{ $form3c->study_site ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -147,7 +147,7 @@
                 <p>Name of Researcher/PI</p>
             </div>
             <div class="w-[29.00%] border-r p-2">
-                <p>{{-- name of researcher --}}</p>
+                <p>{{ $form3c->pi_name ?? $principalInvestigator ?? 'N/A' }}</p>
             </div>
 
             <!-- CONTACT INFORMATION -->
@@ -158,13 +158,13 @@
                 <!-- MOBILE NUMBER -->
                 <div class="flex items-center">
                     <p class="py-1 font-bold">Mobile No:</p>&nbsp;
-                    <p>{{-- mobile no. --}}</p>
+                    <p>{{ $form3c->contact_no ?? 'N/A' }}</p>
                 </div>
 
                 <!-- EMAIL -->
                 <div class="flex items-center border-t">
                     <p class="py-1 font-bold">Email:</p>&nbsp;
-                    <p class="break-all">{{-- email --}}</p>
+                    <p class="break-all">{{ $form3c->pi_email ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -175,7 +175,7 @@
                 <p>Institution</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- institution --}}</p>
+                <p>{{ $form3c->investigator_institution ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -185,7 +185,7 @@
                 <p>Address of Institution</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- address of institution --}}</p>
+                <p>{{ $form3c->institution_address ?? 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -200,7 +200,7 @@
                 <p>College / Department / Unit</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- college / department / unit --}}</p>
+                <p>{{ $form3c->college_dept ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -210,7 +210,7 @@
                 <p>Ethical clearance effectivity period</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- ethical clearance effectivity period --}}</p>
+                <p>{{ $form3c->ethical_clearance ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -227,7 +227,7 @@
                 <p>Start of study</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- start of study --}}</p>
+                <p>{{ $form3c->study_start ? \Carbon\Carbon::parse($form3c->study_start)->format('Y-m-d') : 'N/A' }}</p>
             </div>
         </div>
 
@@ -237,7 +237,7 @@
                 <p>Expected end of study</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- expected end of study --}}</p>
+                <p>{{ $form3c->study_end ? \Carbon\Carbon::parse($form3c->study_end)->format('Y-m-d') : 'N/A' }}</p>
             </div>
         </div>
 
@@ -247,7 +247,7 @@
                 <p>Number of enrolled participants</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- number of enrolled participants --}}</p>
+                <p>{{ $form3c->enrolled_participants ?? '0' }}</p>
             </div>
         </div>
 
@@ -257,7 +257,7 @@
                 <p>Number of required participants</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- number of required participants --}}</p>
+                <p>{{ $form3c->required_participants ?? '0' }}</p>
             </div>
         </div>
 
@@ -267,7 +267,7 @@
                 <p>Number of participants who withdrew</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- number of participants who withdrew --}}</p>
+                <p>{{ $form3c->participant_withdrew ?? '0' }}</p>
             </div>
         </div>
 
@@ -277,7 +277,7 @@
                 <p>Deviations from the approved protocol</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- deviations from the approved protocol --}}</p>
+                <p>{{ $form3c->deviations ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -288,7 +288,7 @@
                     risk-benefit ratio</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- new information --}}</p>
+                <p>{{ $form3c->new_information ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -296,6 +296,9 @@
         <div class="flex items-stretch border-t">
             <div class="w-[50.00%] border-r py-1 mx-2">
                 <p>Issues/problems encountered</p>
+            </div>
+            <div class="mx-2 py-1">
+                <p>{{ $form3c->issues_problems ?? 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -310,7 +313,7 @@
         </p>
 
         <p class="text-sm font-arial mt-2 italic">
-            < Name of the Principal Investigator>
+            {{ $form3c->pi_name ?? $principalInvestigator ?? '< Name of the Principal Investigator>' }}
         </p>
 
         <p class="text-sm font-arial mt-2">Principal Investigator</p>

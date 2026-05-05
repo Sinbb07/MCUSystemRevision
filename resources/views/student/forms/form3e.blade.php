@@ -1,7 +1,8 @@
 @section('title','Form 3(E)')
 <x-student-layout>
     <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
-        <form action="" method="POST" class="block">
+        <form action="{{ route('form3e.store') }}" method="POST" class="block">
+            @csrf
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <p class="text-right mt-3 mr-3 max-lg:text-sm max-md:text-sm max-sm:text-xs">FORM 3(E)</p>
                 <h1
@@ -16,31 +17,31 @@
                         <div class="max-sm:mb-2">2025-S1-001</div>
 
                         <div class="font-bold">Study Protocol Title:</div>
-                        <div class="max-sm:mb-2">Brain Injury: Prevention and Treatment of Chronic Brain Injury</div>
+                        <div class="max-sm:mb-2">{{ $researchInfo->research_title ?? 'N/A' }}</div>
 
                         <div class="font-bold">Principal Investigator (PI):</div>
-                        <div class="max-sm:mb-2">John Doe</div>
+                        <div class="max-sm:mb-2">{{ $principalInvestigator }}</div>
 
                         <div class="font-bold">Co-Investigator(s):</div>
-                        <div class="max-sm:mb-2">John Doe, Alfreds Futterkiste</div>
+                        <div class="max-sm:mb-2">{{ $researchInfo->research_CoInvestigator ?? 'N/A' }}</div>
 
                         <div class="font-bold">PI Contact Number:</div>
-                        <div class="max-sm:mb-2">09XX-XXX-XX74</div>
+                        <div class="max-sm:mb-2">{{ $researchInfo->research_Contact ?? '09XX-XXX-XX74' }}</div>
 
                         <div class="font-bold">Email Address:</div>
-                        <div class="max-sm:mb-2">email123@gmail.com</div>
+                        <div class="max-sm:mb-2">{{ auth()->user()->user_Email ?? 'N/A' }}</div>
 
                         <div class="font-bold">Institution:</div>
-                        <div class="max-sm:mb-2">Institution</div>
+                        <div class="max-sm:mb-2">{{ $researchInfo->research_school ?? 'N/A' }}</div>
 
                         <div class="font-bold">College/Department:</div>
-                        <div class="max-sm:mb-2">BS Computer Science</div>
+                        <div class="max-sm:mb-2">{{ $researchInfo->research_department ?? 'N/A' }}</div>
 
                         <div class="font-bold">Study Protocol Submission Date:</div>
-                        <div class="max-sm:mb-2">2025-05-05</div>
+                        <div class="max-sm:mb-2">{{ $form3e && $form3e->created_at ? $form3e->created_at->format('Y-m-d') : 'N/A' }}</div>
 
                         <div class="font-bold">Study Protocol Approval Date:</div>
-                        <div class="max-sm:mb-2">2025-05-05</div>
+                        <div class="max-sm:mb-2">{{ $form3e && $form3e->updated_at ? $form3e->updated_at->format('Y-m-d') : 'N/A' }}</div>
 
                         <div class="font-bold">Version Number</div>
                         <div class="max-sm:mb-2">2.0</div>
@@ -55,7 +56,7 @@
                                 Procedure/provisions to be amended
                             </span>
                             <textarea name="amend_provisions"
-                                class="mt-1 w-full resize-none max-sm:text-sm" disabled></textarea>
+                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('amend_provisions', $form3e->amend_provisions ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
@@ -64,7 +65,7 @@
                                 Original Procedure/provision
                             </span>
                             <textarea name="orig_procedure"
-                                class="mt-1 w-full resize-none max-sm:text-sm" disabled></textarea>
+                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('orig_procedure', $form3e->orig_procedure ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
@@ -73,7 +74,7 @@
                                 Proposed Amendment/s
                             </span>
                             <textarea name="proposed_amendments"
-                                class="mt-1 w-full resize-none max-sm:text-sm" disabled></textarea>
+                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('proposed_amendments', $form3e->proposed_amendments ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
@@ -82,7 +83,7 @@
                                 Justification
                             </span>
                             <textarea name="justification"
-                                class="mt-1 w-full resize-none max-sm:text-sm" disabled></textarea>
+                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('justification', $form3e->justification ?? '') }}</textarea>
                         </label>
                     </div>
                 </div>

@@ -32,13 +32,20 @@ class Form3CController extends Controller
             'issues_problems' => 'nullable|string',
         ]);
 
-        // Generate form3CID if new
-        $lastId = Form3C::max('form3CID');
-        if ($lastId) {
-            $num = intval(substr($lastId, 3)) + 1;
-            $form3CID = 'f3c' . str_pad($num, 6, '0', STR_PAD_LEFT);
+        // Get existing form to check if we need to generate new ID
+        $existingForm = Form3C::where('user_ID', Auth::user()->user_ID)->first();
+        
+        if ($existingForm) {
+            $form3CID = $existingForm->form3CID;
         } else {
-            $form3CID = 'f3c000001';
+            // Generate form3CID if new
+            $lastId = Form3C::max('form3CID');
+            if ($lastId) {
+                $num = intval(substr($lastId, 3)) + 1;
+                $form3CID = 'f3c' . str_pad($num, 6, '0', STR_PAD_LEFT);
+            } else {
+                $form3CID = 'f3c000001';
+            }
         }
 
         // Save or update draft
@@ -67,8 +74,9 @@ class Form3CController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Your draft has been saved!');
+        return redirect()->back()->with('success', 'Form 3(C) has been saved successfully!');
     }
+
 
     public function edit()
     {

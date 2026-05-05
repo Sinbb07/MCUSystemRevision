@@ -10,7 +10,7 @@ class Form3AController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate fields
+        // Validate fields - FIXED field names to match form
         $request->validate([
             'protocol' => 'required|string|max:255',
             'version_no' => 'required|string|max:255',
@@ -27,13 +27,20 @@ class Form3AController extends Controller
             'section_page_number' => 'required|string',
         ]);
 
-        // Generate form2CID if new
-        $lastId = Form3A::max('form3AID');
-        if ($lastId) {
-            $num = intval(substr($lastId, 3)) + 1;
-            $form3AID = 'f3a' . str_pad($num, 6, '0', STR_PAD_LEFT);
+        // Get existing form to check if we need to generate new ID
+        $existingForm = Form3A::where('user_ID', Auth::user()->user_ID)->first();
+        
+        if ($existingForm) {
+            $form3AID = $existingForm->form3AID;
         } else {
-            $form3AID = 'f3a000001';
+            // Generate form3AID if new
+            $lastId = Form3A::max('form3AID');
+            if ($lastId) {
+                $num = intval(substr($lastId, 3)) + 1;
+                $form3AID = 'f3a' . str_pad($num, 6, '0', STR_PAD_LEFT);
+            } else {
+                $form3AID = 'f3a000001';
+            }
         }
 
         // Save or update draft
@@ -57,23 +64,23 @@ class Form3AController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Your draft has been saved!');
+        return redirect()->back()->with('success', 'Form 3(A) has been saved successfully!');
     }
+    
     public function edit()
     {
         $user = auth()->user();
 
         $mi = $user->user_MI ? "{$user->user_MI}." : '';
         $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
-        $userEmail = $user->user_Email;
         $userId = $user->user_ID;
 
-        // fetch draft if exists (safe null-checks to avoid errors)
+        // fetch draft if exists
         $form3a = Form3A::where('user_ID', $userId)->first();
 
         // fetch research info for this user
         $researchInfo = \App\Models\ResearchInformation::where('user_ID', $userId)->first();
 
-        return view('student.forms.form3a', compact('form3a', 'researchInfo','principalInvestigator'));
+        return view('student.forms.form3a', compact('form3a', 'researchInfo', 'principalInvestigator'));
     }
 }

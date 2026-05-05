@@ -29,55 +29,55 @@
                 <p class="text-sm text-l italic mb-2">(To be filled out by MCUERB Staff)</p>
                 </p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $mcuerbCode ?? '2025-S1-001' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Study Protocol Title</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $form5e->protocol ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Principal Investigator (PI)</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $principalInvestigator ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Co-Investigators</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $form5e->coiname ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">PI Contact Numbers</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $form5e->pi_contact ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">PI Email Address</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $form5e->pi_email ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Institution</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $form5e->institution ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Address of Institution</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $form5e->institute_address ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Ethics Review Board Contact</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $form5e->erb_contact ?? 'N/A' }}</p>
         </div>
     </div>
 
@@ -102,8 +102,7 @@
             </div>
             <div class="px-2 w-[20%] border-r">
                 <p class="text-sm italic text-l mb-2">
-                    dd-mm-yyyy
-                    {{-- date --}}
+                    {{ $form5e->created_at ? $form5e->created_at->format('d-m-Y') : 'dd-mm-yyyy' }}
                 </p>
             </div>
             <div class="px-2 w-[60%]">
@@ -271,20 +270,20 @@
         <p class="pl-8">a. Basic documents (must submit for initial review)</p>
         <div class="pl-12">
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->cover_letter) checked @endif>
                 <span>
                     Cover letter from the thesis/dissertion advisor/mentor with noted by the College Dean - for MCU
                     students
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->enrollment_proof) checked @endif>
                 <span>
                     Proof of enrollment (1 photocopied and e-copy of registration form) - for MCU students
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->letter) checked @endif>
                 <span>
                     Proof of employment (letter of endorsement from direct supervisor) - for teaching, non-teaching,
                     and
@@ -292,27 +291,27 @@
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->letter) checked @endif>
                 <span>
                     Letter from the thesis/dissertion advisor/mentor noted by the College Dean signifying that the
                     protocol had undergone and passed technical review
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->complete_form2b) checked @endif>
                 <span>
                     Completed MCUERB FORM 2(B) APPLICATION FOR INITIAL REVIEW - 1 hard copy of printed and a soft
                     copy
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->complete_form2a) checked @endif>
                 <span>
                     Completed MCUERB FORM 2(A) PROTOCOL REVIEW CHECKLIST
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->complete_form2d) checked @endif>
                 <span>
                     Completed MCUERB FORM 2(D) INFORMED CONSENT CHECKLIST for PRINCIPAL INVESTIGATOR (PI)
                 </span>
@@ -321,26 +320,26 @@
         <p class="pl-8 mt-4">b. Protocol Package (must submit for initial review)</p>
         <div class="pl-12">
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->study_protocol) checked @endif>
                 <span>
                     Study Protocol (Chapters I, II, III)
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->form2c_eng) checked @endif>
                 <span>
                     MCUERB FORM 2(C) INFORMED CONSENT FORM - English Version
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->form2c_fil) checked @endif>
                 <span>
                     MCUERB FORM 2(C) INFORMED CONSENT FORM - Filipino Version or in local language/dialect (if
                     applicable)
                 </span>
             </div>
             <div>
-                <input type="checkbox" class="w-4 h-4">
+                <input type="checkbox" class="w-4 h-4" @if($form5e->data_collection) checked @endif>
                 <span>
                     Data collection forms/tools/instrument/questionnaire
                 </span>
@@ -355,51 +354,51 @@
         <div>
             <div class="pl-12 mt-4">
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->cert_validator) checked @endif>
                     <span>
                         Certificates of Validators of the tool(s)/instrument(s)/questionnaire (at least three (3)
                         validators) - Researcher's developed tool (if applicable)
                     </span>
                 </div>
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->eng_7_12_yrs) checked @endif>
                     <span>
                         Child Assent for Children Ages 7-12 years - English Version (if applicable)
                     </span>
                 </div>
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->fil_7_12_yrs) checked @endif>
                     <span>
                         Child Assent for Children Ages 7-12 years - Filipino/Dialect Version (if applicable)
                     </span>
                 </div>
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->eng_13_17_yrs) checked @endif>
                     <span>
                         Child Assent for Children Ages 13-17 years - English Version (if applicable)
                     </span>
                 </div>
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->fil_13_17_yrs) checked @endif>
                     <span>
                         Child Assent for Children Ages 13-17 years - Filipino/Dialect Version (if applicable)
                     </span>
                 </div>
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->advertisement) checked @endif>
                     <span>
                         Recruitment advertisement(s) and/or Social Media Poster (as needed by the protocol) (if
                         applicable)
                     </span>
                 </div>
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->vitae) checked @endif>
                     <span>
                         Curriculum Vitae of PI and study team members
                     </span>
                 </div>
                 <div>
-                    <input type="checkbox" class="w-4 h-4">
+                    <input type="checkbox" class="w-4 h-4" @if($form5e->gcp) checked @endif>
                     <span>
                         Good Clinical Practice (GCP) or Health Research Ethics Training Certificate of PI and
                         Co-Investigators (GCP is required for clinical trials) obtained within the last three (3) years
@@ -547,7 +546,7 @@
                         THESIS ADVISER
                     </p>
                     <p>
-                        DATE: {{-- date --}}
+                        DATE: {{ now()->format('d-m-Y') }}
                     </p>
                 </div>
                 <div>
@@ -559,7 +558,7 @@
                         RESEARCH COORDINATOR
                     </p>
                     <p>
-                        DATE: {{-- date --}}
+                        DATE: {{ now()->format('d-m-Y') }}
                     </p>
                 </div>
             </div>

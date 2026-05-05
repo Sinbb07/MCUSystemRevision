@@ -11,7 +11,7 @@ class Form3E extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     
-    public $timestamps = false;
+    // REMOVE THIS LINE: public $timestamps = false;
 
     protected $fillable = [
         'form3EID',
@@ -29,6 +29,6 @@ class Form3E extends Model
 
     public function researchInfo()
     {
-    return $this->hasOne(ResearchInformation::class, 'user_ID', 'user_ID');
+        return $this->hasOne(ResearchInformation::class, 'user_ID', 'user_ID');
     }
 }

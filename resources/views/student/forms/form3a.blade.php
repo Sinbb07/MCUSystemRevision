@@ -1,7 +1,8 @@
 @section('title', 'Form 3(A)')
 <x-student-layout>
     <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
-        <form action="" method="POST" class="block">
+        <form action="{{ route('form3a.store') }}" method="POST" class="block">
+            @csrf
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <p class="text-right mt-3 mr-3 max-lg:text-sm max-md:text-sm max-sm:text-xs">FORM 3(A)</p>
                 <h1
@@ -16,7 +17,7 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             TITLE OF STUDY
                         </label>
-                        <input type="text" name="study_title"
+                        <input type="text" name="protocol" value="{{ old('protocol', $form3a->protocol ?? $researchInfo->research_title ?? '') }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -24,7 +25,7 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             VERSION NUMBER/DATE
                         </label>
-                        <input type="text" name="version_no"
+                        <input type="text" name="version_no" value="{{ old('version_no', $form3a->version_no ?? '') }}"
                             class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -32,7 +33,7 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             STUDY SITE
                         </label>
-                        <input type="text" name="study_site"
+                        <input type="text" name="study_site" value="{{ old('study_site', $form3a->study_site ?? '') }}"
                             class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -43,7 +44,7 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             NAME OF INVESTIGATOR
                         </label>
-                        <input type="text" name="pi_name"
+                        <input type="text" name="pi_name" value="{{ old('pi_name', $form3a->pi_name ?? $principalInvestigator) }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -51,9 +52,8 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             CO-INVESTIGATOR/S (if any)
                         </label>
-                        <input type="text" name="co_investigator"
-                            class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
-                            required>
+                        <input type="text" name="coi_name" value="{{ old('coi_name', $form3a->coi_name ?? '') }}"
+                            class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                     </div>
                 </div>
                 <h2 class="px-3 pt-5 pb-1 font-semibold text-lg max-2xl:text-base max-sm:text-sm">CONTACT INFORMATION
@@ -64,14 +64,14 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             TELEPHONE NO.
                         </label>
-                        <input type="text" name="tel_no" maxlength="10"
+                        <input type="text" name="tel_no" maxlength="10" value="{{ old('tel_no', $form3a->tel_no ?? '') }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             MOBILE NO.
                         </label>
-                        <input type="text" name="contact_no" maxlength="11"
+                        <input type="text" name="contact_no" maxlength="11" value="{{ old('contact_no', $form3a->contact_no ?? '') }}"
                             class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -79,7 +79,7 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             EMAIL
                         </label>
-                        <input type="email" name="pi_email"
+                        <input type="email" name="pi_email" value="{{ old('pi_email', $form3a->pi_email ?? auth()->user()->user_Email) }}"
                             class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -90,7 +90,7 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             INSTITUTION OF INVESTIGATOR(S)
                         </label>
-                        <input type="text" name="investigator_institution"
+                        <input type="text" name="investigator_institution" value="{{ old('investigator_institution', $form3a->investigator_institution ?? '') }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -98,7 +98,7 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             ADDRESS OF INSTITUTION
                         </label>
-                        <input type="text" name="institution_address"
+                        <input type="text" name="institution_address" value="{{ old('institution_address', $form3a->institution_address ?? '') }}"
                             class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                             required>
                     </div>
@@ -111,22 +111,19 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             MCUERB Recommendations
                         </label>
-                        <textarea name="recommendations" id=""
-                            class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="recommendations" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('recommendations', $form3a->recommendations ?? '') }}</textarea>
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             Response of Researcher(s)
                         </label>
-                        <textarea name="research_response" id=""
-                            class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="research_response" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('research_response', $form3a->research_response ?? '') }}</textarea>
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             Section and page number of revisions
                         </label>
-                        <textarea name="section_page_number" id=""
-                            class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="section_page_number" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('section_page_number', $form3a->section_page_number ?? '') }}</textarea>
                     </div>
                 </div>
             </div>

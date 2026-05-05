@@ -1,7 +1,8 @@
 @section('title', 'Form 3(D)')
 <x-student-layout>
     <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
-        <form action="" method="POST" class="block">
+        <form action="{{ route('form3d.store') }}" method="POST" class="block">
+            @csrf
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <p class="text-right mt-3 mr-3 max-lg:text-sm max-md:text-sm max-sm:text-xs">FORM 3(D)</p>
                 <h1
@@ -15,25 +16,25 @@
                         <div class="max-sm:mb-2">2025-S1-001</div>
 
                         <div class="font-bold">Original Approval Date:</div>
-                        <div class="max-sm:mb-2">8/26/2025</div>
+                        <div class="max-sm:mb-2">{{ $form3d && $form3d->created_at ? $form3d->created_at->format('m/d/Y') : 'N/A' }}</div>
 
                         <div class="font-bold">Original Research Title:</div>
-                        <div class="max-sm:mb-2">Brain Injury: Prevention and Treatment of Chronic Brain Injury</div>
+                        <div class="max-sm:mb-2">{{ $researchInfo->research_title ?? 'N/A' }}</div>
 
                         <div class="font-bold">Amended Project Title (if applicable):</div>
                         <div class="max-sm:mb-2">N/A</div>
 
                         <div class="font-bold">Original Principal Investigator (PI):</div>
-                        <div class="max-sm:mb-2">John Doe</div>
+                        <div class="max-sm:mb-2">{{ $principalInvestigator }}</div>
 
                         <div class="font-bold">Institution:</div>
-                        <div class="max-sm:mb-2">CAS</div>
+                        <div class="max-sm:mb-2">{{ $researchInfo->research_school ?? 'N/A' }}</div>
 
                         <div class="font-bold">Email:</div>
-                        <div class="max-sm:mb-2">user123@gmail.com</div>
+                        <div class="max-sm:mb-2">{{ $userEmail ?? auth()->user()->user_Email ?? 'N/A' }}</div>
 
                         <div class="font-bold">Date Submitted:</div>
-                        <div class="max-sm:mb-2">8/26/2025</div>
+                        <div class="max-sm:mb-2">{{ now()->format('m/d/Y') }}</div>
                     </div>
                 </div>
             </div>
@@ -46,65 +47,53 @@
                 <div class="p-3 mt-2 space-y-2 text-base max-sm:text-sm">
                     <div>
                         <label>
-                            <input type="checkbox" id="toggleCheckBox" class="check max-sm:w-[14px] max-sm:h-[14px]">
                             <span>
                                 Addition or removal of researchers (if yes, add details below)
                             </span>
-                            <textarea name="add_remove" id="textBox" class="mt-1 w-full resize-none max-sm:text-sm"
-                                disabled></textarea>
+                            <textarea name="add_remove" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('add_remove', $form3d->add_remove ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
                         <label>
-                            <input type="checkbox" id="toggleCheckBox" class="check max-sm:w-[14px] max-sm:h-[14px]">
                             <span>
-                                Addition of a new rsearch method (if yes, add the details below).
+                                Addition of a new research method (if yes, add the details below).
                             </span>
-                            <textarea name="add_methods" id="textBox" class="mt-1 w-full resize-none max-sm:text-sm"
-                                disabled></textarea>
+                            <textarea name="add_methods" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('add_methods', $form3d->add_methods ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
                         <label>
-                            <input type="checkbox" id="toggleCheckBox" class="check max-sm:w-[14px] max-sm:h-[14px]">
                             <span>
                                 Ask for additional data from your existing participants (if yes, add details below).
                             </span>
-                            <textarea name="additional_data" id="textBox" class="mt-1 w-full resize-none max-sm:text-sm"
-                                disabled></textarea>
+                            <textarea name="additional_data" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('additional_data', $form3d->additional_data ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
                         <label>
-                            <input type="checkbox" id="toggleCheckBox" class="check max-sm:w-[14px] max-sm:h-[14px]">
                             <span>
                                 Remove a group of participants or a research method from the project, and have not yet
                                 commenced that part of the project (if yes, add details below).
                             </span>
-                            <textarea name="remove_participants" id="textBox"
-                                class="mt-1 w-full resize-none max-sm:text-sm" disabled></textarea>
+                            <textarea name="remove_participants" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('remove_participants', $form3d->remove_participants ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
                         <label>
-                            <input type="checkbox" id="toggleCheckBox" class="check max-sm:w-[14px] max-sm:h-[14px]">
                             <span>
                                 Minor changes to study documents such as spelling and grammar, correcting errors, or
                                 updates to contact details to reflect changes in the research team (if yes, briefly
                                 summarize below and attach copies).
                             </span>
-                            <textarea name="minor_changes" id="textBox" class="mt-1 w-full resize-none max-sm:text-sm"
-                                disabled></textarea>
+                            <textarea name="minor_changes" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('minor_changes', $form3d->minor_changes ?? '') }}</textarea>
                         </label>
                     </div>
                     <div>
                         <label>
-                            <input type="checkbox" id="toggleCheckBox" class="check max-sm:w-[14px] max-sm:h-[14px]">
                             <span>
                                 Apply for an extension to your current ethical approval (if yes, add details below).
                             </span>
-                            <textarea name="extension" id="textBox" class="mt-1 w-full resize-none max-sm:text-sm"
-                                disabled></textarea>
+                            <textarea name="extension" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('extension', $form3d->extension ?? '') }}</textarea>
                         </label>
                     </div>
                 </div>
@@ -116,13 +105,12 @@
                         <ul class="list-disc pl-6">
                             <li>These are the only changes requested</li>
                             <li>These changes do not alter or add to the ethical considerations as described in the
-                                original
-                                application</li>
+                                original application</li>
                         </ul>
                     </div>
 
                     <label class="flex items-center space-x-2">
-                        <input type="checkbox" name="confirmation_all_changes" class="w-4 h-4" />
+                        <input type="checkbox" name="confirmation_all_changes" class="w-4 h-4" value="1" {{ old('confirmation_all_changes', $form3d->confirmation_all_changes ?? false) ? 'checked' : '' }} />
                         <span class="font-medium">If these all apply, check the box. Otherwise, use the FULL
                             AMENDMENT APPLICATION.</span>
                     </label>
@@ -174,8 +162,7 @@
                         <span>
                             Please list below any other documents that are included with this application
                         </span>
-                        <textarea name="minor_changes" id="textBox"
-                            class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="other_documents" class="mt-1 w-full resize-none max-sm:text-sm">{{ old('other_documents', $form3d->other_documents ?? '') }}</textarea>
                     </div>
 
                     <div class="mt-3 text-gray-600">
@@ -192,21 +179,21 @@
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             THESIS ADVISER
                         </label>
-                        <input type="text" name="thesisadviser"
+                        <input type="text" name="thesisadviser" value="{{ old('thesisadviser', $form3d->thesisadviser ?? '') }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             NOTED BY:
                         </label>
-                        <input type="text" name="notedby"
+                        <input type="text" name="notedby" value="{{ old('notedby', $form3d->notedby ?? '') }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                     </div>
                     <div class="flex flex-col md:basis-1/3 w-full">
                         <label class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                             RESEARCH COORDINATOR
                         </label>
-                        <input type="text" name="coordinator"
+                        <input type="text" name="coordinator" value="{{ old('coordinator', $form3d->coordinator ?? '') }}"
                             class="block rounded border border-darkgray mt-1 w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                     </div>
                 </div>
@@ -219,7 +206,7 @@
                 <div class="p-3 flex items-center justify-center space-x-2">
                     <button type="submit"
                         class="bg-primary text-secondary hover:bg-secondary hover:text-primary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">SAVE</button>
-                    <a href="{{ route('export.form2d') }}" target="_blank">
+                    <a href="{{ route('export.form3d') }}" target="_blank">
                         <button type="button"
                             class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm"
                             @if(!$hasSavedForm) disabled style="opacity:0.5; cursor:not-allowed;" @endif>EXPORT

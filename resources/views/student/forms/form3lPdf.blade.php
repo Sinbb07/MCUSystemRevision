@@ -32,7 +32,7 @@
                 <p>Title of Study</p>
             </div>
             <div class="mx-2 py-1">
-                {{-- title of study --}}
+                {{ $form3l->study_title ?? $researchInfo->research_title ?? 'N/A' }}
             </div>
         </div>
 
@@ -42,7 +42,7 @@
                 Version number/date of the ERB approved protocol
             </div>
             <div class="mx-2 py-1">
-                {{-- version number --}}
+                {{ $form3l->version_number_date ?? 'N/A' }}
             </div>
         </div>
 
@@ -53,7 +53,7 @@
                 <p>MCUERB Code <i>(to be provided by MCUERB)</i></p>
             </div>
             <div class="w-[30.00%] border-r p-2 ml-2">
-                <p>{{-- original mcuerb code --}}</p>
+                <p>{{ $mcuerbCode ?? '2025-S1-001' }}</p>
             </div>
 
             <!-- STUDY SITE -->
@@ -61,7 +61,7 @@
                 Study Site
             </div>
             <div class="flex-1 p-2">
-                <p>{{-- study site --}}</p>
+                <p>{{ $form3l->study_site ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -72,7 +72,7 @@
                 <p>Name of Researcher/PI</p>
             </div>
             <div class="w-[30.00%] border-r ml-2 p-2">
-                <p>{{-- name of researcher --}}</p>
+                <p>{{ $form3l->pi_name ?? $principalInvestigator ?? 'N/A' }}</p>
             </div>
 
             <!-- CONTACT INFORMATION -->
@@ -83,19 +83,19 @@
                 <!-- TELEPHONE NUMBER -->
                 <div class="flex items-center">
                     <p class="py-1">Tel. No:</p>&nbsp;
-                    <p>{{-- tel. no. --}}</p>
+                    <p>{{ $form3l->tel_no ?? 'N/A' }}</p>
                 </div>
 
                 <!-- MOBILE NUMBER -->
                 <div class="flex items-center border-t">
                     <p class="py-1">Mobile No:</p>&nbsp;
-                    <p class="break-all">{{-- mobile no. --}}</p>
+                    <p class="break-all">{{ $form3l->contact_no ?? 'N/A' }}</p>
                 </div>
 
                 <!-- EMAIL -->
                 <div class="flex items-center border-t">
                     <p class="py-1">Email:</p>&nbsp;
-                    <p class="break-all">{{-- email --}}</p>
+                    <p class="break-all">{{ $form3l->pi_email ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -106,7 +106,7 @@
                 <p>Co-Investigator/s (if any)</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- co-investigators --}}</p>
+                <p>{{ $form3l->co_investigators ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -116,7 +116,7 @@
                 <p>Institution of researcher</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- institution of researcher --}}</p>
+                <p>{{ $form3l->institution_researcher ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -126,7 +126,7 @@
                 <p>Address of Institution</p>
             </div>
             <div class="mx-2 py-1">
-                <p>{{-- address of institution --}}</p>
+                <p>{{ $form3l->institution_address ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -137,11 +137,11 @@
             </div>
             <div class="w-[35.00%] mx-1 border-r">
                 <p>From:</p>
-                <p>{{-- from date --}}</p>
+                <p>{{ $form3l->ethical_from_date ? \Carbon\Carbon::parse($form3l->ethical_from_date)->format('Y-m-d') : 'N/A' }}</p>
             </div>
             <div class="mx-1">
                 <p>To:</p>
-                <p>{{-- to date --}}</p>
+                <p>{{ $form3l->ethical_to_date ? \Carbon\Carbon::parse($form3l->ethical_to_date)->format('Y-m-d') : 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -161,7 +161,7 @@
         </div>
         <div class="flex items-stretch border-t">
             <div class="w-full">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- start of study --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->study_start ? \Carbon\Carbon::parse($form3l->study_start)->format('Y-m-d') : 'N/A' }}</p>
             </div>
         </div>
 
@@ -171,7 +171,7 @@
                 <p class="text-sm py-0.5 mx-2">2. End of study</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- end of study --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->study_end ? \Carbon\Carbon::parse($form3l->study_end)->format('Y-m-d') : 'N/A' }}</p>
             </div>
         </div>
 
@@ -181,7 +181,7 @@
                 <p class="text-sm py-0.5 mx-2">3. Number of enrolled participants</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- number of enrolled participants --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->enrolled_participants ?? '0' }}</p>
             </div>
         </div>
 
@@ -191,7 +191,7 @@
                 <p class="text-sm py-0.5 mx-2">4. Number of required participants</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- number of required participants --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->required_participants ?? '0' }}</p>
             </div>
         </div>
     </div>
@@ -206,7 +206,7 @@
                 <p class="text-sm py-0.5 mx-2">5. Number of participants who withdrew</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- number of participants who withdrew --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->participant_withdrew ?? '0' }}</p>
             </div>
         </div>
 
@@ -216,7 +216,7 @@
                 <p class="text-sm py-0.5 mx-2">6. Deviations from the approved protocol</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- deviations from the approved protocol --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->deviations ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -226,7 +226,7 @@
                 <p class="text-sm py-0.5 mx-2">7. Issues/problems encountered</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- issues/problems encountered --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->issues_problems ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -236,7 +236,7 @@
                 <p class="text-sm py-0.5 mx-2">8. Summary of findings</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- summary of findings --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->findings_summary ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -246,7 +246,7 @@
                 <p class="text-sm py-0.5 mx-2">9. Conclusions</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- conclusions --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->conclusions ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -256,7 +256,7 @@
                 <p class="text-sm py-0.5 mx-2">10. Actions for dissemination of study results</p>
             </div>
             <div class="w-full border-t">
-                <p class="text-sm py-0.5 h-6 mx-2">{{-- actions for dissemination of study results --}}</p>
+                <p class="text-sm py-0.5 h-6 mx-2">{{ $form3l->action_dissemination ?? 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -264,11 +264,11 @@
     <div class="mt-4 mx-4">
         <div class="flex">
             <p class="font-bold">Signature over Printed Name of Principal Investigator:</p>&nbsp;
-            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{-- signature of pi --}}</p>
+            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{ $form3l->pi_name ?? $principalInvestigator ?? '' }}</p>
         </div>
         <div class="flex">
             <p class="font-bold">Date:</p>&nbsp;
-            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{-- date --}}</p>
+            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{ now()->format('Y-m-d') }}</p>
         </div>
     </div>
 

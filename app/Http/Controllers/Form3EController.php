@@ -18,13 +18,20 @@ class Form3EController extends Controller
             'justification' => 'nullable|string',
         ]);
 
-        // Generate form3EID if new
-        $lastId = Form3E::max('form3EID');
-        if ($lastId) {
-            $num = intval(substr($lastId, 3)) + 1;
-            $form3EID = 'f3e' . str_pad($num, 6, '0', STR_PAD_LEFT);
+        // Get existing form to check if we need to generate new ID
+        $existingForm = Form3E::where('user_ID', Auth::user()->user_ID)->first();
+        
+        if ($existingForm) {
+            $form3EID = $existingForm->form3EID;
         } else {
-            $form3EID = 'f3e000001';
+            // Generate form3EID if new
+            $lastId = Form3E::max('form3EID');
+            if ($lastId) {
+                $num = intval(substr($lastId, 3)) + 1;
+                $form3EID = 'f3e' . str_pad($num, 6, '0', STR_PAD_LEFT);
+            } else {
+                $form3EID = 'f3e000001';
+            }
         }
 
         // Save or update draft
@@ -39,7 +46,7 @@ class Form3EController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Your draft has been saved!');
+        return redirect()->back()->with('success', 'Form 3(E) has been saved successfully!');
     }
 
     public function edit()
@@ -48,7 +55,6 @@ class Form3EController extends Controller
 
         $mi = $user->user_MI ? "{$user->user_MI}." : '';
         $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
-        $userEmail = $user->user_Email;
         $userId = $user->user_ID;
 
         // fetch draft if exists
@@ -57,6 +63,6 @@ class Form3EController extends Controller
         // fetch research info for this user
         $researchInfo = \App\Models\ResearchInformation::where('user_ID', $userId)->first();
 
-        return view('student.forms.form3e', compact('form3e', 'researchInfo', 'principalInvestigator', 'userEmail'));
+        return view('student.forms.form3e', compact('form3e', 'researchInfo', 'principalInvestigator'));
     }
 }

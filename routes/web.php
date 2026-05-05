@@ -378,8 +378,8 @@ Route::middleware(['auth', 'access:Principal Investigator', 'no-cache', 'prevent
         Route::post('/form3d/store', [Form3DController::class, 'store'])->name('form3d.store');
         Route::get('/export-form3d', [PdfExportController::class, 'exportForm3D'])->name('export.form3d');
 
-        Route::get('/form3e', [Form3DController::class, 'edit'])->name('form3e.edit');
-        Route::post('/form3e/store', [Form3DController::class, 'store'])->name('form3e.store');
+        Route::get('/form3e', [Form3EController::class, 'edit'])->name('form3e.edit');
+        Route::post('/form3e/store', [Form3EController::class, 'store'])->name('form3e.store');
         Route::get('/export-form3e', [PdfExportController::class, 'exportForm3E'])->name('export.form3e');
 
         Route::get('/form3l', [Form3LController::class, 'edit'])->name('form3l.edit');

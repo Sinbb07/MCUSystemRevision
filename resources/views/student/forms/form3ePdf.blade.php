@@ -32,7 +32,7 @@
                 <p><b>MCUERB Code</b> <i>(To be provided by ERB)</i></p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- mcuerb code --}}</p>
+                <p>{{ $mcuerbCode ?? '2025-S1-001' }}</p>
             </div>
         </div>
 
@@ -42,7 +42,7 @@
                 <p class="font-bold">Study Protocol Title</p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- study protocol title --}}</p>
+                <p>{{ $researchInfo->research_title ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -54,7 +54,7 @@
                         <p class="font-bold py-2">Principal Investigator (PI)</p>
                     </div>
                     <div class="w-[50.00%] py-1">
-                        <p class="">{{-- principal investigator --}}</p>
+                        <p class="">{{ $principalInvestigator }}</p>
                     </div>
                 </div>
                 <div class="flex items-center border-t">
@@ -62,7 +62,7 @@
                         <p class="font-bold py-4">Co-Investigator(s)</p>
                     </div>
                     <div class="w-[50.00%] py-1">
-                        <p>{{-- co-investigator(s) --}}</p>
+                        <p>{{ $researchInfo->research_CoInvestigator ?? 'N/A' }}</p>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                         <p class="font-bold ml-1 py-0.5">Mobile No.</p>
                     </div>
                     <div class="mx-1">
-                        <p class="break-all">{{-- mobile no. --}}</p>
+                        <p class="break-all">{{ $researchInfo->research_Contact ?? 'N/A' }}</p>
                     </div>
                 </div>
 
@@ -86,7 +86,7 @@
                         <p class="font-bold ml-1 py-4">Email</p>
                     </div>
                     <div class="w-[66.00%] px-1">
-                        <p class="break-all">{{-- email --}}</p>
+                        <p class="break-all">{{ auth()->user()->user_Email ?? 'N/A' }}</p>
                     </div>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                 <p class="font-bold">Institution</p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- institution --}}</p>
+                <p>{{ $researchInfo->research_school ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -108,7 +108,7 @@
                 <p class="font-bold">Address of Institution</p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- address of institution --}}</p>
+                <p>{{ $researchInfo->institution_address ?? $researchInfo->research_school ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -118,7 +118,7 @@
                 <p class="font-bold">College/Department</p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- college/department --}}</p>
+                <p>{{ $researchInfo->research_department ?? 'N/A' }}</p>
             </div>
         </div>
 
@@ -128,7 +128,7 @@
                 <p class="font-bold">Study Protocol Submission Date</p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- study protocol submission date --}}</p>
+                <p>{{ $form3e && $form3e->created_at ? $form3e->created_at->format('Y-m-d') : 'N/A' }}</p>
             </div>
         </div>
 
@@ -138,7 +138,7 @@
                 <p class="font-bold">Study Protocol Approval Date</p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- study protocol approval date --}}</p>
+                <p>{{ $form3e && $form3e->updated_at ? $form3e->updated_at->format('Y-m-d') : 'N/A' }}</p>
             </div>
         </div>
 
@@ -148,18 +148,18 @@
                 <p class="font-bold">Version Number</p>
             </div>
             <div class="w-[72.00%] py-1">
-                <p>{{-- version number --}}</p>
+                <p>2.0</p>
             </div>
         </div>
     </div>
     <div class="mt-4 mx-8">
         <div class="flex">
             <p class="font-bold">Signature over Printed Name of Principal Investigator:</p>&nbsp;
-            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{-- signature of pi --}}</p>
+            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{ $principalInvestigator }}</p>
         </div>
         <div class="flex mt-4">
             <p class="font-bold">Date:</p>&nbsp;
-            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{-- date --}}</p>
+            <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-5 w-48">{{ now()->format('Y-m-d') }}</p>
         </div>
     </div>
     <div class="mx-8 mt-4 border">
@@ -197,14 +197,9 @@
                     if necessary)
                 </p>
             </div>
-            <div class="font-bold items-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- procedure/provisions --}}
-                </p>
-            </div>
-            <div class="font-bold items-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- procedure/provisions --}}
+            <div class="items-center border-r py-1 break-all border-t" style="min-height: 12rem;">
+                <p class="text-center p-2">
+                    {{ $form3e->amend_provisions ?? 'N/A' }}
                 </p>
             </div>
         </div>
@@ -214,14 +209,9 @@
                     Original Procedure / Provisions
                 </p>
             </div>
-            <div class="font-bold flex items-center justify-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- original procedure/provisions --}}
-                </p>
-            </div>
-            <div class="font-bold items-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- original procedure/provisions --}}
+            <div class="items-center border-r py-1 break-all border-t" style="min-height: 12rem;">
+                <p class="text-center p-2">
+                    {{ $form3e->orig_procedure ?? 'N/A' }}
                 </p>
             </div>
         </div>
@@ -231,14 +221,9 @@
                     Proposed Amendment/s
                 </p>
             </div>
-            <div class="font-bold items-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- proposed amendments --}}
-                </p>
-            </div>
-            <div class="font-bold items-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- proposed amendments --}}
+            <div class="items-center border-r py-1 break-all border-t" style="min-height: 12rem;">
+                <p class="text-center p-2">
+                    {{ $form3e->proposed_amendments ?? 'N/A' }}
                 </p>
             </div>
         </div>
@@ -248,14 +233,9 @@
                     Justification
                 </p>
             </div>
-            <div class="font-bold items-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- justification --}}
-                </p>
-            </div>
-            <div class="font-bold items-center border-r py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- justification --}}
+            <div class="items-center border-r py-1 break-all border-t" style="min-height: 12rem;">
+                <p class="text-center p-2">
+                    {{ $form3e->justification ?? 'N/A' }}
                 </p>
             </div>
         </div>
@@ -265,13 +245,8 @@
                     Remarks (To be filled up by the Primary Reviewer)
                 </p>
             </div>
-            <div class="font-bold items-center py-1 break-all border-t h-48">
-                <p class="text-center">
-                    {{-- remarks --}}
-                </p>
-            </div>
-            <div class="font-bold items-center py-1 break-all border-t h-48">
-                <p class="text-center">
+            <div class="items-center py-1 break-all border-t" style="min-height: 12rem;">
+                <p class="text-center p-2">
                     {{-- remarks --}}
                 </p>
             </div>

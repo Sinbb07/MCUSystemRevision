@@ -11,7 +11,8 @@ class Form5E extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     
-    public $timestamps = false;
+    // Enable timestamps
+    public $timestamps = true;
 
     protected $fillable = [
         'form5EID',
@@ -79,6 +80,6 @@ class Form5E extends Model
 
     public function researchInfo()
     {
-    return $this->hasOne(ResearchInformation::class, 'user_ID', 'user_ID');
+        return $this->hasOne(ResearchInformation::class, 'user_ID', 'user_ID');
     }
 }

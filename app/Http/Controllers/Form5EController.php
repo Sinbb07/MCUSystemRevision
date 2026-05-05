@@ -21,29 +21,28 @@ class Form5EController extends Controller
             'institute_address' => 'required|string|max:255',
             'erb_contact' => 'required|string|max:255',
 
-            'cover_letter' => 'nullable|boolean',
-            'enrollment_proof' => 'nullable|boolean',
-            'letter' => 'nullable|boolean',
-            'complete_form2b' => 'nullable|boolean',
-            'complete_form2a' => 'nullable|boolean',
-            'complete_form2d' => 'nullable|boolean',
+            'cover_letter' => 'nullable',
+            'enrollment_proof' => 'nullable',
+            'letter' => 'nullable',
+            'complete_form2b' => 'nullable',
+            'complete_form2a' => 'nullable',
+            'complete_form2d' => 'nullable',
             
-            // Protocol Package
-            'study_protocol' => 'nullable|boolean',
-            'form2c_eng' => 'nullable|boolean',
-            'form2c_fil' => 'nullable|boolean',
-            'data_collection' => 'nullable|boolean',
-            'cert_validator' => 'nullable|boolean',
-            'eng_7_12_yrs' => 'nullable|boolean',
-            'fil_7_12_yrs' => 'nullable|boolean',
-            'eng_13_17_yrs' => 'nullable|boolean',
-            'fil_13_17_yrs' => 'nullable|boolean',
-            'advertisement' => 'nullable|boolean',
-            'vitae' => 'nullable|boolean',
-            'gcp' => 'nullable|boolean',
+            'study_protocol' => 'nullable',
+            'form2c_eng' => 'nullable',
+            'form2c_fil' => 'nullable',
+            'data_collection' => 'nullable',
+            'cert_validator' => 'nullable',
+            'eng_7_12_yrs' => 'nullable',
+            'fil_7_12_yrs' => 'nullable',
+            'eng_13_17_yrs' => 'nullable',
+            'fil_13_17_yrs' => 'nullable',
+            'advertisement' => 'nullable',
+            'vitae' => 'nullable',
+            'gcp' => 'nullable',
         ]);
 
-        // Generate form2CID if new
+        // Generate form5EID if new
         $lastId = Form5E::max('form5EID');
         if ($lastId) {
             $num = intval(substr($lastId, 3)) + 1;
@@ -52,13 +51,18 @@ class Form5EController extends Controller
             $form5EID = 'f5e000001';
         }
 
+        // Get user
+        $user = Auth::user();
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $fullName = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+
         // Save or update draft
         Form5E::updateOrCreate(
-            ['user_ID' => Auth::user()->user_ID],
+            ['user_ID' => $user->user_ID],
             [
                 'form5EID' => $form5EID,
                 'protocol'  => $request->protocol,
-                'pi_name'    => auth()->user()->full_name,
+                'pi_name'    => $fullName,
                 'coiname' => $request->coiname,
                 'pi_contact' => $request->pi_contact,
                 'pi_email' => $request->pi_email,
@@ -67,30 +71,30 @@ class Form5EController extends Controller
                 'erb_contact' => $request->erb_contact,
 
                 // Basic Documents
-                'cover_letter' => $request->boolean('cover_letter'),
-                'enrollment_proof' => $request->boolean('enrollment_proof'),
-                'letter' => $request->boolean('letter'),
-                'complete_form2b' => $request->boolean('complete_form2b'),
-                'complete_form2a' => $request->boolean('complete_form2a'),
-                'complete_form2d' => $request->boolean('complete_form2d'),
+                'cover_letter' => $request->has('cover_letter'),
+                'enrollment_proof' => $request->has('enrollment_proof'),
+                'letter' => $request->has('letter'),
+                'complete_form2b' => $request->has('complete_form2b'),
+                'complete_form2a' => $request->has('complete_form2a'),
+                'complete_form2d' => $request->has('complete_form2d'),
                 
                 // Protocol Package
-                'study_protocol' => $request->boolean('study_protocol'),
-                'form2c_eng' => $request->boolean('form2c_eng'),
-                'form2c_fil' => $request->boolean('form2c_fil'),
-                'data_collection' => $request->boolean('data_collection'),
-                'cert_validator' => $request->boolean('cert_validator'),
-                'eng_7_12_yrs' => $request->boolean('eng_7_12_yrs'),
-                'fil_7_12_yrs' => $request->boolean('fil_7_12_yrs'),
-                'eng_13_17_yrs' => $request->boolean('eng_13_17_yrs'),
-                'fil_13_17_yrs' => $request->boolean('fil_13_17_yrs'),
-                'advertisement' => $request->boolean('advertisement'),
-                'vitae' => $request->boolean('vitae'),
-                'gcp' => $request->boolean('gcp'),
+                'study_protocol' => $request->has('study_protocol'),
+                'form2c_eng' => $request->has('form2c_eng'),
+                'form2c_fil' => $request->has('form2c_fil'),
+                'data_collection' => $request->has('data_collection'),
+                'cert_validator' => $request->has('cert_validator'),
+                'eng_7_12_yrs' => $request->has('eng_7_12_yrs'),
+                'fil_7_12_yrs' => $request->has('fil_7_12_yrs'),
+                'eng_13_17_yrs' => $request->has('eng_13_17_yrs'),
+                'fil_13_17_yrs' => $request->has('fil_13_17_yrs'),
+                'advertisement' => $request->has('advertisement'),
+                'vitae' => $request->has('vitae'),
+                'gcp' => $request->has('gcp'),
             ]
         );
 
-        return redirect()->back()->with('success', 'Your draft has been saved!');
+        return redirect()->back()->with('success', 'Form 5(E) has been saved successfully!');
     }
 
     public function edit()
@@ -99,15 +103,14 @@ class Form5EController extends Controller
 
         $mi = $user->user_MI ? "{$user->user_MI}." : '';
         $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
-        $userEmail = $user->user_Email;
         $userId = $user->user_ID;
 
-        // fetch draft if exists (safe null-checks to avoid errors)
+        // fetch draft if exists
         $form5e = Form5E::where('user_ID', $userId)->first();
 
         // fetch research info for this user
         $researchInfo = \App\Models\ResearchInformation::where('user_ID', $userId)->first();
 
-        return view('student.forms.form5e', compact('form5e', 'researchInfo','principalInvestigator'));
+        return view('student.forms.form5e', compact('form5e', 'researchInfo', 'principalInvestigator'));
     }
 }

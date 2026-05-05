@@ -10,6 +10,12 @@ use App\Models\Form2D;
 use App\Models\Form2E;
 use App\Models\Form2J;
 use App\Models\Form5E;
+use App\Models\Form3A;
+use App\Models\Form3B;
+use App\Models\Form3C;
+use App\Models\Form3D;
+use App\Models\Form3E;
+use App\Models\Form3L;
 use App\Models\Protocol;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -226,11 +232,29 @@ class PdfExportController extends Controller
     {
         $user = auth()->user();
 
-        $protocol = Form5E::where('user_ID', $user->user_ID)
+        // Get form5e data from database
+        $form5e = Form5E::where('user_ID', $user->user_ID)
             ->with('researchInfo')
-            ->firstOrFail();
+            ->first();
 
-        return Pdf::view('student.forms.form5ePdf', compact('protocol'))
+        if (!$form5e) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get research info
+        $researchInfo = $form5e->researchInfo;
+        
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        // Get co-investigator
+        $coInvestigator = $researchInfo->research_CoInvestigator ?? 'N/A';
+        
+        // Set mcuerb code
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form5ePdf', compact('form5e', 'researchInfo', 'principalInvestigator', 'coInvestigator', 'mcuerbCode'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->inline('FORM-5E.pdf');
@@ -238,38 +262,26 @@ class PdfExportController extends Controller
 
     public function exportForm3C()
     {
-        $protocol = (object)[
-            
-        ];
+        $user = auth()->user();
 
-        return Pdf::view('student.forms.form3cPdf', compact('protocol'))
+        // Get form3c data from database
+        $form3c = Form3C::where('user_ID', $user->user_ID)->first();
+
+        if (!$form3c) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        // Set mcuerb code
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form3cPdf', compact('form3c', 'principalInvestigator', 'mcuerbCode'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->inline('FORM-3C.pdf');
-    }
-
-    public function exportForm3D()
-    {
-        $protocol = (object)[
-            
-        ];
-
-        return Pdf::view('student.forms.form3dPdf', compact('protocol'))
-            ->format('Letter')
-            ->margins(15, 15, 15, 15)
-            ->inline('FORM-3D.pdf');
-    }
-
-    public function exportForm3L()
-    {
-        $protocol = (object)[
-            
-        ];
-
-        return Pdf::view('student.forms.form3lPdf', compact('protocol'))
-            ->format('Letter')
-            ->margins(15, 15, 15, 15)
-            ->inline('FORM-3L.pdf');
     }
 
     public function exportProtocolReviewChecklist(Request $request, $protocolId = null)
@@ -381,5 +393,139 @@ class PdfExportController extends Controller
             ->format('Letter')
             ->margins(15, 15, 15, 15)
             ->download('Form-2I.pdf');
+    }
+    
+    public function exportForm3L()
+    {
+        $user = auth()->user();
+
+        // Get form3l data from database
+        $form3l = Form3L::where('user_ID', $user->user_ID)->first();
+
+        if (!$form3l) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get research info
+        $researchInfo = \App\Models\ResearchInformation::where('user_ID', $user->user_ID)->first();
+        
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        // Set mcuerb code
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form3lPdf', compact('form3l', 'researchInfo', 'principalInvestigator', 'mcuerbCode'))
+            ->format('Letter')
+            ->margins(15, 15, 15, 15)
+            ->inline('FORM-3L.pdf');
+    }
+
+    public function exportForm3A()
+    {
+        $user = auth()->user();
+
+        // Get form3a data from database
+        $form3a = Form3A::where('user_ID', $user->user_ID)->first();
+
+        if (!$form3a) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get research info
+        $researchInfo = \App\Models\ResearchInformation::where('user_ID', $user->user_ID)->first();
+        
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        // Set mcuerb code
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form3aPdf', compact('form3a', 'researchInfo', 'principalInvestigator', 'mcuerbCode'))
+            ->format('Letter')
+            ->margins(15, 15, 15, 15)
+            ->inline('FORM-3A.pdf');
+    }
+    
+    public function exportForm3E()
+    {
+        $user = auth()->user();
+
+        // Get form3e data from database
+        $form3e = Form3E::where('user_ID', $user->user_ID)->first();
+
+        if (!$form3e) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get research info
+        $researchInfo = \App\Models\ResearchInformation::where('user_ID', $user->user_ID)->first();
+        
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        // Set mcuerb code
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form3ePdf', compact('form3e', 'researchInfo', 'principalInvestigator', 'mcuerbCode'))
+            ->format('Letter')
+            ->margins(15, 15, 15, 15)
+            ->inline('FORM-3E.pdf');
+    }
+
+    public function exportForm3B()
+    {
+        $user = auth()->user();
+
+        $form3b = Form3B::where('user_ID', $user->user_ID)->first();
+
+        if (!$form3b) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        $researchInfo = \App\Models\ResearchInformation::where('user_ID', $user->user_ID)->first();
+        
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form3bPdf', compact('form3b', 'researchInfo', 'principalInvestigator', 'mcuerbCode'))
+            ->format('Letter')
+            ->margins(15, 15, 15, 15)
+            ->inline('FORM-3B.pdf');
+    }
+
+    public function exportForm3D()
+    {
+        $user = auth()->user();
+
+        // Get form3d data from database
+        $form3d = Form3D::where('user_ID', $user->user_ID)->first();
+
+        if (!$form3d) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get research info
+        $researchInfo = \App\Models\ResearchInformation::where('user_ID', $user->user_ID)->first();
+        
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        // Get user email
+        $userEmail = $user->user_Email;
+        
+        // Set mcuerb code
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form3dPdf', compact('form3d', 'researchInfo', 'principalInvestigator', 'userEmail', 'mcuerbCode'))
+            ->format('Letter')
+            ->margins(15, 15, 15, 15)
+            ->inline('FORM-3D.pdf');
     }
 }
