@@ -9,7 +9,8 @@ class ApprovedIacuc extends Model
 {
     use HasFactory;
 
-    protected $table = 'tbl_approved_iacuc';
+    // Fix the table name - add the missing 'u'
+    protected $table = 'tbl_approved_iacuc'; // Change this line
     
     protected $primaryKey = 'id';
     
@@ -27,49 +28,31 @@ class ApprovedIacuc extends Model
         'Decision' => 'string'
     ];
 
-    /**
-     * Get the user that owns the approval
-     */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_ID', 'user_ID');
     }
 
-    /**
-     * Get the protocol that was approved
-     */
     public function protocol()
     {
         return $this->belongsTo(Protocol::class, 'Protocol_ID', 'protocol_ID');
     }
 
-    /**
-     * Scope for approved protocols
-     */
     public function scopeApproved($query)
     {
         return $query->where('Decision', 'Approved');
     }
 
-    /**
-     * Scope for rejected protocols
-     */
     public function scopeRejected($query)
     {
         return $query->where('Decision', 'Rejected');
     }
 
-    /**
-     * Check if protocol is approved
-     */
     public function isApproved()
     {
         return $this->Decision === 'Approved';
     }
 
-    /**
-     * Check if protocol is rejected
-     */
     public function isRejected()
     {
         return $this->Decision === 'Rejected';

@@ -57,18 +57,27 @@ class ERBDecisionController extends Controller
 
     public function iacucIndex()
     {
-        // Fetch one record per protocol (latest only) for IACUC
+        // Get all protocol IDs that already have a decision in tbl_approved_iacuc
+        $approvedProtocolIds = ApprovedIacuc::pluck('Protocol_ID')->toArray();
+        
+        \Log::info('Approved IACUC Protocol IDs:', $approvedProtocolIds);
+        
+        // Fetch one record per protocol (latest only) for IACUC - EXCLUDING already approved ones
         $evaluatedProtocols = EvaluatedReviews::with([
             'protocol.researchInformation.user'
         ])
-        ->whereHas('protocol', function($query) {
+        ->whereHas('protocol', function($query) use ($approvedProtocolIds) {
             $query->where('protocol_ID', 'like', 'IACUC-%');
+            
+            // Only exclude if there are approved protocols
+            if (!empty($approvedProtocolIds)) {
+                $query->whereNotIn('protocol_ID', $approvedProtocolIds);
+            }
         })
         ->selectRaw('protocol_id, MAX(updated_at) as latest_review_date')
         ->groupBy('protocol_id')
         ->get()
         ->map(function ($item) {
-            // Get the latest review for each protocol
             $latestReview = EvaluatedReviews::where('protocol_id', $item->protocol_id)
                 ->orderByDesc('updated_at')
                 ->with(['protocol.researchInformation.user'])
@@ -81,7 +90,7 @@ class ERBDecisionController extends Controller
                 'protocol_ID'      => $latestReview->protocol->protocol_ID ?? 'N/A',
                 'research_title'   => $researchInfo->research_title ?? 'N/A',
                 'user_Fname'       => $user->user_Fname ?? 'N/A',
-                'user_Lname'       => $user->user_Lname ?? '', // Added last name
+                'user_Lname'       => $user->user_Lname ?? '',
                 'co_investigator'  => $researchInfo->research_CoInvestigator ?? 'N/A',
                 'status'           => $latestReview->status ?? 'Pending',
                 'date_submitted'   => $latestReview->created_at,
@@ -95,6 +104,8 @@ class ERBDecisionController extends Controller
     public function iacucStoreDecision(Request $request)
     {
         try {
+            \Log::info('IACUC Decision Request received:', $request->all());
+            
             $request->validate([
                 'protocol_id' => 'required|string',
                 'decision' => 'required|string|in:Approved,Resubmission'
@@ -106,70 +117,66 @@ class ERBDecisionController extends Controller
             // Verify the protocol exists and is IACUC
             $protocol = Protocol::where('protocol_ID', $protocolId)
                 ->where('protocol_ID', 'like', 'IACUC-%')
-                ->firstOrFail();
+                ->first();
+
+            if (!$protocol) {
+                \Log::error('Protocol not found: ' . $protocolId);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Protocol not found: ' . $protocolId
+                ], 404);
+            }
 
             $userId = $protocol->user_ID;
 
-            // Map decision to database values
-            $dbDecision = $decision === 'Approved' ? 'Approved' : 'Rejected';
+            // Make sure the decision matches exactly what the enum expects
+            // Allowed values: 'Approved' or 'Resubmission'
+            $dbDecision = $decision; // Should already be 'Approved' or 'Resubmission'
 
-            // Create or update the decision
-            ApprovedIacuc::updateOrCreate(
-                [
-                    'Protocol_ID' => $protocolId
-                ],
-                [
+            // Check if record already exists
+            $existing = ApprovedIacuc::where('Protocol_ID', $protocolId)->first();
+            
+            if ($existing) {
+                \Log::info('Updating existing record for protocol: ' . $protocolId);
+                $existing->update([
                     'user_ID' => $userId,
                     'Decision' => $dbDecision
-                ]
-            );
-
-            // Update protocol status if needed
-            $protocol->update([
-                'status' => $dbDecision === 'Approved' ? 'Approved' : 'Rejected'
-            ]);
-
-            // ✅ PROCESS MONITORING: IACUC Admin Decides Protocol
-            ProcessMonitoring::create([
-                'process_code' => 'IAC9',
-                'process_description' => 'Decide protocol: ' . $protocolId . ' (' . $decision . ')',
-                'user_type' => 'admin_iacuc',
-                'direction' => 'out',
-                'timestamp' => now(),
-                'action_by_user_id' => auth()->user()->user_ID,
-                'action_by_user_type' => 'admin_iacuc',
-                'affected_user_id' => $userId,
-                'affected_user_type' => 'pi',
-            ]);
-
-            // ✅ PROCESS MONITORING: PI Receives Decision
-            ProcessMonitoring::create([
-                'process_code' => 'PI1',
-                'process_description' => 'Approval IACUC - Protocol decision: ' . $decision . ' for ' . $protocolId,
-                'user_type' => 'pi',
-                'direction' => 'in',
-                'timestamp' => now(),
-                'action_by_user_id' => auth()->user()->user_ID,
-                'action_by_user_type' => 'admin_iacuc',
-                'affected_user_id' => $userId,
-                'affected_user_type' => 'pi',
-            ]);
-
-            // Notify the PI (System notification only - no email)
-            $piUser = User::find($userId);
-            if ($piUser) {
-                // Send system notification only
-                $piUser->notify(new ProtocolDecision($protocolId, $decision));
+                ]);
+            } else {
+                \Log::info('Creating new record for protocol: ' . $protocolId);
+                ApprovedIacuc::create([
+                    'Protocol_ID' => $protocolId,
+                    'user_ID' => $userId,
+                    'Decision' => $dbDecision
+                ]);
             }
+
+            \Log::info('Successfully saved decision for protocol: ' . $protocolId);
+
+            // Update protocol status
+            $protocol->update([
+                'status' => $dbDecision === 'Approved' ? 'Approved' : 'Resubmission'
+            ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Protocol ' . $protocolId . ' has been ' . strtolower($decision) . ' successfully!'
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in IACUC Decision: ' . json_encode($e->errors()));
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error: ' . json_encode($e->errors())
+            ], 422);
+        } catch (\Illuminate\Database\QueryException $e) {
+            \Log::error('Database error in IACUC Decision: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ], 500);
         } catch (\Exception $e) {
             \Log::error('IACUC Decision Error: ' . $e->getMessage());
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to save decision: ' . $e->getMessage()
