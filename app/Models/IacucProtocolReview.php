@@ -40,5 +40,9 @@ class IacucProtocolReview extends Model
         'appropriate_method_comment',
         'summary_comments',
         'personnel_names',
+        'animal_species',
+        'animal_source',
+        'number_cage',
+        'use_anesthetics',
     ];
 }

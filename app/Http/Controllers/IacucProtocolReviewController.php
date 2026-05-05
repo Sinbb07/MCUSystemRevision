@@ -84,6 +84,11 @@ class IacucProtocolReviewController extends Controller
                 'appropriate_method_comment' => $request->name_qualification,
                 'summary_comments' => $request->non_animal_model,
                 'personnel_names' => $request->personnel_names,
+                // Add these missing fields
+                'animal_species' => $request->animal_species,
+                'animal_source' => $request->animal_source,
+                'number_cage' => $request->number_cage,
+                'use_anesthetics' => $request->use_anesthetics,
             ]
         );
 
