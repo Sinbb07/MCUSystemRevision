@@ -38,6 +38,7 @@ use App\Http\Controllers\Form3DController;
 use App\Http\Controllers\Form3EController;
 use App\Http\Controllers\Form3CController;
 use App\Http\Controllers\Form3LController;
+use App\Http\Controllers\IacucProtocolReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -169,7 +170,7 @@ Route::middleware(['auth', 'access:IACUC Admin', 'no-cache', 'prevent-back'])->p
 
     // Monitoring & Settings
     Route::get('/monitoring-process', [ProcessMonitoringController::class, 'iacucIndex'])->name('iacuc.monitoring-process');
-    Route::get('/tickets', function () { return view('iacuc.tickets'); })->name('iacuc.tickets');
+    // Route::get('/tickets', function () { return view('iacuc.tickets'); })->name('iacuc.tickets');
     Route::get('/settings', function () { return view('iacuc.settings'); })->name('iacuc.settings');
 
         // Support & Tickets for IACUC - Use the iacuc methods
@@ -186,6 +187,8 @@ Route::middleware(['auth', 'access:IACUC Admin', 'no-cache', 'prevent-back'])->p
         auth()->user()->unreadNotifications->markAsRead();
         return back()->with('success', 'All notifications marked as read.');
     })->name('iacuc.notification.markAllRead');
+
+
 });
 
 /*
@@ -386,7 +389,8 @@ Route::middleware(['auth', 'access:Principal Investigator', 'no-cache', 'prevent
         Route::post('/form3l/store', [Form3LController::class, 'store'])->name('form3l.store');
         Route::get('/export-form3l', [PdfExportController::class, 'exportForm3L'])->name('export.form3l');
 
-        Route::get('/protocol-review', function () { return view('student.forms.protocol-review'); })->name('student.protocol-review');
+        Route::get('/protocol-review', [IacucProtocolReviewController::class, 'edit'])->name('student.protocol-review');
+        Route::post('/protocol-review/store', [IacucProtocolReviewController::class, 'store'])->name('protocol-review.store');
         Route::get('/export-protocol-review-form', [PdfExportController::class, 'exportProtocolReview'])->name('export.protocol-review-form');
     });
 

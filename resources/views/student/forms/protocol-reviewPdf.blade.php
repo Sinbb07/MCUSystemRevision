@@ -19,10 +19,10 @@
         <div class="flex text-sm font-bold">
             <div>
                 PROTOCOL NO.
-                <p class="w-56 border-r">{{-- protocol no. --}}</p>
+                <p class="w-56 border-r">{{ $protocol->protocol_ID ?? 'N/A' }}</p>
             </div>
             <div>
-                Date received:
+                Date received: {{ now()->format('m/d/Y') }}
             </div>
         </div>
 
@@ -74,10 +74,8 @@
                         PROCEDURE(S) or TITLE OF RESEARCH STUDY:
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-9">
-                        {{-- procedure --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-9">{{ $formData->study_title ?? '' }}</p>
                 </div>
             </div>
 
@@ -91,10 +89,8 @@
                         PURPOSE/OBJECTIVE/S:
                     </p>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-9">
-                        {{-- purpose/objectives --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-9">{{ $formData->scientific_merit_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -108,10 +104,8 @@
                         DURATION or TIMEFRAME:
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-9">
-                        {{-- duration timeframe --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-9">{{ $formData->overview_section_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -136,9 +130,7 @@
                     <p class="ml-2">
                         Name:
                     </p>
-                    <p class="mt-0.5 ml-2 text-sm">
-                        {{-- name --}}aweaweawewe awe aweaw eaweaw eaweaw eaweawe aweaw eaw eaw ea we aw ea we
-                    </p>
+                    <p class="mt-0.5 ml-2 text-sm">{{ $formData->pi_person ?? $principalInvestigator ?? '' }}</p>
                 </div>
             </div>
 
@@ -155,14 +147,12 @@
                     </p>
                     </p>
                 </div>
-                <div class="pl-12 h-10 text-sm">
-                    <p>
-                        {{-- qualification --}}
-                    </p>
+                <div class="pl-12 h-auto text-sm p-2">
+                    <p>{{ $formData->training_experience_comment ?? '' }}</p>
                 </div>
             </div>
 
-            <!-- V. BACKGROUND AND SIGNIFICANCE OF THE PROCDURE OR RESEARCH -->
+            <!-- V. BACKGROUND AND SIGNIFICANCE OF THE PROCEDURE OR RESEARCH -->
             <div class="border-t">
                 <div class="mx-1 flex">
                     <p class="font-bold">
@@ -180,10 +170,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="h-32 text-sm">
-                    <p class="pl-9">
-                        {{-- background and significance of the procedure or research --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-9">{{ $formData->rational_justification_comment ?? '' }}</p>
                 </div>
             </div>
         </div>
@@ -225,10 +213,8 @@
                         (species)
                     </p>
                 </div>
-                <div class="h-6 text-sm">
-                    <p class="pl-12">
-                        {{-- type of animal --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->animal_species ?? '' }}</p>
                 </div>
             </div>
 
@@ -242,10 +228,8 @@
                         Source of animals:
                     </p>
                 </div>
-                <div class="h-8 text-sm">
-                    <p class="pl-12">
-                        {{-- source of animals --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->animal_source ?? '' }}</p>
                 </div>
             </div>
 
@@ -259,10 +243,8 @@
                         Reason/basis for selecting the animal species:
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-12">
-                        {{-- reason/basis for electing the animal species --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->adequate_justification_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -279,10 +261,8 @@
                         (justify the number of animals):
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-12">
-                        {{-- sex and number of animals --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->unnecessary_duplication_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -296,10 +276,8 @@
                         Quarantine and acclimation or conditioning process:
                     </p>
                 </div>
-                <div class="h-8 text-sm">
-                    <p class="pl-12">
-                        {{-- quarantine and acclimation or conditioning process --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->endpoint_duration_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -328,10 +306,8 @@
                         (if applicable):
                     </p>
                 </div>
-                <div class="h-6 text-sm">
-                    <p class="pl-14">
-                        {{-- cage type and beddings --}}aweawewe
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-14">{{ $formData->pain_category_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -345,10 +321,8 @@
                         Number of animal per cage
                     </p>
                 </div>
-                <div class="h-6 text-sm">
-                    <p class="pl-14">
-                        {{-- number of animal per cage --}}aweawewe
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-14">{{ $formData->number_cage ?? '' }}</p>
                 </div>
             </div>
 
@@ -362,14 +336,12 @@
                         Cage cleaning/disinfection method and frequency
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-14">
-                        {{-- cage cleaning/disinfection method and frequency --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-14">{{ $formData->alternative_housing_comment ?? '' }}</p>
                 </div>
             </div>
 
-            <!-- 4. ROOM TEMPERATURE, HUMIDITY, VENTILATION, AND LIGHTING  -->
+            <!-- 4. ROOM TEMPERATURE, HUMIDITY, VENTILATION, AND LIGHTING -->
             <div class="border-t">
                 <div class="mx-1 ml-9 flex">
                     <p class="font-bold">
@@ -379,10 +351,8 @@
                         Room temperature, humidity, ventilation, and lighting
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-14">
-                        {{-- room temperature, humidity, ventilation, and lighting --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-14">{{ $formData->hazardous_material_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -399,10 +369,8 @@
                         (include amount and frequency):
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-14">
-                        {{-- animal and feeding and watering method --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-14">{{ $formData->multiple_survival_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -428,10 +396,8 @@
                         General description of animal manipulation methods
                     </p>
                 </div>
-                <div class="h-24 text-sm">
-                    <p class="pl-12">
-                        {{-- general description of animal manipulation methods --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->experimental_procedures_comment ?? '' }}</p>
                 </div>
             </div>
         </div>
@@ -468,10 +434,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-12">
-                        {{-- quarantine and acclimation or conditioning process --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->pain_relief_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -490,10 +454,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="h-24 text-sm">
-                    <p class="pl-12">
-                        {{-- specimen or biological agent --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->ill_debilitated_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -512,10 +474,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="h-24 text-sm">
-                    <p class="pl-12">
-                        {{-- animal examination process and frequency of examinations --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->complications_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -534,10 +494,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="h-24 text-sm">
-                    <p class="pl-12">
-                        {{-- use of anesthetics --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->use_anesthetics ?? '' }}</p>
                 </div>
             </div>
 
@@ -568,10 +526,8 @@
                         Where will surgery be performed?
                     </p>
                 </div>
-                <div class="h-12 text-sm">
-                    <p class="pl-15">
-                        {{-- where will surgery be performed --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-15">{{ $formData->veterinary_complications_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -585,10 +541,8 @@
                         Description of supportive care and monitoring procedures during and after surgery
                     </p>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-15">
-                        {{-- description of supportive care and monitoring procedures during and after surgery --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-15">{{ $formData->proposed_anesthesia_comment ?? '' }}</p>
                 </div>
             </div>
         </div>
@@ -599,7 +553,6 @@
 
     <div class="mt-2 mx-10">
         <div class="mt-3 border">
-            <!-- 6. SURGICAL PROCEDURE -->
             <div>
                 <div class="mx-1 ml-9 flex">
                     <p class="font-bold">
@@ -626,10 +579,8 @@
                         Description of measures for possible post-surgical complications
                     </p>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-15">
-                        {{-- description of measures for possible post-surgical complications --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-15">{{ $formData->post_procedural_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -643,10 +594,8 @@
                         Name(s) of surgeon(s), their qualifications, and relevant experiences
                     </p>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-15">
-                        {{-- description of measures for possible post surgical complications --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-15">{{ $formData->appropriate_method_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -660,10 +609,8 @@
                         If euthanasia of animals will be done, indicate/describe the method selected
                     </p>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-12">
-                        {{-- if euthanasia of animals will be done, indicate/describe the method selected --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-12">{{ $formData->euthanasia_method_comment ?? '' }}</p>
                 </div>
             </div>
 
@@ -678,14 +625,12 @@
                         for not using it
                     </p>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-9">
-                        {{-- non-animal model applicable for the procedure/study --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-9">{{ $formData->summary_comments ?? '' }}</p>
                 </div>
             </div>
 
-            <!-- I. INDICATE THE NAMES AND QUALIFICATION OF ALL PERSONEL WHO WILL BE RESPONSIBLE FOR CONDUCTING THE PROCEDURES -->
+            <!-- I. INDICATE THE NAMES AND QUALIFICATION OF ALL PERSONNEL -->
             <div class="border-t">
                 <div class="mx-1 ml-6 flex">
                     <p class="font-bold">
@@ -693,7 +638,7 @@
                     </p>
                     <div class="block my-0">
                         <p class="ml-2">
-                            Indicate the names and qualification of all personel who will be responsible for conducting
+                            Indicate the names and qualification of all personnel who will be responsible for conducting
                             the procedures
                         </p>
                         <p class="ml-2 italic text-sm">
@@ -701,10 +646,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-9">
-                        {{-- names and qualification of all personel --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-9">{{ $formData->personnel_names ?? '' }}</p>
                 </div>
             </div>
 
@@ -720,10 +663,8 @@
                         carcass disposal
                     </p>
                 </div>
-                <div class="h-16 text-sm">
-                    <p class="pl-9">
-                        {{-- post-experimental procedures --}}
-                    </p>
+                <div class="h-auto text-sm p-2">
+                    <p class="pl-9">{{ $formData->post_experimental ?? '' }}</p>
                 </div>
             </div>
         </div>
@@ -748,7 +689,7 @@
                         I accept responsibility for assuring that the procedures/study will be conducted in accordance
                         with the approved protocol. <br><br>
 
-                        I assure that all personel who will use this protocol and work with animals have received
+                        I assure that all personnel who will use this protocol and work with animals have received
                         appropriate training/instructions in procedural and handling techniques, and on animal welfare
                         considerations. <br><br>
 
@@ -761,16 +702,14 @@
                     <div class="mt-10 pl-9">
                         <div class="flex">
                             <div>
-                                <p class="border-b-2">
-                                    {{-- signature --}}
-                                </p>
+                                <p class="border-b-2">{{ $formData->pi_person ?? $principalInvestigator ?? '' }}</p>
                                 <p class="flex items-center">
                                     Responsible Person Name & Signature
                                 </p>
                             </div>
                             <div class="ml-24 flex">
                                 <p>Date</p>
-                                <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-4 ml-2 w-28"></p>
+                                <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-4 ml-2 w-28">{{ now()->format('m/d/Y') }}</p>
                             </div>
                         </div>
                     </div>
@@ -789,16 +728,14 @@
                     <div class="mt-10 pl-9">
                         <div class="flex">
                             <div>
-                                <p class="border-b-2">
-                                    {{-- signature --}}
-                                </p>
+                                <p class="border-b-2">{{ $formData->adviser ?? '' }}</p>
                                 <p class="flex items-center">
                                     Faculty Advisor Name & Signature
                                 </p>
                             </div>
                             <div class="ml-28 flex">
                                 <p>Date</p>
-                                <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-4 ml-2 w-28"></p>
+                                <p class="border border-t-0 border-l-0 border-r-0 border-b-2 h-4 ml-2 w-28">{{ now()->format('m/d/Y') }}</p>
                             </div>
                         </div>
                     </div>
@@ -809,11 +746,9 @@
                     <div class="mt-8 pl-9 pb-4">
                         <div class="flex">
                             <div>
-                                <p class="border-b-2">
-                                    {{-- signature --}}
-                                </p>
+                                <p class="border-b-2"></p>
                                 <p class="flex items-center">
-                                    Faculty Advisor Name & Signature
+                                    Research Coordinator Name & Signature
                                 </p>
                             </div>
                             <div class="ml-28 flex">

@@ -1,7 +1,8 @@
 @section('title', 'Protocol Review Form')
 <x-iacuc-reviewer>
     <main class="xl:ml-[335px] max-xl:ml-auto p-4 max-md:p-2">
-        <form action="" method="POST" class="block">
+        <form action="{{ route('protocol-review.store') }}" method="POST" class="block">
+            @csrf
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <p class="text-right mt-3 mr-3 max-lg:text-sm max-md:text-sm max-sm:text-xs">PROTOCOL REVIEW FORM</p>
                 <h1
@@ -24,8 +25,8 @@
                                 I. PROCEDURE(S) or TITLE OF RESEARCH STUDY
                             </span>
                         </label>
-                        <textarea name="procedure_title_study" id=""
-                            class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="procedure_title_study"
+                            class="mt-1 w-full resize-none max-sm:text-sm">{{ old('procedure_title_study', $formData->study_title ?? '') }}</textarea>
                     </div>
                     <div class="pt-3">
                         <label>
@@ -33,7 +34,8 @@
                                 II. PURPOSE/OBJECTIVE/S
                             </span>
                         </label>
-                        <textarea name="objectives" id="" class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="objectives"
+                            class="mt-1 w-full resize-none max-sm:text-sm">{{ old('objectives', $formData->scientific_merit_comment ?? '') }}</textarea>
                     </div>
                     <div class="pt-3">
                         <label>
@@ -41,8 +43,8 @@
                                 III. DURATION or TIMEFRAME
                             </span>
                         </label>
-                        <textarea name="duration_timeframe" id=""
-                            class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="duration_timeframe"
+                            class="mt-1 w-full resize-none max-sm:text-sm">{{ old('duration_timeframe', $formData->overview_section_comment ?? '') }}</textarea>
                     </div>
                     <div class="pt-3">
                         <label>
@@ -58,7 +60,7 @@
                                         class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                                         NAME
                                     </label>
-                                    <input type="text" name="pi_name"
+                                    <input type="text" name="pi_name" value="{{ old('pi_name', $formData->pi_person ?? $principalInvestigator ?? '') }}"
                                         class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                                         required>
                                 </div>
@@ -67,7 +69,7 @@
                                         class="font-semibold text-base max-2xl:text-base max-lg:text-sm max-sm:text-[13px]">
                                         QUALIFICATION
                                     </label>
-                                    <input type="text" name="qualification"
+                                    <input type="text" name="qualification" value="{{ old('qualification', $formData->training_experience_comment ?? '') }}"
                                         class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]"
                                         required>
                                 </div>
@@ -86,7 +88,8 @@
                                 </span>
                             </span>
                         </label>
-                        <textarea name="significance" id="" class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                        <textarea name="significance"
+                            class="mt-1 w-full resize-none max-sm:text-sm">{{ old('significance', $formData->rational_justification_comment ?? '') }}</textarea>
                     </div>
                     <div class="pt-3">
                         <label>
@@ -107,7 +110,7 @@
                                         A. Type of Animal to be used (species)
                                     </span>
                                 </label>
-                                <input type="text" name="animal_species"
+                                <input type="text" name="animal_species" value="{{ old('animal_species', '') }}"
                                     class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                             </div>
                             <div class="pt-2">
@@ -116,7 +119,7 @@
                                         B. Source of Animals
                                     </span>
                                 </label>
-                                <input type="text" name="animal_source"
+                                <input type="text" name="animal_source" value="{{ old('animal_source', '') }}"
                                     class="mt-1 rounded border border-darkgray w-full text-[14px] max-sm:text-[13px] h-[35px] max-lg:h-[30px]">
                             </div>
                             <div class="pt-2">
@@ -125,8 +128,8 @@
                                         C. Reason/basis for selecting the animal species
                                     </span>
                                 </label>
-                                <textarea name="reason_basis" id=""
-                                    class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                <textarea name="reason_basis"
+                                    class="mt-1 w-full resize-none max-sm:text-sm">{{ old('reason_basis', $formData->adequate_justification_comment ?? '') }}</textarea>
                             </div>
                             <div class="pt-2">
                                 <label class="max-sm:py-1 flex items-start space-x-2 max-sm:text-sm">
@@ -135,8 +138,8 @@
                                             of animals)</i>
                                     </span>
                                 </label>
-                                <textarea name="number_animals" id=""
-                                    class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                <textarea name="number_animals"
+                                    class="mt-1 w-full resize-none max-sm:text-sm">{{ old('number_animals', $formData->unnecessary_duplication_comment ?? '') }}</textarea>
                             </div>
                             <div class="pt-2">
                                 <label class="max-sm:py-1 flex items-start space-x-2 max-sm:text-sm">
@@ -144,8 +147,8 @@
                                         E. Quarantine and acclimation or conditioning process
                                     </span>
                                 </label>
-                                <textarea name="conditioning_process" id=""
-                                    class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                <textarea name="conditioning_process"
+                                    class="mt-1 w-full resize-none max-sm:text-sm">{{ old('conditioning_process', $formData->endpoint_duration_comment ?? '') }}</textarea>
                             </div>
                             <div class="pt-2">
                                 <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm/6">
@@ -160,8 +163,8 @@
                                                 applicable)</i>
                                         </span>
                                     </label>
-                                    <textarea name="cage_type" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="cage_type"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('cage_type', $formData->pain_category_comment ?? '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -169,8 +172,8 @@
                                             2. Number of animals per cage
                                         </span>
                                     </label>
-                                    <textarea name="number_cage" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="number_cage"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('number_cage', '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -178,8 +181,8 @@
                                             3. Cage cleaning/disinfection method and frequency
                                         </span>
                                     </label>
-                                    <textarea name="cleaning_method" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="cleaning_method"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('cleaning_method', $formData->alternative_housing_comment ?? '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -187,8 +190,8 @@
                                             4. Room temperature, humidity, ventilation and lighting
                                         </span>
                                     </label>
-                                    <textarea name="room_temp" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="room_temp"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('room_temp', $formData->hazardous_material_comment ?? '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -198,8 +201,8 @@
                                                 frequency)</i>
                                         </span>
                                     </label>
-                                    <textarea name="animal_diet" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="animal_diet"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('animal_diet', $formData->multiple_survival_comment ?? '') }}</textarea>
                                 </div>
                             </div>
                             <div class="pt-2">
@@ -216,8 +219,8 @@
                                                 conditioning)</i>
                                         </span>
                                     </label>
-                                    <textarea name="method_description" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="method_description"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('method_description', $formData->experimental_procedures_comment ?? '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -227,8 +230,8 @@
                                                 effects)</i>
                                         </span>
                                     </label>
-                                    <textarea name="dosing_method" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="dosing_method"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('dosing_method', $formData->pain_relief_comment ?? '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -238,8 +241,8 @@
                                                 route, and method of restraints)</i>
                                         </span>
                                     </label>
-                                    <textarea name="collection_method" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="collection_method"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('collection_method', $formData->ill_debilitated_comment ?? '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -249,8 +252,8 @@
                                                 method)</i>
                                         </span>
                                     </label>
-                                    <textarea name="exam_process" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="exam_process"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('exam_process', $formData->complications_comment ?? '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -259,8 +262,8 @@
                                                 drug, dosage, frequency and route of administration)</i>
                                         </span>
                                     </label>
-                                    <textarea name="collection_method" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="use_anesthetics"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('use_anesthetics', '') }}</textarea>
                                 </div>
                                 <div class="pt-2 pl-2">
                                     <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -276,19 +279,18 @@
                                                     a. Where will surgery be performed?
                                                 </span>
                                             </label>
-                                            <textarea name="surgery_location" id=""
-                                                class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                            <textarea name="surgery_location"
+                                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('surgery_location', $formData->veterinary_complications_comment ?? '') }}</textarea>
                                         </div>
                                         <div class="pt-2 pl-2">
                                             <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
                                                 <span>
                                                     b. Description of supportive care and monitoring procedures during
-                                                    and
-                                                    after surgery
+                                                    and after surgery
                                                 </span>
                                             </label>
-                                            <textarea name="during_after" id=""
-                                                class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                            <textarea name="during_after"
+                                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('during_after', $formData->proposed_anesthesia_comment ?? '') }}</textarea>
                                         </div>
                                         <div class="pt-2 pl-2">
                                             <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -296,8 +298,8 @@
                                                     c. Description of measures for possible post-surgical complications
                                                 </span>
                                             </label>
-                                            <textarea name="measure_description" id=""
-                                                class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                            <textarea name="measure_description"
+                                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('measure_description', $formData->post_procedural_comment ?? '') }}</textarea>
                                         </div>
                                         <div class="pt-2 pl-2">
                                             <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
@@ -306,8 +308,8 @@
                                                     experiences
                                                 </span>
                                             </label>
-                                            <textarea name="name_qualification" id=""
-                                                class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                            <textarea name="name_qualification"
+                                                class="mt-1 w-full resize-none max-sm:text-sm">{{ old('name_qualification', $formData->appropriate_method_comment ?? '') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -318,8 +320,8 @@
                                             selected
                                         </span>
                                     </label>
-                                    <textarea name="select_method" id=""
-                                        class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                    <textarea name="select_method"
+                                        class="mt-1 w-full resize-none max-sm:text-sm">{{ old('select_method', $formData->euthanasia_method_comment ?? '') }}</textarea>
                                 </div>
                             </div>
                             <div class="pt-2">
@@ -329,31 +331,34 @@
                                         provide the reason for not using it
                                     </span>
                                 </label>
-                                <textarea name="non_animal_model" id=""
-                                    class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                <textarea name="non_animal_model"
+                                    class="mt-1 w-full resize-none max-sm:text-sm">{{ old('non_animal_model', $formData->summary_comments ?? '') }}</textarea>
                             </div>
                             <div class="pt-2">
                                 <label class="max-sm:py-1 flex-items-start space-x-2 max-sm:text-sm">
                                     <span>
-                                        I. Indicate the names and qualification of all personel who will be responsible
-                                        for conducting the procedures
+                                        I. Indicate the names and qualification of all personnel who will be responsible for conducting the procedures
                                     </span>
                                 </label>
-                                <textarea name="non_animal_model" id=""
-                                    class="mt-1 w-full resize-none max-sm:text-sm"></textarea>
+                                <textarea name="personnel_names"
+                                    class="mt-1 w-full resize-none max-sm:text-sm">{{ old('personnel_names', $formData->personnel_names ?? '') }}</textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            @php
+                $hasSavedForm = !empty($formData); 
+            @endphp
             <!-- BUTTONS -->
             <div class="mt-3 p-1 max-w-7xl w-full bg-lightgray rounded mx-auto shadow-md">
                 <div class="p-3 flex items-center justify-center space-x-2">
-                    <button type="button"
+                    <button type="submit"
                         class="bg-primary text-secondary hover:bg-secondary hover:text-primary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">SAVE</button>
-                    <a href="">
-                        <button type="submit"
-                            class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm">EXPORT
+                    <a href="{{ route('export.protocol-review-form') }}" target="_blank">
+                        <button type="button"
+                            class="bg-secondary text-primary hover:bg-primary hover:text-secondary duration-200 tracking-widest p-4 max-sm:p-3 rounded max-sm:text-sm"
+                            @if(!$hasSavedForm) disabled style="opacity:0.5; cursor:not-allowed;" @endif>EXPORT
                             TO PDF</button>
                     </a>
                 </div>

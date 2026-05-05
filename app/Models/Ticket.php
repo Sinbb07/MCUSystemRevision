@@ -19,9 +19,13 @@ class Ticket extends Model
         'Ticket_Description',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'User_ID', 'user_ID');
     }
 }
-

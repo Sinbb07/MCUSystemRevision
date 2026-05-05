@@ -336,14 +336,29 @@ class PdfExportController extends Controller
 
     public function exportProtocolReview()
     {
-        $protocol = (object)[
-            
-        ];
+        $user = auth()->user();
 
-        return Pdf::view('iacuc-reviewer.forms.protocol-reviewPdf', compact('protocol'))
+        // Get form data from database
+        $formData = \App\Models\IacucProtocolReview::where('reviewer_ID', $user->user_ID)->first();
+
+        if (!$formData) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get research info
+        $researchInfo = \App\Models\ResearchInformation::where('user_ID', $user->user_ID)->first();
+        
+        // Get protocol data for this user
+        $protocol = \App\Models\Protocol::where('user_ID', $user->user_ID)->first();
+        
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+
+        return Pdf::view('student.forms.protocol-reviewPdf', compact('formData', 'researchInfo', 'principalInvestigator', 'protocol'))
             ->format('Letter')
             ->margins(15, 15, 15, 15)
-            ->inline('IACUC-Protocol-Review-Form.pdf');
+            ->inline('IACUC-PROTOCOL-REVIEW-FORM.pdf');
     }
 
     public function exportForm2I($protocolId = null)

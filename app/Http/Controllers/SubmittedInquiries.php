@@ -72,10 +72,12 @@ class SubmittedInquiries extends Controller
                 $classificationType = 'IACUC';
                 $errorMessage = 'You are not authorized to view this ticket. This user is not classified for IACUC review.';
                 $viewPath = 'iacuc.tickets';
+                $redirectRoute = 'iacuc.submitted-tickets';
             } else {
                 $classificationType = 'ERB';
                 $errorMessage = 'You are not authorized to view this ticket. This user is not classified for ERB review.';
                 $viewPath = 'erb.tickets';
+                $redirectRoute = 'erb.submitted-tickets';
             }
             
             // Get the ticket with user and research information
@@ -97,7 +99,8 @@ class SubmittedInquiries extends Controller
             
         } catch (\Exception $e) {
             // If ticket not found or any other error, redirect back with error message
-            return redirect()->route($classificationType === 'IACUC' ? 'iacuc.submitted-tickets' : 'erb.submitted-tickets')
+            $redirectRoute = str_contains(request()->route()->getPrefix(), 'iacuc') ? 'iacuc.submitted-tickets' : 'erb.submitted-tickets';
+            return redirect()->route($redirectRoute)
                 ->with('error', 'Ticket not found or you do not have permission to view it.');
         }
     }
