@@ -79,7 +79,6 @@
             </div>
         </div>
 
-
         <table id="myTable" class="display overflow-w-scroll border-collapse w-full">
             <!-- Table header -->
             <thead class="bg-primary text-white text-lg/7 max-lg:text-base/7">
@@ -98,7 +97,7 @@
             <tbody class="text-base/7 max-lg:text-sm/6">
                 @forelse($evaluatedProtocols as $review)
                     <tr data-submitted="{{ $review->date_submitted }}" data-review="{{ $review->review_date }}">
-                        <!-- Protocol ID with checkbox (moved to first column) -->
+                        <!-- Protocol ID with checkbox -->
                         <td>
                             <input type="checkbox" class="protocol-checkbox w-[14px] h-[14px] mb-1"
                                 value="{{ $review->protocol_ID }}" data-title="{{ $review->research_title }}">
@@ -176,6 +175,7 @@
         </div>
     </main>
 </x-erb-layout>
+
 <script>
     const fromDate = document.getElementById('fromDate');
     const toDate = document.getElementById('toDate');
@@ -220,35 +220,35 @@
         table.draw();
     }
 
-    // ✅ Keep your checkbox logic (only one can be selected)
+    // ✅ Multiple checkbox selection - store all selected protocols
     const protocolCheckboxes = document.querySelectorAll(".protocol-checkbox");
     const selectedProtocolsList = document.getElementById("selectedProtocols");
 
+    function updateSelectedProtocolsList() {
+        selectedProtocolsList.innerHTML = "";
+        const checkedBoxes = document.querySelectorAll(".protocol-checkbox:checked");
+        
+        checkedBoxes.forEach(checkbox => {
+            const li = document.createElement("li");
+            li.textContent = `Protocol ID: ${checkbox.value} — ${checkbox.dataset.title}`;
+            li.setAttribute("data-protocol-id", checkbox.value);
+            selectedProtocolsList.appendChild(li);
+        });
+    }
+
     protocolCheckboxes.forEach(checkbox => {
         checkbox.addEventListener("change", () => {
-            // Allow only one protocol selection at a time
-            protocolCheckboxes.forEach(cb => {
-                if (cb !== checkbox) cb.checked = false;
-            });
-
-            selectedProtocolsList.innerHTML = "";
-
-            if (checkbox.checked) {
-                const li = document.createElement("li");
-                li.textContent = `Protocol ID: ${checkbox.value} — ${checkbox.dataset.title}`;
-                li.setAttribute("data-protocol-id", checkbox.value);
-                selectedProtocolsList.appendChild(li);
-            }
+            updateSelectedProtocolsList();
         });
     });
 
-    // ✅ Handle decision submission
+    // ✅ Handle decision submission for MULTIPLE protocols
     document.getElementById("submitBtn").addEventListener("click", function () {
         const selectedRadio = document.querySelector('input[name="decision"]:checked');
-        const selectedProtocol = document.querySelector(".protocol-checkbox:checked");
+        const selectedProtocols = document.querySelectorAll(".protocol-checkbox:checked");
 
-        if (!selectedProtocol) {
-            alert("⚠️ Please select a protocol first.");
+        if (selectedProtocols.length === 0) {
+            alert("⚠️ Please select at least one protocol.");
             return;
         }
 
@@ -258,34 +258,62 @@
         }
 
         const decision = selectedRadio.value;
-        const protocolID = selectedProtocol.value;
+        
+        // Process each selected protocol
+        let processedCount = 0;
+        let totalCount = selectedProtocols.length;
+        
+        selectedProtocols.forEach(selectedProtocol => {
+            const protocolID = selectedProtocol.value;
+            const row = selectedProtocol.closest("tr");
 
-        fetch("{{ route('erb.pending-reviews.store') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                protocol_id: protocolID,
-                decision: decision
-            }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("✅ " + data.message);
-                    selectedProtocol.closest("tr").classList.add("bg-green-100");
-                    selectedProtocol.checked = false;
-                    document.querySelector('input[name="decision"]:checked').checked = false;
-                    selectedProtocolsList.innerHTML = '';
-                } else {
-                    alert("❌ " + (data.message || "An error occurred."));
-                }
+            fetch("{{ route('erb.pending-reviews.store') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    protocol_id: protocolID,
+                    decision: decision
+                }),
             })
-            .catch(error => {
-                console.error(error);
-                alert("❌ Unexpected error occurred.");
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        processedCount++;
+                        
+                        // Remove the row from the table
+                        if (row) {
+                            const table = $('#myTable').DataTable();
+                            table.row(row).remove().draw(false);
+                        }
+                        
+                        // Check if all are processed
+                        if (processedCount === totalCount) {
+                            alert("✅ " + processedCount + " protocol(s) have been " + decision.toLowerCase() + " successfully!");
+                            
+                            // Clear selections
+                            document.querySelectorAll(".protocol-checkbox:checked").forEach(cb => {
+                                cb.checked = false;
+                            });
+                            document.querySelector('input[name="decision"]:checked').checked = false;
+                            selectedProtocolsList.innerHTML = '';
+                            
+                            // If no rows left, refresh page to show empty state
+                            const remainingRows = $('#myTable tbody tr').length;
+                            if (remainingRows === 0) {
+                                location.reload();
+                            }
+                        }
+                    } else {
+                        alert("❌ Failed for protocol " + protocolID + ": " + (data.message || "An error occurred."));
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("❌ Unexpected error occurred for protocol " + protocolID);
+                });
+        });
     });
 </script>

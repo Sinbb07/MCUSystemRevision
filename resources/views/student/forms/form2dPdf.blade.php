@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>FORM-2D</title>
-    @vite('resources/css/app.css') {{-- loads Tailwind --}}
+    @vite('resources/css/app.css')
 </head>
 <style>
     .page-break {
@@ -32,49 +32,49 @@
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">MCUERB CODE:</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $mcuerbCode }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Study Protocol Title</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $researchInfo->research_title ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Principal Investigator (PI)</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $principalInvestigator }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Co-Investigators</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $coInvestigator }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">PI Contact Numbers</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $piContact }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">PI Email Address</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $piEmail }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Study Protocol Submission Date</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $submissionDate }}</p>
         </div>
         <div class="flex items-center border-t">
             <div class="px-2 w-1/4 border-r">
                 <p class="text-sm font-bold text-l mb-2">Study Protocol Review Date</p>
             </div>
-            <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
+            <p class="text-sm text-l mb-2">{{ $reviewDate }}</p>
         </div>
     </div>
 
@@ -96,45 +96,22 @@
         </div>
         <div class="flex items-stretch border-t">
             <div class="px-2 w-5/6 border-r">
-
-            </div>
-            <div class="px-2 w-16 border-r">
-                <p class="text-xs text-center text-l mb-2">YES</p>
-            </div>
-            <div class="px-2 w-16 border-r">
-                <p class="text-xs text-center text-l mb-2">NO</p>
-            </div>
-            <div class="px-2 w-16 border-r">
-                <p class="text-xs text-center text-l mb-2">N/A</p>
-            </div>
-            <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2"><!---{{ $protocol->mcuerb_code }}--></p>
-            </div>
-        </div>
-        <div class="flex items-stretch border-t">
-            <div class="px-2 w-5/6 border-r">
                 <p class="text-sm text-l mb-2">• Statement indicating the study involves research</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->statement_study_involve ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -142,25 +119,19 @@
                 <p class="text-sm text-l mb-2">• Statement indicating clearly the purpose of the study</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_purpose ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_purpose ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_purpose ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_purpose ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->statement_study_purpose ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -169,113 +140,67 @@
                     study</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->participant_inclusion ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->participant_inclusion ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->participant_inclusion ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->explanation_inclusion ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->explanation_inclusion ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
             <div class="px-2 w-5/6 border-r">
-                <p class="text-sm text-l mb-2">• Provisions ensuring that the study participant’s participation in the
+                <p class="text-sm text-l mb-2">• Provisions ensuring that the study participant's participation in the
                     study is voluntary</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->voluntary ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->voluntary ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->voluntary ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->provisions ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->provisions ?? '' }}</p>
             </div>
         </div>
     </div>
 
     <div class="page-break"></div>
 
-    <!---page 2--->
-
+    <!-- Page 2 - Continue with remaining questions -->
     <div class="flex flex-col border">
         <div class="flex items-stretch">
-            <div class="px-2 w-5/6 border-r">
-                <p class="text-sm text-l mb-2">• Provisions ensuring that the study participant’s participation in the
-                    study is voluntary</p>
-            </div>
-            <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
-                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->voluntary ?? '') === 'Yes')✓@endif
-                </div>
-            </div>
-            <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
-                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->voluntary ?? '') === 'No')✓@endif
-                </div>
-            </div>
-            <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
-                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->voluntary ?? '') === 'NA')✓@endif
-                </div>
-            </div>
-            <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->provisions ?? '' }}</p>
-            </div>
-        </div>
-        <div class="flex items-stretch border-t">
             <div class="px-2 w-5/6 border-r">
                 <p class="text-sm text-l mb-2">• Statement indicating that participation may be withdrawn anytime
                     without penalty or loss of benefit to which the participant is entitled</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->withdraw ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->withdraw ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->withdraw ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->withdrawal_statement ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->withdrawal_statement ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -283,25 +208,19 @@
                 <p class="text-sm text-l mb-2">• Statement explaining the nature and procedure of the study</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->statement_study_nature ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -310,25 +229,19 @@
                     participants disclosed?</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->disclose_risks_benefits ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -337,25 +250,19 @@
                     society, or contributions to scientific knowledge stated</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->potential_benefits_statement ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -364,25 +271,19 @@
                     what is in the ICF?</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->provision_mitigations ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -391,25 +292,19 @@
                     available to the study participant and their important potential benefits and risks?</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->alternate_procedure_lists ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -417,25 +312,19 @@
                 <p class="text-sm text-l mb-2">• Statement informing study participant of his/her responsibilities</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->statement_responsibilities ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -444,25 +333,19 @@
                     participants in the course of the study</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->expenses_statement ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -471,52 +354,19 @@
                     available to the study participants in the event of study-related injury</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
-            </div>
-        </div>
-        <div class="flex items-stretch border-t">
-            <div class="px-2 w-5/6 border-r">
-                <p class="text-sm text-l mb-2">• Statement indicating if there is a compensation and/or treatment
-                    available to the study participants in the event of study-related injury</p>
-            </div>
-            <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
-                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
-                </div>
-            </div>
-            <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
-                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
-                </div>
-            </div>
-            <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
-                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
-                </div>
-            </div>
-            <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->compensation_statement ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -525,36 +375,29 @@
                     confidential and will not be made publicly available,
                     to the extent permitted by law; and that the identity of the participant will
                     remain confidential in the event the study results are published; including
-                    limitations to the investigator’s ability to guarantee confidentiality</p>
+                    limitations to the investigator's ability to guarantee confidentiality</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->statement_participant_records ?? '' }}</p>
             </div>
         </div>
     </div>
 
     <div class="page-break"></div>
 
-    <!---page 3-->
-
+    <!-- Page 3 -->
     <div class="flex flex-col border">
         <div class="flex items-stretch">
             <div class="px-2 w-5/6 border-r">
@@ -563,52 +406,40 @@
                     how long identifying data will be stored, and manner of storage)</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->data_protection_description ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
             <div class="px-2 w-5/6 border-r">
-                <p class="text-sm text-l mb-2">• Expected duration of the subject’s participation in the study specified
+                <p class="text-sm text-l mb-2">• Expected duration of the subject's participation in the study specified
                 </p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->expected_study_duration ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -616,58 +447,83 @@
                 <p class="text-sm text-l mb-2">• Approximate number of study subjects stated</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->approximate_number_subject ?? '' }}</p>
+            </div>
+        </div>
+        <div class="flex items-stretch border-t">
+            <div class="px-2 w-5/6 border-r">
+                <p class="text-sm text-l mb-2">• Explanation whether the study participant will be offered the option of receiving overall study findings and results</p>
+            </div>
+            <div class="px-2 w-16 border-r flex justify-center items-center">
+                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
+                </div>
+            </div>
+            <div class="px-2 w-16 border-r flex justify-center items-center">
+                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
+                </div>
+            </div>
+            <div class="px-2 w-16 border-r flex justify-center items-center">
+                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
+                </div>
+            </div>
+            <div class="px-2 w-1/2">
+                <p class="text-sm text-l mb-2">{{ $form2d->explanation_findings_results ?? '' }}</p>
+            </div>
+        </div>
+        <div class="flex items-stretch border-t">
+            <div class="px-2 w-5/6 border-r">
+                <p class="text-sm text-l mb-2">• Person(s) to contact in the study team for further information regarding the study and whom to contact in the event of study-related injury indicated</p>
+            </div>
+            <div class="px-2 w-16 border-r flex justify-center items-center">
+                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
+                </div>
+            </div>
+            <div class="px-2 w-16 border-r flex justify-center items-center">
+                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
+                </div>
+            </div>
+            <div class="px-2 w-16 border-r flex justify-center items-center">
+                <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
+                </div>
+            </div>
+            <div class="px-2 w-1/2">
+                <p class="text-sm text-l mb-2">{{ $form2d->person_contact ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
             <div class="px-2 w-5/6 border-r">
                 <p class="text-sm text-l mb-2">• Statement that the MCUERB has approved the study, and may be reached
-                    through the
-                    following contact for information regarding rights of study participants, including grievances and
-                    complaints
-                    Email Address: erb@mcu.edu.ph</p>
+                    through the following contact for information regarding rights of study participants, including grievances and complaints</p>
                 <p class="text-sm text-l mb-2">Manila Central University Ethics Review Board</p>
                 <p class="text-sm text-l mb-2">Email Address: erb@mcu.edu.ph</p>
                 <p class="text-sm text-l mb-2">Contact Number: (02) 8364 1071</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->statement_approval ?? '' }}</p>
             </div>
         </div>
         <div class="flex items-stretch border-t">
@@ -678,25 +534,19 @@
                     language/dialect other than English.)</p>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'Yes')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'No')✓@endif
                 </div>
             </div>
             <div class="px-2 w-16 border-r flex justify-center items-center">
-                <!---edit mo yung variable at condition-->
                 <div class="w-4 h-4 border border-black flex items-center justify-center text-[10px] leading-none">
-                    @if(($protocol->study_involvement ?? '') === 'NA')✓@endif
                 </div>
             </div>
             <div class="px-2 w-1/2">
-                <p class="text-sm text-l mb-2">{{ $protocol->statement_study_involve ?? '' }}</p>
+                <p class="text-sm text-l mb-2">{{ $form2d->manifestation_presentation ?? '' }}</p>
             </div>
         </div>
     </div>

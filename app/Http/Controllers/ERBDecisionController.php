@@ -17,12 +17,16 @@ class ERBDecisionController extends Controller
 {
     public function index()
     {
-        // Fetch one record per protocol (latest only)
+        // Get all protocol IDs that already have a decision in tbl_approved
+        $approvedProtocolIds = Approved::pluck('Protocol_ID')->toArray();
+        
+        // Fetch one record per protocol (latest only) - EXCLUDING already approved ones
         $evaluatedProtocols = EvaluatedReviews::with([
             'protocol.researchInformation.user'
         ])
-        ->whereHas('protocol', function($query) {
-            $query->where('protocol_ID', 'like', 'ERB-%');
+        ->whereHas('protocol', function($query) use ($approvedProtocolIds) {
+            $query->where('protocol_ID', 'like', 'ERB-%')
+                ->whereNotIn('protocol_ID', $approvedProtocolIds); // EXCLUDE already approved protocols
         })
         ->selectRaw('protocol_id, MAX(updated_at) as latest_review_date')
         ->groupBy('protocol_id')

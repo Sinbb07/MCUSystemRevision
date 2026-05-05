@@ -63,14 +63,48 @@ class PdfExportController extends Controller
     {
         $user = auth()->user();
 
-        $protocol = Form2D::where('user_ID', $user->user_ID)
+        // Get form2d data from database
+        $form2d = Form2D::where('user_ID', $user->user_ID)
             ->with('researchInfo')
-            ->firstOrFail();
+            ->first();
 
-        return Pdf::view('student.forms.form2dPdf', compact('protocol'))
-            ->format('Letter')
-            ->margins(15, 15, 15, 15)
-            ->inline('FORM-2D.pdf');
+        if (!$form2d) {
+            abort(404, 'No form data found. Please save the form first.');
+        }
+
+        // Get research info
+        $researchInfo = $form2d->researchInfo;
+        
+        // Get PI name
+        $mi = $user->user_MI ? "{$user->user_MI}." : '';
+        $principalInvestigator = "{$user->user_Fname} {$mi} {$user->user_Lname}";
+        
+        // Get co-investigator
+        $coInvestigator = $researchInfo->research_CoInvestigator ?? 'N/A';
+        
+        // Get contact info
+        $piContact = $researchInfo->research_Contact ?? '09XX-XXX-XX74';
+        $piEmail = $user->user_Email ?? 'N/A';
+        
+        // Set dates
+        $submissionDate = now()->format('Y-m-d');
+        $reviewDate = now()->format('Y-m-d');
+        $mcuerbCode = '2025-S1-001';
+
+        return Pdf::view('student.forms.form2dPdf', compact(
+            'form2d', 
+            'researchInfo', 
+            'principalInvestigator', 
+            'coInvestigator',
+            'piContact',
+            'piEmail',
+            'submissionDate',
+            'reviewDate',
+            'mcuerbCode'
+        ))
+        ->format('Letter')
+        ->margins(15, 15, 15, 15)
+        ->inline('FORM-2D.pdf');
     }
 
     public function exportForm2E(Request $request, $protocolId = null)

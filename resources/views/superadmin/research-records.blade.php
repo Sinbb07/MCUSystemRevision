@@ -101,56 +101,67 @@
             <tbody class="text-base/7 max-lg:text-sm/6">
                 @foreach($Records as $research)
                     @php
-                        // Determine if this is ERB or IACUC based on protocol
-                        $firstReview = optional($research->user->initialReviews->first());
-                        $protocolERB = optional($firstReview->protocol);
-                        $protocolIACUC = optional($research->user->protocol);
+                        // Get classification to determine protocol type (using 'classifications' relationship)
+                        $classification = optional($research->user)->classifications;
+                        $protocolType = optional($classification)->reviewClassification ?? 'N/A';
                         
-                        // Check which protocol exists and is valid
-                        $isERB = $protocolERB && str_starts_with($protocolERB->protocol_ID, 'ERB');
-                        $isIACUC = $protocolIACUC && str_starts_with($protocolIACUC->protocol_ID, 'IACUC');
+                        // For ERB
+                        $firstReview = optional(optional($research->user)->initialReviews)->first();
+                        $protocolERB = optional($firstReview)->protocol;
                         
-                        if ($isERB) {
-                            $protocolType = 'ERB';
+                        // For IACUC
+                        $protocolIACUC = optional($research->user)->protocol;
+                        
+                        // Select the correct protocol based on classification
+                        if ($protocolType === 'ERB') {
                             $protocol = $protocolERB;
-                            $protocolId = $protocol->protocol_ID ?? 'N/A';
-                            $reviewType = $protocol->review_type ?? 'N/A';
+                            $reviewType = optional($protocol)->review_type ?? 'N/A';
+                            $protocolId = optional($protocol)->protocol_ID ?? 'N/A';
                             
                             // Get evaluated reviews from tbl_evaluated_reviews for ERB
-                            $evaluatedReviews = $protocol ? $protocol->evaluatedReviews : collect();
+                            $evaluatedReviews = $protocol ? optional($protocol->evaluatedReviews) : collect();
                             
-                            $reviewer1Evaluation = $evaluatedReviews->first();
-                            $reviewer1 = optional($reviewer1Evaluation?->reviewer)->full_name ?? 'N/A';
+                            $reviewer1Evaluation = $evaluatedReviews ? $evaluatedReviews->first() : null;
+                            $reviewer1 = optional(optional($reviewer1Evaluation)->reviewer)->full_name ?? 'N/A';
                             $status1 = $reviewer1Evaluation->status ?? 'Pending';
                             
-                            $reviewer2Evaluation = $evaluatedReviews->skip(1)->first();
-                            $reviewer2 = optional($reviewer2Evaluation?->reviewer)->full_name ?? 'N/A';
+                            $reviewer2Evaluation = $evaluatedReviews ? $evaluatedReviews->skip(1)->first() : null;
+                            $reviewer2 = optional(optional($reviewer2Evaluation)->reviewer)->full_name ?? 'N/A';
                             $status2 = $reviewer2Evaluation->status ?? 'Pending';
                             
                             // Get decision from tbl_approved for ERB
-                            $decision = optional($research->user->approved->first())->Decision ?? 'Pending';
-                        } else {
-                            $protocolType = 'IACUC';
+                            $decision = optional(optional($research->user)->approved->first())->Decision ?? 'Pending';
+                        } elseif ($protocolType === 'IACUC') {
                             $protocol = $protocolIACUC;
-                            $protocolId = $protocol->protocol_ID ?? 'N/A';
-                            $reviewType = $protocol->review_type ?? 'N/A';
+                            $reviewType = optional($protocol)->review_type ?? 'N/A';
+                            $protocolId = optional($protocol)->protocol_ID ?? 'N/A';
                             
                             // Get evaluated reviews from tbl_evaluated_reviews for IACUC
-                            $evaluatedReviews = $protocol ? $protocol->evaluatedReviews : collect();
+                            $evaluatedReviews = $protocol ? optional($protocol->evaluatedReviews) : collect();
                             
-                            $reviewer1Evaluation = $evaluatedReviews->first();
-                            $reviewer1 = optional($reviewer1Evaluation?->reviewer)->full_name ?? 'N/A';
+                            $reviewer1Evaluation = $evaluatedReviews ? $evaluatedReviews->first() : null;
+                            $reviewer1 = optional(optional($reviewer1Evaluation)->reviewer)->full_name ?? 'N/A';
                             $status1 = $reviewer1Evaluation->status ?? 'Pending';
                             
-                            $reviewer2Evaluation = $evaluatedReviews->skip(1)->first();
-                            $reviewer2 = optional($reviewer2Evaluation?->reviewer)->full_name ?? 'N/A';
+                            $reviewer2Evaluation = $evaluatedReviews ? $evaluatedReviews->skip(1)->first() : null;
+                            $reviewer2 = optional(optional($reviewer2Evaluation)->reviewer)->full_name ?? 'N/A';
                             $status2 = $reviewer2Evaluation->status ?? 'Pending';
                             
                             // Get decision from tbl_approved_iacuc for IACUC
-                            $decision = optional($research->user->approvedIacuc)->Decision ?? 'Pending';
+                            $decision = optional(optional($research->user)->approvedIacuc)->Decision ?? 'Pending';
+                        } else {
+                            // No classification found
+                            $protocol = null;
+                            $protocolId = 'N/A';
+                            $reviewType = 'N/A';
+                            $reviewer1 = 'N/A';
+                            $status1 = 'Pending';
+                            $reviewer2 = 'N/A';
+                            $status2 = 'Pending';
+                            $decision = 'Pending';
                         }
                         
-                        $latestSubmission = $research->user->researchFiles->max('submitted_at');
+                        $latestSubmission = optional(optional($research->user)->researchFiles)->max('submitted_at');
                         $submissionDate = $latestSubmission ? \Carbon\Carbon::parse($latestSubmission)->format('Y-m-d') : '';
                         
                         $submissionDisplay = $latestSubmission 
@@ -166,12 +177,8 @@
                         <!-- Research Title -->
                         <td>{{ $research->research_title }}</td>
                         
-                        <!-- P.I. Name -->
-                        <td class="underline text-blue-600">
-                            <a href="{{ $protocolType === 'ERB' ? route('erb.submitted-documents', $research->user->user_ID) : route('iacuc.submitted-documents', $research->user->user_ID) }}">
-                                {{ $research->user->full_name }}
-                            </a>
-                        </td>
+                        <!-- P.I. Name (NO HYPERLINK) -->
+                        <td>{{ optional($research->user)->full_name ?? 'N/A' }}</td>
                         
                         <!-- Date of Submission -->
                         <td>{!! $submissionDisplay !!}</td>

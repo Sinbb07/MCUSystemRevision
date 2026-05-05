@@ -16,68 +16,28 @@ class Form2D extends Model
     protected $fillable = [
         'form2DID',
         'user_ID',
-
-        'study_involvement',
-        'statement_study_involve',
-
-        'study_purpose',
-        'statement_study_purpose',
-
-        'participant_inclusion',
-        'explanation_inclusion',
-
-        'voluntary',
-        'provisions',
-
-        'withdraw',
-        'withdrawal_statement',
-
-        'study_nature',
-        'statement_study_nature',
-
-        'risks_benefits',
-        'disclose_risks_benefits',
-
-        'potential_benefits',
-        'potential_benefits_statement',
-
-        'mitigation',
-        'provision_mitigations',
-
-        'alternate_procedure',
-        'alternate_procedure_lists',
-
-        'participant_responsibilities',
-        'statement_responsibilities',
-
-        'study_expenses',
-        'expenses_statement',
-
-        'compensation',
-        'compensation_statement',
-
-        'participant_records',
-        'statement_participant_records',
-
-        'data_protection',
-        'data_protection_description',
-
-        'study_duration',
-        'expected_study_duration',
-
-        'number_subject',
-        'approximate_number_subject',
-
-        'findings_results',
-        'explanation_findings_results',
-
-        'contact',
-        'person_contact',
-
-        'approval',
-        'statement_approval',
         
-        'presentation_language',
+        // Only textarea fields
+        'statement_study_involve',
+        'statement_study_purpose',
+        'explanation_inclusion',
+        'provisions',
+        'withdrawal_statement',
+        'statement_study_nature',
+        'disclose_risks_benefits',
+        'potential_benefits_statement',
+        'provision_mitigations',
+        'alternate_procedure_lists',
+        'statement_responsibilities',
+        'expenses_statement',
+        'compensation_statement',
+        'statement_participant_records',
+        'data_protection_description',
+        'expected_study_duration',
+        'approximate_number_subject',
+        'explanation_findings_results',
+        'person_contact',
+        'statement_approval',
         'manifestation_presentation'
     ];
 
@@ -88,6 +48,6 @@ class Form2D extends Model
 
     public function researchInfo()
     {
-    return $this->hasOne(ResearchInformation::class, 'user_ID', 'user_ID');
+        return $this->hasOne(ResearchInformation::class, 'user_ID', 'user_ID');
     }
 }

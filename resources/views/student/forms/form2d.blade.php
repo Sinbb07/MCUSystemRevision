@@ -295,118 +295,45 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Script loaded - initializing radio buttons');
-
-            // Function to handle radio button changes
-            function handleRadioChange(event) {
-                const radio = event.target;
-                const targetId = radio.getAttribute('data-target');
-                const textarea = document.getElementById(targetId);
-
-                console.log('Radio changed:', radio.name, radio.value, 'Target:', targetId);
-
-                if (!textarea) {
-                    console.error('Textarea not found:', targetId);
-                    return;
-                }
-
-                if (radio.value === 'Yes') {
-                    textarea.disabled = false;
-                    textarea.required = true;
-                    textarea.classList.remove('bg-gray-100', 'text-gray-400');
-                    textarea.classList.add('bg-white', 'text-gray-900');
-                    console.log('Enabled textarea:', targetId);
-                } else {
-                    textarea.disabled = true;
-                    textarea.required = false;
-                    // Clear the textarea value when switching to No or NA
-                    textarea.value = '';
-                    textarea.classList.remove('bg-white', 'text-gray-900');
-                    textarea.classList.add('bg-gray-100', 'text-gray-400');
-                    console.log('Disabled and cleared textarea:', targetId);
-                }
-            }
-
-            // Add event listeners to all radio buttons
-            const radioButtons = document.querySelectorAll('input[type="radio"][data-target]');
-            console.log('Found radio buttons:', radioButtons.length);
-
-            radioButtons.forEach(radio => {
-                radio.addEventListener('change', handleRadioChange);
-                console.log('Added listener to:', radio.name);
-            });
-
             // Populate form with existing data if available
             const formData = @json($form2d ?? null);
             if (formData) {
                 console.log('Populating form with data:', formData);
-
-                // Set radio buttons first
+                
+                // Set textarea values only
                 Object.keys(formData).forEach(fieldName => {
                     const value = formData[fieldName];
-
-                    if (value === 'Yes' || value === 'No' || value === 'NA') {
-                        const radio = document.querySelector(`input[name="${fieldName}"][value="${value}"]`);
-                        if (radio) {
-                            radio.checked = true;
-                            console.log('Set radio:', fieldName, value);
-                            // Trigger change event to handle textareas
-                            setTimeout(() => {
-                                radio.dispatchEvent(new Event('change'));
-                            }, 50);
-                        }
-                    }
-                });
-
-                // Set textarea values after a short delay to ensure they're enabled
-                setTimeout(() => {
-                    Object.keys(formData).forEach(fieldName => {
-                        const value = formData[fieldName];
-                        // Only set textarea values (not radio values) and only if they have content
-                        if (value && value !== 'Yes' && value !== 'No' && value !== 'NA' && value.trim() !== '') {
+                    // Skip radio fields (they start with study_, participant_, etc. but not statement_)
+                    if (fieldName.startsWith('statement_') || 
+                        fieldName === 'explanation_inclusion' ||
+                        fieldName === 'provisions' ||
+                        fieldName === 'withdrawal_statement' ||
+                        fieldName === 'disclose_risks_benefits' ||
+                        fieldName === 'potential_benefits_statement' ||
+                        fieldName === 'provision_mitigations' ||
+                        fieldName === 'alternate_procedure_lists' ||
+                        fieldName === 'statement_responsibilities' ||
+                        fieldName === 'expenses_statement' ||
+                        fieldName === 'compensation_statement' ||
+                        fieldName === 'statement_participant_records' ||
+                        fieldName === 'data_protection_description' ||
+                        fieldName === 'expected_study_duration' ||
+                        fieldName === 'approximate_number_subject' ||
+                        fieldName === 'explanation_findings_results' ||
+                        fieldName === 'person_contact' ||
+                        fieldName === 'statement_approval' ||
+                        fieldName === 'manifestation_presentation') {
+                        
+                        if (value && typeof value === 'string' && value.trim() !== '') {
                             const textarea = document.querySelector(`textarea[name="${fieldName}"]`);
                             if (textarea) {
-                                // Only set the value if the textarea is enabled (meaning "Yes" was selected)
-                                if (!textarea.disabled) {
-                                    textarea.value = value;
-                                    console.log('Set textarea:', fieldName, value);
-                                } else {
-                                    console.log('Textarea disabled, not setting value:', fieldName);
-                                }
+                                textarea.value = value;
+                                console.log('Set textarea:', fieldName, value);
                             }
                         }
-                    });
-                }, 200);
-            }
-
-            // Form submission handler
-            const form = document.querySelector('form');
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    console.log('Form submitting...');
-                    // Enable all disabled textareas before submission so their data gets sent
-                    // But only if they have content (for cases where we're updating from Yes to No/NA)
-                    const allTextareas = document.querySelectorAll('textarea');
-                    allTextareas.forEach(textarea => {
-                        if (textarea.disabled && textarea.value.trim() !== '') {
-                            // If a textarea is disabled but has content, clear it first
-                            textarea.value = '';
-                        }
-                        textarea.disabled = false;
-                    });
-                });
-            }
-
-            // Additional cleanup: Clear any textarea that's disabled but has content when form loads
-            setTimeout(() => {
-                const disabledTextareasWithContent = document.querySelectorAll('textarea:disabled');
-                disabledTextareasWithContent.forEach(textarea => {
-                    if (textarea.value.trim() !== '') {
-                        console.log('Clearing disabled textarea with content:', textarea.id);
-                        textarea.value = '';
                     }
                 });
-            }, 300);
+            }
         });
     </script>
 
